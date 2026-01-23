@@ -14,29 +14,32 @@ export function Input({
   className = '',
   ...props
 }: InputProps) {
-  const sizeClass = size === 'lg' ? 'py-4 px-4 text-xl' : 'py-3 px-3 text-lg';
+  const sizeClass = size === 'lg'
+    ? 'py-4 px-4 text-lg'
+    : 'py-3.5 px-4 text-base';
 
   return (
     <View>
       {label && (
-        <Typography variant="label" className="text-gray-700 dark:text-gray-300 mb-2">
+        <Typography variant="label" className="text-surface-600 dark:text-surface-400 mb-2 uppercase tracking-wider text-xs">
           {label}
         </Typography>
       )}
       <TextInput
         className={`
-          bg-gray-100 dark:bg-gray-700 
-          rounded-xl 
-          text-gray-900 dark:text-white
+          bg-surface-100 dark:bg-surface-800
+          border-2 border-transparent
+          rounded-xl
+          text-surface-900 dark:text-white
           ${sizeClass}
-          ${error ? 'border-2 border-red-500' : ''}
+          ${error ? 'border-danger-500' : 'focus:border-primary-500'}
           ${className}
         `}
-        placeholderTextColor="#9CA3AF"
+        placeholderTextColor="#A3A3A3"
         {...props}
       />
       {error && (
-        <Typography variant="small" className="text-red-500 mt-1">
+        <Typography variant="small" className="text-danger-500 mt-1.5">
           {error}
         </Typography>
       )}
