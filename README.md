@@ -1,5 +1,10 @@
 # MedMinder - Medication Reminder App
 
+[![Expo SDK](https://img.shields.io/badge/Expo-54.0-blue.svg)](https://expo.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
+[![React Native](https://img.shields.io/badge/React%20Native-0.81-61dafb.svg)](https://reactnative.dev/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
 A comprehensive medication reminder app designed for elderly users managing complex medication schedules. Built with Expo SDK 54, TypeScript, and SQLite.
 
 ## Features
@@ -338,10 +343,51 @@ drizzle-kit generate
 # Run migrations (handled automatically by app)
 ```
 
-## License
+## Documentation
 
-[Add your license here]
+Comprehensive documentation is available in the [`/docs`](./docs) folder:
+
+- **[Background & Vision](./docs/BACKGROUND.md)** - Project origin, problem statement, target users, and goals
+- **[Design Philosophy](./docs/PHILOSOPHY.md)** - Accessibility, UX principles, and design decisions for elderly users
+- **[Architecture](./docs/ARCHITECTURE.md)** - System architecture, layer breakdown, and data flow patterns
+- **[Technical Decisions](./docs/TECH_DECISIONS.md)** - Why we chose Expo, TypeScript, SQLite, and other technologies
+- **[Contributing Guide](./docs/CONTRIBUTING.md)** - How to contribute, code style guidelines, and development setup
+
+## Why MedMinder?
+
+### Privacy First
+- **No account required** - Open and use immediately
+- **Offline-first** - All data stored locally on your device
+- **No tracking** - Your medication data stays private
+
+### Designed for Elderly Users
+- **Large touch targets** (44x44 points minimum)
+- **High contrast** colors for readability
+- **Simple navigation** - 3-tab interface, no complex menus
+- **Clear typography** - Readable fonts at adjustable sizes
+- **Forgiving UI** - Confirmations before destructive actions
+
+### Reliable & Simple
+- **Works offline** - No internet required
+- **Smart notifications** - Reminders at the right time
+- **Easy medication entry** - Guided 5-step wizard
+- **Visual adherence tracking** - Calendar view of dose history
 
 ## Contributing
 
-[Add contribution guidelines here]
+We welcome contributions! Please see our [Contributing Guide](./docs/CONTRIBUTING.md) for details on:
+
+- Setting up your development environment
+- Code style guidelines
+- Pull request process
+- Testing expectations
+
+**Good first issues**: Check our [issue tracker](https://github.com/yourusername/medminder/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) for beginner-friendly tasks.
+
+## License
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+---
+
+**Built with ❤️ for those who need it most.**
