@@ -6,20 +6,20 @@ import { DoseLogService } from '../../src/services/doseLog.service';
 import { MedicationService } from '../../src/services/medication.service';
 import { DayAggregate, DoseLog, Medication } from '../../src/types';
 import { Typography } from '../../src/components/ui/Typography';
-import { Card } from '../../src/components/ui/Card';
 import { StatusIndicator } from '../../src/components/medication/StatusIndicator';
+import { Ionicons } from '@expo/vector-icons';
 
 const CALENDAR_THEME = {
   backgroundColor: 'transparent',
   calendarBackground: 'transparent',
-  textSectionTitleColor: '#6B7280',
-  selectedDayBackgroundColor: '#4CAF50',
+  textSectionTitleColor: '#737373',
+  selectedDayBackgroundColor: '#06B6D4',
   selectedDayTextColor: '#ffffff',
-  todayTextColor: '#4CAF50',
-  dayTextColor: '#1F2937',
-  textDisabledColor: '#D1D5DB',
-  arrowColor: '#4CAF50',
-  monthTextColor: '#1F2937',
+  todayTextColor: '#06B6D4',
+  dayTextColor: '#171717',
+  textDisabledColor: '#D4D4D4',
+  arrowColor: '#06B6D4',
+  monthTextColor: '#171717',
   textDayFontSize: 16,
   textMonthFontSize: 18,
   textDayHeaderFontSize: 14,
@@ -49,18 +49,18 @@ export default function HistoryScreen() {
 
     const marks: Record<string, any> = {};
     for (const agg of aggregates) {
-      let dotColor = '#4CAF50'; // Green - all taken
+      let dotColor = '#22C55E'; // Green - all taken
       if (agg.missedCount > 0 && agg.takenCount > 0) {
-        dotColor = '#FFC107'; // Yellow - partial
+        dotColor = '#F59E0B'; // Yellow - partial
       } else if (agg.missedCount > 0 && agg.takenCount === 0) {
-        dotColor = '#F44336'; // Red - all missed
+        dotColor = '#EF4444'; // Red - all missed
       }
 
       marks[agg.date] = {
         marked: true,
         dotColor,
         selected: agg.date === selectedDate,
-        selectedColor: agg.date === selectedDate ? '#4CAF50' : undefined,
+        selectedColor: agg.date === selectedDate ? '#06B6D4' : undefined,
       };
     }
 
@@ -68,7 +68,7 @@ export default function HistoryScreen() {
     marks[selectedDate] = {
       ...marks[selectedDate],
       selected: true,
-      selectedColor: '#4CAF50',
+      selectedColor: '#06B6D4',
     };
 
     setMarkedDates(marks);
@@ -107,10 +107,10 @@ export default function HistoryScreen() {
   };
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-900">
+    <View className="flex-1 bg-surface-50 dark:bg-surface-900">
       <ScrollView className="flex-1">
         {/* Calendar */}
-        <View className="bg-white dark:bg-gray-800 px-4 pt-4">
+        <View className="bg-white dark:bg-surface-800 px-4 pt-4">
           <Calendar
             current={selectedDate}
             onDayPress={handleDayPress}
@@ -122,22 +122,22 @@ export default function HistoryScreen() {
         </View>
 
         {/* Legend */}
-        <View className="flex-row justify-center gap-6 py-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <View className="flex-row justify-center gap-6 py-3 bg-white dark:bg-surface-800 border-b border-surface-100 dark:border-surface-700">
           <View className="flex-row items-center">
-            <View className="w-3 h-3 rounded-full bg-green-500 mr-2" />
-            <Typography variant="small" className="text-gray-600 dark:text-gray-400">
+            <View className="w-3 h-3 rounded-full bg-success-500 mr-2" />
+            <Typography variant="small" className="text-surface-600 dark:text-surface-400">
               All taken
             </Typography>
           </View>
           <View className="flex-row items-center">
-            <View className="w-3 h-3 rounded-full bg-yellow-500 mr-2" />
-            <Typography variant="small" className="text-gray-600 dark:text-gray-400">
+            <View className="w-3 h-3 rounded-full bg-warning-500 mr-2" />
+            <Typography variant="small" className="text-surface-600 dark:text-surface-400">
               Partial
             </Typography>
           </View>
           <View className="flex-row items-center">
-            <View className="w-3 h-3 rounded-full bg-red-500 mr-2" />
-            <Typography variant="small" className="text-gray-600 dark:text-gray-400">
+            <View className="w-3 h-3 rounded-full bg-danger-500 mr-2" />
+            <Typography variant="small" className="text-surface-600 dark:text-surface-400">
               Missed
             </Typography>
           </View>
@@ -145,41 +145,63 @@ export default function HistoryScreen() {
 
         {/* Day Details */}
         <View className="px-4 py-6">
-          <Typography variant="h2" className="text-gray-900 dark:text-white mb-1">
+          <Typography variant="h2" className="text-surface-900 dark:text-white mb-1">
             {format(parseISO(selectedDate), 'MMMM d, yyyy')}
           </Typography>
-          
+
           {dayAggregate && dayAggregate.totalDoses > 0 ? (
             <>
-              <Typography variant="body" className="text-gray-600 dark:text-gray-300 mb-4">
-                Adherence: {dayAggregate.adherencePercent}% ({dayAggregate.takenCount}/{dayAggregate.takenCount + dayAggregate.missedCount} doses)
-              </Typography>
+              {/* Adherence Stats */}
+              <View className="flex-row items-center mb-4">
+                <View className="flex-row items-center bg-success-50 dark:bg-success-950 px-3 py-1.5 rounded-lg">
+                  <Ionicons name="checkmark-circle" size={16} color="#22C55E" />
+                  <Typography variant="small" className="text-success-600 dark:text-success-400 ml-1 font-semibold">
+                    {dayAggregate.adherencePercent}%
+                  </Typography>
+                </View>
+                <Typography variant="small" className="text-surface-500 dark:text-surface-400 ml-2">
+                  {dayAggregate.takenCount}/{dayAggregate.takenCount + dayAggregate.missedCount} doses taken
+                </Typography>
+              </View>
 
-              <Card className="p-0 overflow-hidden">
+              <View className="bg-white dark:bg-surface-800 rounded-2xl border-2 border-surface-200 dark:border-surface-700 overflow-hidden">
                 {dayLogs.map((log, index) => (
                   <View
                     key={log.id}
                     className={`flex-row items-center justify-between p-4 ${
-                      index < dayLogs.length - 1 ? 'border-b border-gray-100 dark:border-gray-700' : ''
+                      index < dayLogs.length - 1 ? 'border-b border-surface-100 dark:border-surface-700' : ''
                     }`}
                   >
-                    <View className="flex-1">
-                      <Typography variant="body" className="text-gray-900 dark:text-white font-medium">
-                        {log.scheduledTime}
-                      </Typography>
-                      <Typography variant="small" className="text-gray-600 dark:text-gray-400">
-                        {log.medication?.name || 'Unknown medication'}
-                      </Typography>
+                    <View className="flex-row items-center flex-1">
+                      <View
+                        className="w-10 h-10 rounded-lg items-center justify-center mr-3"
+                        style={{ backgroundColor: log.medication?.color || '#06B6D4' }}
+                      >
+                        <Ionicons name="medical" size={18} color="#fff" />
+                      </View>
+                      <View className="flex-1">
+                        <Typography variant="body" className="text-surface-900 dark:text-white font-semibold">
+                          {log.medication?.name || 'Unknown medication'}
+                        </Typography>
+                        <Typography variant="small" className="text-surface-500 dark:text-surface-400">
+                          Scheduled at {log.scheduledTime}
+                        </Typography>
+                      </View>
                     </View>
                     <StatusIndicator status={log.status} showLabel />
                   </View>
                 ))}
-              </Card>
+              </View>
             </>
           ) : (
-            <Typography variant="body" className="text-gray-500 dark:text-gray-400 text-center py-8">
-              No doses scheduled for this day
-            </Typography>
+            <View className="items-center py-12">
+              <View className="w-16 h-16 rounded-2xl bg-surface-100 dark:bg-surface-800 items-center justify-center mb-4">
+                <Ionicons name="calendar-outline" size={32} color="#737373" />
+              </View>
+              <Typography variant="body" className="text-surface-500 dark:text-surface-400 text-center">
+                No doses scheduled for this day
+              </Typography>
+            </View>
           )}
         </View>
       </ScrollView>

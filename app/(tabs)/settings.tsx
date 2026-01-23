@@ -84,15 +84,20 @@ export default function SettingsScreen() {
     <ScreenWrapper scrollable>
       <ScrollView className="flex-1 px-4 py-6">
         {/* Notifications Section */}
-        <Typography variant="label" className="text-gray-500 dark:text-gray-400 mb-2 ml-4">
-          NOTIFICATIONS
+        <Typography variant="label" className="text-surface-500 dark:text-surface-400 mb-2 ml-4 uppercase tracking-wider text-xs">
+          Notifications
         </Typography>
-        <Card className="mb-6 p-0 overflow-hidden">
+        <View className="bg-white dark:bg-surface-800 rounded-2xl border-2 border-surface-200 dark:border-surface-700 mb-6 overflow-hidden">
           {/* Snooze Duration */}
-          <View className="flex-row items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700">
-            <Typography variant="body" className="text-gray-900 dark:text-white">
-              Snooze Duration
-            </Typography>
+          <View className="flex-row items-center justify-between p-4 border-b border-surface-100 dark:border-surface-700">
+            <View className="flex-row items-center">
+              <View className="w-9 h-9 rounded-lg bg-primary-50 dark:bg-primary-950 items-center justify-center mr-3">
+                <Ionicons name="alarm-outline" size={18} color="#06B6D4" />
+              </View>
+              <Typography variant="body" className="text-surface-900 dark:text-white">
+                Snooze Duration
+              </Typography>
+            </View>
             <Select
               value={settings.snoozeDurationMinutes}
               options={SNOOZE_OPTIONS}
@@ -102,14 +107,19 @@ export default function SettingsScreen() {
           </View>
 
           {/* Missed Threshold */}
-          <View className="flex-row items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700">
-            <View className="flex-1 mr-4">
-              <Typography variant="body" className="text-gray-900 dark:text-white">
-                Mark as Missed After
-              </Typography>
-              <Typography variant="small" className="text-gray-500 dark:text-gray-400">
-                Auto-mark pending doses as missed
-              </Typography>
+          <View className="flex-row items-center justify-between p-4 border-b border-surface-100 dark:border-surface-700">
+            <View className="flex-row items-center flex-1 mr-4">
+              <View className="w-9 h-9 rounded-lg bg-warning-50 dark:bg-warning-950 items-center justify-center mr-3">
+                <Ionicons name="time-outline" size={18} color="#F59E0B" />
+              </View>
+              <View className="flex-1">
+                <Typography variant="body" className="text-surface-900 dark:text-white">
+                  Mark as Missed After
+                </Typography>
+                <Typography variant="small" className="text-surface-500 dark:text-surface-400">
+                  Auto-mark pending doses as missed
+                </Typography>
+              </View>
             </View>
             <Select
               value={settings.missedThresholdMinutes}
@@ -120,10 +130,15 @@ export default function SettingsScreen() {
           </View>
 
           {/* Sound */}
-          <View className="flex-row items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700">
-            <Typography variant="body" className="text-gray-900 dark:text-white">
-              Reminder Sound
-            </Typography>
+          <View className="flex-row items-center justify-between p-4 border-b border-surface-100 dark:border-surface-700">
+            <View className="flex-row items-center">
+              <View className="w-9 h-9 rounded-lg bg-violet-50 dark:bg-violet-950 items-center justify-center mr-3">
+                <Ionicons name="volume-medium-outline" size={18} color="#8B5CF6" />
+              </View>
+              <Typography variant="body" className="text-surface-900 dark:text-white">
+                Reminder Sound
+              </Typography>
+            </View>
             <Select
               value={settings.notificationSound}
               options={SOUND_OPTIONS}
@@ -134,28 +149,38 @@ export default function SettingsScreen() {
 
           {/* Haptic Feedback */}
           <View className="flex-row items-center justify-between p-4">
-            <Typography variant="body" className="text-gray-900 dark:text-white">
-              Vibration
-            </Typography>
+            <View className="flex-row items-center">
+              <View className="w-9 h-9 rounded-lg bg-accent-50 dark:bg-accent-950 items-center justify-center mr-3">
+                <Ionicons name="phone-portrait-outline" size={18} color="#F97316" />
+              </View>
+              <Typography variant="body" className="text-surface-900 dark:text-white">
+                Vibration
+              </Typography>
+            </View>
             <Switch
               value={settings.hapticFeedback}
               onValueChange={(v) => updateSetting('hapticFeedback', v)}
-              trackColor={{ false: '#E0E0E0', true: '#4CAF5080' }}
-              thumbColor={settings.hapticFeedback ? '#4CAF50' : '#f4f3f4'}
+              trackColor={{ false: '#E5E5E5', true: '#06B6D480' }}
+              thumbColor={settings.hapticFeedback ? '#06B6D4' : '#f4f3f4'}
             />
           </View>
-        </Card>
+        </View>
 
         {/* Display Section */}
-        <Typography variant="label" className="text-gray-500 dark:text-gray-400 mb-2 ml-4">
-          DISPLAY
+        <Typography variant="label" className="text-surface-500 dark:text-surface-400 mb-2 ml-4 uppercase tracking-wider text-xs">
+          Display
         </Typography>
-        <Card className="mb-6 p-0 overflow-hidden">
+        <View className="bg-white dark:bg-surface-800 rounded-2xl border-2 border-surface-200 dark:border-surface-700 mb-6 overflow-hidden">
           {/* Dark Mode */}
-          <View className="flex-row items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700">
-            <Typography variant="body" className="text-gray-900 dark:text-white">
-              Dark Mode
-            </Typography>
+          <View className="flex-row items-center justify-between p-4 border-b border-surface-100 dark:border-surface-700">
+            <View className="flex-row items-center">
+              <View className="w-9 h-9 rounded-lg bg-surface-100 dark:bg-surface-700 items-center justify-center mr-3">
+                <Ionicons name="moon-outline" size={18} color="#737373" />
+              </View>
+              <Typography variant="body" className="text-surface-900 dark:text-white">
+                Dark Mode
+              </Typography>
+            </View>
             <Select
               value={settings.darkMode}
               options={DARK_MODE_OPTIONS}
@@ -166,9 +191,14 @@ export default function SettingsScreen() {
 
           {/* Font Size */}
           <View className="flex-row items-center justify-between p-4">
-            <Typography variant="body" className="text-gray-900 dark:text-white">
-              Text Size
-            </Typography>
+            <View className="flex-row items-center">
+              <View className="w-9 h-9 rounded-lg bg-surface-100 dark:bg-surface-700 items-center justify-center mr-3">
+                <Ionicons name="text-outline" size={18} color="#737373" />
+              </View>
+              <Typography variant="body" className="text-surface-900 dark:text-white">
+                Text Size
+              </Typography>
+            </View>
             <Select
               value={settings.fontSize}
               options={FONT_SIZE_OPTIONS}
@@ -176,62 +206,87 @@ export default function SettingsScreen() {
               compact
             />
           </View>
-        </Card>
+        </View>
 
         {/* Data Section */}
-        <Typography variant="label" className="text-gray-500 dark:text-gray-400 mb-2 ml-4">
-          DATA
+        <Typography variant="label" className="text-surface-500 dark:text-surface-400 mb-2 ml-4 uppercase tracking-wider text-xs">
+          Data
         </Typography>
-        <Card className="mb-6 p-0 overflow-hidden">
+        <View className="bg-white dark:bg-surface-800 rounded-2xl border-2 border-surface-200 dark:border-surface-700 mb-6 overflow-hidden">
           <Pressable
             onPress={handleExportData}
-            className="flex-row items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700"
+            className="flex-row items-center justify-between p-4 border-b border-surface-100 dark:border-surface-700"
           >
-            <Typography variant="body" className="text-gray-900 dark:text-white">
-              Export Data
-            </Typography>
-            <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+            <View className="flex-row items-center">
+              <View className="w-9 h-9 rounded-lg bg-success-50 dark:bg-success-950 items-center justify-center mr-3">
+                <Ionicons name="download-outline" size={18} color="#22C55E" />
+              </View>
+              <Typography variant="body" className="text-surface-900 dark:text-white">
+                Export Data
+              </Typography>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#A3A3A3" />
           </Pressable>
 
           <Pressable
             onPress={handleClearData}
             className="flex-row items-center justify-between p-4"
           >
-            <Typography variant="body" className="text-red-500">
-              Clear All Data
-            </Typography>
-            <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+            <View className="flex-row items-center">
+              <View className="w-9 h-9 rounded-lg bg-danger-50 dark:bg-danger-950 items-center justify-center mr-3">
+                <Ionicons name="trash-outline" size={18} color="#EF4444" />
+              </View>
+              <Typography variant="body" className="text-danger-500">
+                Clear All Data
+              </Typography>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#A3A3A3" />
           </Pressable>
-        </Card>
+        </View>
 
         {/* About Section */}
-        <Typography variant="label" className="text-gray-500 dark:text-gray-400 mb-2 ml-4">
-          ABOUT
+        <Typography variant="label" className="text-surface-500 dark:text-surface-400 mb-2 ml-4 uppercase tracking-wider text-xs">
+          About
         </Typography>
-        <Card className="mb-6 p-0 overflow-hidden">
-          <View className="flex-row items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700">
-            <Typography variant="body" className="text-gray-900 dark:text-white">
-              App Version
-            </Typography>
-            <Typography variant="body" className="text-gray-500 dark:text-gray-400">
+        <View className="bg-white dark:bg-surface-800 rounded-2xl border-2 border-surface-200 dark:border-surface-700 mb-6 overflow-hidden">
+          <View className="flex-row items-center justify-between p-4 border-b border-surface-100 dark:border-surface-700">
+            <View className="flex-row items-center">
+              <View className="w-9 h-9 rounded-lg bg-primary-50 dark:bg-primary-950 items-center justify-center mr-3">
+                <Ionicons name="information-outline" size={18} color="#06B6D4" />
+              </View>
+              <Typography variant="body" className="text-surface-900 dark:text-white">
+                App Version
+              </Typography>
+            </View>
+            <Typography variant="body" className="text-surface-500 dark:text-surface-400">
               {Constants.expoConfig?.version || '1.0.0'}
             </Typography>
           </View>
 
-          <Pressable className="flex-row items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700">
-            <Typography variant="body" className="text-gray-900 dark:text-white">
-              Privacy Policy
-            </Typography>
-            <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+          <Pressable className="flex-row items-center justify-between p-4 border-b border-surface-100 dark:border-surface-700">
+            <View className="flex-row items-center">
+              <View className="w-9 h-9 rounded-lg bg-surface-100 dark:bg-surface-700 items-center justify-center mr-3">
+                <Ionicons name="shield-checkmark-outline" size={18} color="#737373" />
+              </View>
+              <Typography variant="body" className="text-surface-900 dark:text-white">
+                Privacy Policy
+              </Typography>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#A3A3A3" />
           </Pressable>
 
           <Pressable className="flex-row items-center justify-between p-4">
-            <Typography variant="body" className="text-gray-900 dark:text-white">
-              Terms of Service
-            </Typography>
-            <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+            <View className="flex-row items-center">
+              <View className="w-9 h-9 rounded-lg bg-surface-100 dark:bg-surface-700 items-center justify-center mr-3">
+                <Ionicons name="document-text-outline" size={18} color="#737373" />
+              </View>
+              <Typography variant="body" className="text-surface-900 dark:text-white">
+                Terms of Service
+              </Typography>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#A3A3A3" />
           </Pressable>
-        </Card>
+        </View>
       </ScrollView>
     </ScreenWrapper>
   );

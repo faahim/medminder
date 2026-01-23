@@ -1,5 +1,6 @@
 // IMPORTANT: This must be the first import
 import 'react-native-get-random-values';
+import '../global.css';
 
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
