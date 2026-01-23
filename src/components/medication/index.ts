@@ -1,5 +1,6 @@
 export { MedicationCard } from './MedicationCard';
 export { DoseCard } from './DoseCard';
+export { AsNeededCard } from './AsNeededCard';
 export { TimelineSection } from './TimelineSection';
 export { MealTimingBadge } from './MealTimingBadge';
 export { StatusIndicator } from './StatusIndicator';

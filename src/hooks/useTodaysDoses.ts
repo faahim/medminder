@@ -4,21 +4,24 @@ import { MedicationService } from '../services/medication.service';
 import { DoseLogService } from '../services/doseLog.service';
 import { NotificationService } from '../services/notification.service';
 import { buildTodaySchedule, groupDosesByTimeOfDay } from '../utils/schedule';
-import { ScheduledDose, DoseStatus, TimeOfDay } from '../types';
+import { ScheduledDose, DoseStatus, TimeOfDay, Medication } from '../types';
 import { useDatabase } from '../contexts/DatabaseContext';
 
 interface UseTodaysDosesReturn {
   doses: ScheduledDose[];
   groupedDoses: Record<TimeOfDay, ScheduledDose[]>;
+  asNeededMeds: Medication[];
   isLoading: boolean;
   error: Error | null;
   refresh: () => Promise<void>;
   logDose: (medicationId: string, time: string, status: DoseStatus) => Promise<void>;
+  logAsNeededDose: (medicationId: string) => Promise<void>;
 }
 
 export function useTodaysDoses(): UseTodaysDosesReturn {
   const { isReady } = useDatabase();
   const [doses, setDoses] = useState<ScheduledDose[]>([]);
+  const [asNeededMeds, setAsNeededMeds] = useState<Medication[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -30,24 +33,29 @@ export function useTodaysDoses(): UseTodaysDosesReturn {
 
     try {
       const today = format(new Date(), 'yyyy-MM-dd');
-      
+
       // Get all active medications
-      const medications = await MedicationService.getAll();
-      
+      const allMedications = await MedicationService.getAll();
+
+      // Separate scheduled vs as-needed medications
+      const scheduledMedications = allMedications.filter(med => med.scheduleType !== 'as-needed');
+      const asNeededMedications = allMedications.filter(med => med.scheduleType === 'as-needed');
+
       // Get existing logs for today
       const logs = await DoseLogService.getDosesForDate(today);
-      
+
       // Build log map for quick lookup
       const logMap = new Map<string, DoseStatus>();
       for (const log of logs) {
         const key = `${log.medicationId}-${log.scheduledTime}`;
         logMap.set(key, log.status);
       }
-      
-      // Build today's schedule
-      const scheduled = buildTodaySchedule(medications, logMap, new Date());
-      
+
+      // Build today's schedule (only for scheduled medications)
+      const scheduled = buildTodaySchedule(scheduledMedications, logMap, new Date());
+
       setDoses(scheduled);
+      setAsNeededMeds(asNeededMedications);
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to load doses'));
     } finally {
@@ -66,7 +74,7 @@ export function useTodaysDoses(): UseTodaysDosesReturn {
   ) => {
     const today = format(new Date(), 'yyyy-MM-dd');
     await DoseLogService.logDose(medicationId, today, time, status);
-    
+
     // Update local state optimistically
     setDoses(prev => prev.map(dose => {
       if (dose.medication.id === medicationId && dose.scheduledTime === time) {
@@ -74,19 +82,29 @@ export function useTodaysDoses(): UseTodaysDosesReturn {
       }
       return dose;
     }));
-    
+
     // Update badge count
     await NotificationService.updatePendingBadgeCount();
-  }, [doses]);
+  }, []);
+
+  const logAsNeededDose = useCallback(async (medicationId: string) => {
+    const today = format(new Date(), 'yyyy-MM-dd');
+    const now = format(new Date(), 'HH:mm');
+
+    // For as-needed meds, use current time as the scheduled time
+    await DoseLogService.logDose(medicationId, today, now, 'taken');
+  }, []);
 
   const groupedDoses = useMemo(() => groupDosesByTimeOfDay(doses), [doses]);
 
   return {
     doses,
     groupedDoses,
+    asNeededMeds,
     isLoading,
     error,
     refresh: loadTodaysDoses,
     logDose,
+    logAsNeededDose,
   };
 }
