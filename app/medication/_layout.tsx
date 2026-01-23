@@ -4,31 +4,40 @@ import { MedicationFormProvider } from '../../src/contexts';
 export default function AddMedicationWizardLayout() {
   return (
     <MedicationFormProvider>
-      <Stack 
+      <Stack
         screenOptions={{
           headerShown: true,
           presentation: 'card',
+          headerStyle: {
+            backgroundColor: '#FFFFFF',
+          },
+          headerTintColor: '#06B6D4',
+          headerTitleStyle: {
+            fontWeight: '600',
+            color: '#171717',
+          },
+          headerShadowVisible: false,
         }}
       >
-        <Stack.Screen 
-          name="index" 
-          options={{ title: 'Step 1: Name & Dosage' }}
+        <Stack.Screen
+          name="index"
+          options={{ title: 'Add Medication' }}
         />
-        <Stack.Screen 
-          name="schedule" 
-          options={{ title: 'Step 2: Schedule' }}
+        <Stack.Screen
+          name="schedule"
+          options={{ title: 'Schedule' }}
         />
-        <Stack.Screen 
-          name="meal" 
-          options={{ title: 'Step 3: Meal Timing' }}
+        <Stack.Screen
+          name="meal"
+          options={{ title: 'Meal Timing' }}
         />
-        <Stack.Screen 
-          name="duration" 
-          options={{ title: 'Step 4: Duration' }}
+        <Stack.Screen
+          name="duration"
+          options={{ title: 'Duration' }}
         />
-        <Stack.Screen 
-          name="confirm" 
-          options={{ title: 'Step 5: Review' }}
+        <Stack.Screen
+          name="confirm"
+          options={{ title: 'Review' }}
         />
       </Stack>
     </MedicationFormProvider>
