@@ -147,9 +147,11 @@ Locale hint: ${localeHint}.`;
           ],
         },
       ],
-      response_format: {
-        type: 'json_schema',
-        json_schema: schema,
+      text: {
+        format: {
+          type: 'json_schema',
+          json_schema: schema,
+        },
       },
     };
 
