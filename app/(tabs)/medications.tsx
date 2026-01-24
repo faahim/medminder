@@ -21,13 +21,22 @@ export default function MedicationsScreen() {
         <Typography variant="h1" className="text-gray-900 dark:text-white">
           My Medications
         </Typography>
-        <IconButton
-          icon="add"
-          size="lg"
-          variant="primary"
-          onPress={() => router.push('/medication/add')}
-          accessibilityLabel="Add new medication"
-        />
+        <View className="flex-row gap-2">
+          <IconButton
+            icon="camera"
+            size="lg"
+            variant="secondary"
+            onPress={() => router.push('/prescription/import')}
+            accessibilityLabel="Scan prescription"
+          />
+          <IconButton
+            icon="add"
+            size="lg"
+            variant="primary"
+            onPress={() => router.push('/medication/add')}
+            accessibilityLabel="Add new medication"
+          />
+        </View>
       </View>
 
       {/* Toggle */}
