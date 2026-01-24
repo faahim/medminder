@@ -8,7 +8,7 @@ const DEFAULT_SETTINGS: Omit<Settings, 'id'> = {
   missedThresholdMinutes: 60,
   notificationSound: 'default',
   hapticFeedback: true,
-  darkMode: 'system',
+  darkMode: 'light',
   fontSize: 'normal',
   reminderAdvanceMinutes: 0,
 };

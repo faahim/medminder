@@ -1,167 +1,111 @@
-import { View, FlatList, Pressable, Platform } from 'react-native';
+import { View, FlatList, Pressable } from 'react-native';
 import { useState } from 'react';
 import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+
 import { useMedications } from '../../src/hooks/useMedications';
 import { MedicationCard } from '../../src/components/medication/MedicationCard';
 import { Typography } from '../../src/components/ui/Typography';
 import { EmptyState } from '../../src/components/ui/EmptyState';
-import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+import { AppHeader } from '../../src/components/layout/AppHeader';
 
 export default function MedicationsScreen() {
+  const insets = useSafeAreaInsets();
   const [showArchived, setShowArchived] = useState(false);
-  const { medications, archivedMedications, isLoading } = useMedications();
+  const { medications, archivedMedications } = useMedications();
 
   const displayList = showArchived ? archivedMedications : medications;
   const activeCount = medications.length;
   const archivedCount = archivedMedications.length;
 
   return (
-    <View className="flex-1 bg-surface-50 dark:bg-surface-950">
-      {/* Header */}
-      <View className="bg-white dark:bg-surface-900 px-6 pt-16 pb-4 border-b border-surface-100 dark:border-surface-800">
-        <View className="flex-row justify-between items-center mb-4">
-          <View>
-            <Typography variant="small" className="text-surface-500 dark:text-surface-400 uppercase tracking-wider">
-              Manage
-            </Typography>
-            <Typography variant="h1" className="text-surface-900 dark:text-white font-bold">
-              Medications
-            </Typography>
-          </View>
-          <View className="flex-row gap-2">
+    <View className="flex-1 bg-surface-50">
+      <AppHeader
+        title="Medications"
+        subtitle="Manage"
+        variant="plain"
+        right={
+          <>
             <Pressable
               onPress={() => router.push('/prescription/import')}
-              className="w-12 h-12 rounded-xl bg-surface-100 dark:bg-surface-800 items-center justify-center"
+              className="w-12 h-12 rounded-2xl bg-surface-100 items-center justify-center"
+              accessibilityLabel="Import prescription"
             >
               <Ionicons name="camera" size={22} color="#06B6D4" />
             </Pressable>
             <Pressable
               onPress={() => router.push('/medication/add')}
-              className="w-12 h-12 rounded-xl bg-primary-500 items-center justify-center"
-              style={{
-                shadowColor: '#06B6D4',
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 8,
-                elevation: 4,
-              }}
+              className="w-12 h-12 rounded-2xl bg-primary-500 items-center justify-center"
+              style={{ shadowColor: '#06B6D4', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.22, shadowRadius: 12, elevation: 6 }}
+              accessibilityLabel="Add medication"
             >
               <Ionicons name="add" size={24} color="#fff" />
             </Pressable>
-          </View>
-        </View>
-
-        {/* Toggle */}
-        <View className="flex-row bg-surface-100 dark:bg-surface-800 rounded-xl p-1">
-          <Pressable
-            onPress={() => setShowArchived(false)}
-            className={`flex-1 flex-row items-center justify-center py-2.5 rounded-lg ${
-              !showArchived ? 'bg-white dark:bg-surface-700' : ''
-            }`}
-            style={!showArchived ? {
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 1 },
-              shadowOpacity: 0.05,
-              shadowRadius: 2,
-              elevation: 1,
-            } : {}}
-          >
-            <Ionicons
-              name="medical"
-              size={16}
-              color={!showArchived ? '#06B6D4' : '#A3A3A3'}
-            />
-            <Typography
-              variant="body"
-              className={`ml-2 font-semibold ${
-                !showArchived
-                  ? 'text-primary-600 dark:text-primary-400'
-                  : 'text-surface-500 dark:text-surface-400'
-              }`}
+          </>
+        }
+        bottomSlot={
+          <View className="flex-row bg-surface-100 rounded-2xl p-1">
+            <Pressable
+              onPress={() => setShowArchived(false)}
+              className={`flex-1 flex-row items-center justify-center py-2.5 rounded-xl ${!showArchived ? 'bg-white' : ''}`}
+              style={!showArchived ? { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 } : {}}
             >
-              Active
-            </Typography>
-            <View className={`ml-2 px-2 py-0.5 rounded-full ${
-              !showArchived
-                ? 'bg-primary-100 dark:bg-primary-900'
-                : 'bg-surface-200 dark:bg-surface-700'
-            }`}>
+              <Ionicons name="medical" size={16} color={!showArchived ? '#06B6D4' : '#A3A3A3'} />
               <Typography
-                variant="small"
-                className={
-                  !showArchived
-                    ? 'text-primary-600 dark:text-primary-400 font-bold'
-                    : 'text-surface-500 dark:text-surface-400 font-medium'
-                }
+                variant="body"
+                className={`ml-2 font-semibold ${!showArchived ? 'text-primary-700' : 'text-surface-500'}`}
               >
-                {activeCount}
+                Active
               </Typography>
-            </View>
-          </Pressable>
-          <Pressable
-            onPress={() => setShowArchived(true)}
-            className={`flex-1 flex-row items-center justify-center py-2.5 rounded-lg ${
-              showArchived ? 'bg-white dark:bg-surface-700' : ''
-            }`}
-            style={showArchived ? {
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 1 },
-              shadowOpacity: 0.05,
-              shadowRadius: 2,
-              elevation: 1,
-            } : {}}
-          >
-            <Ionicons
-              name="archive"
-              size={16}
-              color={showArchived ? '#06B6D4' : '#A3A3A3'}
-            />
-            <Typography
-              variant="body"
-              className={`ml-2 font-semibold ${
-                showArchived
-                  ? 'text-primary-600 dark:text-primary-400'
-                  : 'text-surface-500 dark:text-surface-400'
-              }`}
-            >
-              Archived
-            </Typography>
-            {archivedCount > 0 && (
-              <View className={`ml-2 px-2 py-0.5 rounded-full ${
-                showArchived
-                  ? 'bg-primary-100 dark:bg-primary-900'
-                  : 'bg-surface-200 dark:bg-surface-700'
-              }`}>
-                <Typography
-                  variant="small"
-                  className={
-                    showArchived
-                      ? 'text-primary-600 dark:text-primary-400 font-bold'
-                      : 'text-surface-500 dark:text-surface-400 font-medium'
-                  }
-                >
-                  {archivedCount}
+              <View className={`ml-2 px-2 py-0.5 rounded-full ${!showArchived ? 'bg-primary-100' : 'bg-surface-200'}`}>
+                <Typography variant="small" className={`${!showArchived ? 'text-primary-700 font-bold' : 'text-surface-500 font-medium'}`}>
+                  {activeCount}
                 </Typography>
               </View>
-            )}
-          </Pressable>
-        </View>
-      </View>
+            </Pressable>
 
-      {/* List */}
+            <Pressable
+              onPress={() => setShowArchived(true)}
+              className={`flex-1 flex-row items-center justify-center py-2.5 rounded-xl ${showArchived ? 'bg-white' : ''}`}
+              style={showArchived ? { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 } : {}}
+            >
+              <Ionicons name="archive" size={16} color={showArchived ? '#06B6D4' : '#A3A3A3'} />
+              <Typography
+                variant="body"
+                className={`ml-2 font-semibold ${showArchived ? 'text-primary-700' : 'text-surface-500'}`}
+              >
+                Archived
+              </Typography>
+              {archivedCount > 0 ? (
+                <View className={`ml-2 px-2 py-0.5 rounded-full ${showArchived ? 'bg-primary-100' : 'bg-surface-200'}`}>
+                  <Typography
+                    variant="small"
+                    className={`${showArchived ? 'text-primary-700 font-bold' : 'text-surface-500 font-medium'}`}
+                  >
+                    {archivedCount}
+                  </Typography>
+                </View>
+              ) : null}
+            </Pressable>
+          </View>
+        }
+      />
+
       <FlatList
         data={displayList}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{
-          padding: 16,
-          paddingBottom: Platform.OS === 'ios' ? 100 : 80,
+          paddingHorizontal: 16,
+          paddingTop: 16,
+          paddingBottom: insets.bottom + 96,
         }}
         renderItem={({ item }) => (
           <Pressable onPress={() => router.push(`/medication/${item.id}`)}>
             <MedicationCard medication={item} allMedications={medications} showChevron />
           </Pressable>
         )}
+        ItemSeparatorComponent={() => <View className="h-3" />}
         ListEmptyComponent={
           <EmptyState
             icon={showArchived ? 'archive-outline' : 'medical-outline'}
@@ -171,7 +115,6 @@ export default function MedicationsScreen() {
             actionHref={showArchived ? undefined : '/medication/add'}
           />
         }
-        ItemSeparatorComponent={() => <View className="h-3" />}
       />
     </View>
   );

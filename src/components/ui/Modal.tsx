@@ -15,11 +15,12 @@ export function Modal({ visible, onClose, children }: ModalProps) {
       animationType="fade"
       onRequestClose={onClose}
     >
-      <Pressable style={styles.overlay} onPress={onClose}>
+      <View style={styles.overlay}>
+        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
         <View style={styles.content}>
           {children}
         </View>
-      </Pressable>
+      </View>
     </RNModal>
   );
 }

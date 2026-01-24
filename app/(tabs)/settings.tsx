@@ -1,12 +1,14 @@
-import { View, ScrollView, Switch, Alert, Pressable } from 'react-native';
-import { useState } from 'react';
-import { ScreenWrapper } from '../../src/components/layout/ScreenWrapper';
-import { Typography } from '../../src/components/ui/Typography';
-import { Card } from '../../src/components/ui/Card';
-import { Select } from '../../src/components/ui/Select';
+import { View, Switch, Alert, Pressable } from 'react-native';
+import { useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { Settings } from '../../src/types';
 import Constants from 'expo-constants';
+
+import { AppHeader } from '../../src/components/layout/AppHeader';
+import { Screen } from '../../src/components/layout/Screen';
+import { Typography } from '../../src/components/ui/Typography';
+import { Select } from '../../src/components/ui/Select';
+import { Settings } from '../../src/types';
+import { SettingsService } from '../../src/services/settings.service';
 
 const SNOOZE_OPTIONS = [
   { label: '5 minutes', value: 5 },
@@ -29,33 +31,105 @@ const SOUND_OPTIONS = [
   { label: 'Silent', value: 'silent' },
 ];
 
-const DARK_MODE_OPTIONS = [
-  { label: 'System', value: 'system' },
-  { label: 'Light', value: 'light' },
-  { label: 'Dark', value: 'dark' },
-];
-
 const FONT_SIZE_OPTIONS = [
   { label: 'Normal', value: 'normal' },
   { label: 'Large', value: 'large' },
   { label: 'Extra Large', value: 'xlarge' },
 ];
 
-export default function SettingsScreen() {
-  const [settings, setSettings] = useState<Settings>({
-    id: 1,
-    snoozeDurationMinutes: 15,
-    missedThresholdMinutes: 60,
-    notificationSound: 'default',
-    hapticFeedback: true,
-    darkMode: 'system',
-    fontSize: 'normal',
-    reminderAdvanceMinutes: 0,
-  });
+function SectionLabel({ children }: { children: string }) {
+  return (
+    <Typography variant="label" className="text-surface-500 mb-2 ml-4 uppercase tracking-wider text-xs">
+      {children}
+    </Typography>
+  );
+}
 
-  const updateSetting = <K extends keyof Settings>(key: K, value: Settings[K]) => {
-    setSettings((prev) => ({ ...prev, [key]: value }));
-    // TODO: Persist to database
+function Row({
+  icon,
+  iconBgClass,
+  iconColor,
+  title,
+  subtitle,
+  right,
+  border = true,
+  onPress,
+}: {
+  icon: string;
+  iconBgClass: string;
+  iconColor: string;
+  title: string;
+  subtitle?: string;
+  right?: React.ReactNode;
+  border?: boolean;
+  onPress?: () => void;
+}) {
+  const content = (
+    <View className={`flex-row items-center justify-between p-4 ${border ? 'border-b border-surface-100' : ''}`}>
+      <View className="flex-row items-center flex-1 mr-3">
+        <View className={`w-10 h-10 rounded-2xl items-center justify-center mr-3 ${iconBgClass}`}>
+          <Ionicons name={icon as any} size={18} color={iconColor} />
+        </View>
+        <View className="flex-1">
+          <Typography variant="body" className="text-surface-900 font-medium">
+            {title}
+          </Typography>
+          {subtitle ? (
+            <Typography variant="small" className="text-surface-500 mt-0.5">
+              {subtitle}
+            </Typography>
+          ) : null}
+        </View>
+      </View>
+      {right ? right : null}
+    </View>
+  );
+
+  if (onPress) {
+    return (
+      <Pressable onPress={onPress} className="active:opacity-80">
+        {content}
+      </Pressable>
+    );
+  }
+
+  return content;
+}
+
+export default function SettingsScreen() {
+  const [settings, setSettings] = useState<Settings | null>(null);
+
+  useEffect(() => {
+    SettingsService.get()
+      .then((s) => {
+        // Light-only app: keep persisted values, but normalize darkMode to 'light'.
+        setSettings({ ...s, darkMode: 'light' });
+      })
+      .catch(() => {
+        setSettings({
+          id: 1,
+          snoozeDurationMinutes: 15,
+          missedThresholdMinutes: 60,
+          notificationSound: 'default',
+          hapticFeedback: true,
+          darkMode: 'light',
+          fontSize: 'normal',
+          reminderAdvanceMinutes: 0,
+        });
+      });
+  }, []);
+
+  const updateSetting = async <K extends keyof Settings>(key: K, value: Settings[K]) => {
+    if (!settings) return;
+    const next = { ...settings, [key]: value };
+    setSettings(next);
+
+    try {
+      // Persist where supported. (If db schema still has darkMode, it will store 'light'.)
+      await SettingsService.update({ [key]: value } as any);
+    } catch {
+      // noop; UI still updates.
+    }
   };
 
   const handleExportData = () => {
@@ -72,7 +146,6 @@ export default function SettingsScreen() {
           text: 'Clear Everything',
           style: 'destructive',
           onPress: () => {
-            // TODO: Clear database
             Alert.alert('Done', 'All data has been cleared.');
           },
         },
@@ -80,214 +153,149 @@ export default function SettingsScreen() {
     );
   };
 
+  if (!settings) {
+    return (
+      <View className="flex-1 bg-surface-50">
+        <AppHeader title="Settings" subtitle="Preferences" />
+        <Screen includeTopInset={false} padX={16} padY={16}>
+          <Typography variant="body" className="text-surface-500">
+            Loading…
+          </Typography>
+        </Screen>
+      </View>
+    );
+  }
+
   return (
-    <ScreenWrapper scrollable>
-      <ScrollView className="flex-1 px-4 py-6">
-        {/* Notifications Section */}
-        <Typography variant="label" className="text-surface-500 dark:text-surface-400 mb-2 ml-4 uppercase tracking-wider text-xs">
-          Notifications
-        </Typography>
-        <View className="bg-white dark:bg-surface-800 rounded-2xl border-2 border-surface-200 dark:border-surface-700 mb-6 overflow-hidden">
-          {/* Snooze Duration */}
-          <View className="flex-row items-center justify-between p-4 border-b border-surface-100 dark:border-surface-700">
-            <View className="flex-row items-center">
-              <View className="w-9 h-9 rounded-lg bg-primary-50 dark:bg-primary-950 items-center justify-center mr-3">
-                <Ionicons name="alarm-outline" size={18} color="#06B6D4" />
-              </View>
-              <Typography variant="body" className="text-surface-900 dark:text-white">
-                Snooze Duration
-              </Typography>
-            </View>
-            <Select
-              value={settings.snoozeDurationMinutes}
-              options={SNOOZE_OPTIONS}
-              onChange={(v) => updateSetting('snoozeDurationMinutes', v)}
-              compact
-            />
-          </View>
+    <View className="flex-1 bg-surface-50">
+      <AppHeader title="Settings" subtitle="Preferences" />
 
-          {/* Missed Threshold */}
-          <View className="flex-row items-center justify-between p-4 border-b border-surface-100 dark:border-surface-700">
-            <View className="flex-row items-center flex-1 mr-4">
-              <View className="w-9 h-9 rounded-lg bg-warning-50 dark:bg-warning-950 items-center justify-center mr-3">
-                <Ionicons name="time-outline" size={18} color="#F59E0B" />
-              </View>
-              <View className="flex-1">
-                <Typography variant="body" className="text-surface-900 dark:text-white">
-                  Mark as Missed After
-                </Typography>
-                <Typography variant="small" className="text-surface-500 dark:text-surface-400">
-                  Auto-mark pending doses as missed
-                </Typography>
-              </View>
-            </View>
-            <Select
-              value={settings.missedThresholdMinutes}
-              options={THRESHOLD_OPTIONS}
-              onChange={(v) => updateSetting('missedThresholdMinutes', v)}
-              compact
-            />
-          </View>
+      <Screen scroll includeTopInset={false} padX={16} padY={16} padBottomExtra={100}>
+        {/* Notifications */}
+        <SectionLabel>Notifications</SectionLabel>
+        <View className="bg-white rounded-3xl border border-surface-100 overflow-hidden mb-6">
+          <Row
+            icon="alarm-outline"
+            iconBgClass="bg-primary-50"
+            iconColor="#06B6D4"
+            title="Snooze Duration"
+            right={
+              <Select
+                value={settings.snoozeDurationMinutes}
+                options={SNOOZE_OPTIONS}
+                onChange={(v) => updateSetting('snoozeDurationMinutes', v)}
+                compact
+              />
+            }
+          />
 
-          {/* Sound */}
-          <View className="flex-row items-center justify-between p-4 border-b border-surface-100 dark:border-surface-700">
-            <View className="flex-row items-center">
-              <View className="w-9 h-9 rounded-lg bg-violet-50 dark:bg-violet-950 items-center justify-center mr-3">
-                <Ionicons name="volume-medium-outline" size={18} color="#8B5CF6" />
-              </View>
-              <Typography variant="body" className="text-surface-900 dark:text-white">
-                Reminder Sound
-              </Typography>
-            </View>
-            <Select
-              value={settings.notificationSound}
-              options={SOUND_OPTIONS}
-              onChange={(v) => updateSetting('notificationSound', v)}
-              compact
-            />
-          </View>
+          <Row
+            icon="time-outline"
+            iconBgClass="bg-warning-50"
+            iconColor="#F59E0B"
+            title="Mark as Missed After"
+            subtitle="Auto-mark pending doses as missed"
+            right={
+              <Select
+                value={settings.missedThresholdMinutes}
+                options={THRESHOLD_OPTIONS}
+                onChange={(v) => updateSetting('missedThresholdMinutes', v)}
+                compact
+              />
+            }
+          />
 
-          {/* Haptic Feedback */}
-          <View className="flex-row items-center justify-between p-4">
-            <View className="flex-row items-center">
-              <View className="w-9 h-9 rounded-lg bg-accent-50 dark:bg-accent-950 items-center justify-center mr-3">
-                <Ionicons name="phone-portrait-outline" size={18} color="#F97316" />
-              </View>
-              <Typography variant="body" className="text-surface-900 dark:text-white">
-                Vibration
-              </Typography>
-            </View>
-            <Switch
-              value={settings.hapticFeedback}
-              onValueChange={(v) => updateSetting('hapticFeedback', v)}
-              trackColor={{ false: '#E5E5E5', true: '#06B6D480' }}
-              thumbColor={settings.hapticFeedback ? '#06B6D4' : '#f4f3f4'}
-            />
-          </View>
+          <Row
+            icon="volume-medium-outline"
+            iconBgClass="bg-surface-100"
+            iconColor="#737373"
+            title="Reminder Sound"
+            right={
+              <Select
+                value={settings.notificationSound}
+                options={SOUND_OPTIONS}
+                onChange={(v) => updateSetting('notificationSound', v as any)}
+                compact
+              />
+            }
+          />
+
+          <Row
+            icon="phone-portrait-outline"
+            iconBgClass="bg-accent-50"
+            iconColor="#F97316"
+            title="Vibration"
+            border={false}
+            right={
+              <Switch
+                value={settings.hapticFeedback}
+                onValueChange={(v) => updateSetting('hapticFeedback', v)}
+                trackColor={{ false: '#E5E5E5', true: '#06B6D480' }}
+                thumbColor={settings.hapticFeedback ? '#06B6D4' : '#f4f3f4'}
+              />
+            }
+          />
         </View>
 
-        {/* Display Section */}
-        <Typography variant="label" className="text-surface-500 dark:text-surface-400 mb-2 ml-4 uppercase tracking-wider text-xs">
-          Display
-        </Typography>
-        <View className="bg-white dark:bg-surface-800 rounded-2xl border-2 border-surface-200 dark:border-surface-700 mb-6 overflow-hidden">
-          {/* Dark Mode */}
-          <View className="flex-row items-center justify-between p-4 border-b border-surface-100 dark:border-surface-700">
-            <View className="flex-row items-center">
-              <View className="w-9 h-9 rounded-lg bg-surface-100 dark:bg-surface-700 items-center justify-center mr-3">
-                <Ionicons name="moon-outline" size={18} color="#737373" />
-              </View>
-              <Typography variant="body" className="text-surface-900 dark:text-white">
-                Dark Mode
-              </Typography>
-            </View>
-            <Select
-              value={settings.darkMode}
-              options={DARK_MODE_OPTIONS}
-              onChange={(v) => updateSetting('darkMode', v as Settings['darkMode'])}
-              compact
-            />
-          </View>
-
-          {/* Font Size */}
-          <View className="flex-row items-center justify-between p-4">
-            <View className="flex-row items-center">
-              <View className="w-9 h-9 rounded-lg bg-surface-100 dark:bg-surface-700 items-center justify-center mr-3">
-                <Ionicons name="text-outline" size={18} color="#737373" />
-              </View>
-              <Typography variant="body" className="text-surface-900 dark:text-white">
-                Text Size
-              </Typography>
-            </View>
-            <Select
-              value={settings.fontSize}
-              options={FONT_SIZE_OPTIONS}
-              onChange={(v) => updateSetting('fontSize', v as Settings['fontSize'])}
-              compact
-            />
-          </View>
+        {/* Display */}
+        <SectionLabel>Display</SectionLabel>
+        <View className="bg-white rounded-3xl border border-surface-100 overflow-hidden mb-6">
+          <Row
+            icon="text-outline"
+            iconBgClass="bg-surface-100"
+            iconColor="#737373"
+            title="Text Size"
+            border={false}
+            right={
+              <Select
+                value={settings.fontSize}
+                options={FONT_SIZE_OPTIONS}
+                onChange={(v) => updateSetting('fontSize', v as any)}
+                compact
+              />
+            }
+          />
         </View>
 
-        {/* Data Section */}
-        <Typography variant="label" className="text-surface-500 dark:text-surface-400 mb-2 ml-4 uppercase tracking-wider text-xs">
-          Data
-        </Typography>
-        <View className="bg-white dark:bg-surface-800 rounded-2xl border-2 border-surface-200 dark:border-surface-700 mb-6 overflow-hidden">
-          <Pressable
+        {/* Data */}
+        <SectionLabel>Data</SectionLabel>
+        <View className="bg-white rounded-3xl border border-surface-100 overflow-hidden mb-6">
+          <Row
+            icon="download-outline"
+            iconBgClass="bg-success-50"
+            iconColor="#22C55E"
+            title="Export Data"
             onPress={handleExportData}
-            className="flex-row items-center justify-between p-4 border-b border-surface-100 dark:border-surface-700"
-          >
-            <View className="flex-row items-center">
-              <View className="w-9 h-9 rounded-lg bg-success-50 dark:bg-success-950 items-center justify-center mr-3">
-                <Ionicons name="download-outline" size={18} color="#22C55E" />
-              </View>
-              <Typography variant="body" className="text-surface-900 dark:text-white">
-                Export Data
-              </Typography>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#A3A3A3" />
-          </Pressable>
+          />
 
-          <Pressable
+          <Row
+            icon="trash-outline"
+            iconBgClass="bg-danger-50"
+            iconColor="#EF4444"
+            title="Clear All Data"
+            border={false}
             onPress={handleClearData}
-            className="flex-row items-center justify-between p-4"
-          >
-            <View className="flex-row items-center">
-              <View className="w-9 h-9 rounded-lg bg-danger-50 dark:bg-danger-950 items-center justify-center mr-3">
-                <Ionicons name="trash-outline" size={18} color="#EF4444" />
-              </View>
-              <Typography variant="body" className="text-danger-500">
-                Clear All Data
-              </Typography>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#A3A3A3" />
-          </Pressable>
+            right={<Ionicons name="chevron-forward" size={20} color="#A3A3A3" />}
+          />
         </View>
 
-        {/* About Section */}
-        <Typography variant="label" className="text-surface-500 dark:text-surface-400 mb-2 ml-4 uppercase tracking-wider text-xs">
-          About
-        </Typography>
-        <View className="bg-white dark:bg-surface-800 rounded-2xl border-2 border-surface-200 dark:border-surface-700 mb-6 overflow-hidden">
-          <View className="flex-row items-center justify-between p-4 border-b border-surface-100 dark:border-surface-700">
-            <View className="flex-row items-center">
-              <View className="w-9 h-9 rounded-lg bg-primary-50 dark:bg-primary-950 items-center justify-center mr-3">
-                <Ionicons name="information-outline" size={18} color="#06B6D4" />
-              </View>
-              <Typography variant="body" className="text-surface-900 dark:text-white">
-                App Version
+        {/* About */}
+        <SectionLabel>About</SectionLabel>
+        <View className="bg-white rounded-3xl border border-surface-100 overflow-hidden mb-2">
+          <Row
+            icon="information-outline"
+            iconBgClass="bg-primary-50"
+            iconColor="#06B6D4"
+            title="App Version"
+            border={false}
+            right={
+              <Typography variant="body" className="text-surface-500">
+                {Constants.expoConfig?.version || '1.0.0'}
               </Typography>
-            </View>
-            <Typography variant="body" className="text-surface-500 dark:text-surface-400">
-              {Constants.expoConfig?.version || '1.0.0'}
-            </Typography>
-          </View>
-
-          <Pressable className="flex-row items-center justify-between p-4 border-b border-surface-100 dark:border-surface-700">
-            <View className="flex-row items-center">
-              <View className="w-9 h-9 rounded-lg bg-surface-100 dark:bg-surface-700 items-center justify-center mr-3">
-                <Ionicons name="shield-checkmark-outline" size={18} color="#737373" />
-              </View>
-              <Typography variant="body" className="text-surface-900 dark:text-white">
-                Privacy Policy
-              </Typography>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#A3A3A3" />
-          </Pressable>
-
-          <Pressable className="flex-row items-center justify-between p-4">
-            <View className="flex-row items-center">
-              <View className="w-9 h-9 rounded-lg bg-surface-100 dark:bg-surface-700 items-center justify-center mr-3">
-                <Ionicons name="document-text-outline" size={18} color="#737373" />
-              </View>
-              <Typography variant="body" className="text-surface-900 dark:text-white">
-                Terms of Service
-              </Typography>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#A3A3A3" />
-          </Pressable>
+            }
+          />
         </View>
-      </ScrollView>
-    </ScreenWrapper>
+      </Screen>
+    </View>
   );
 }

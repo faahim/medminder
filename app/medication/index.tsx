@@ -1,12 +1,14 @@
-import { View, KeyboardAvoidingView, Platform, ScrollView, Pressable } from 'react-native';
+import { View, Pressable } from 'react-native';
 import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+
 import { useMedicationForm } from '../../src/contexts/MedicationFormContext';
-import { ScreenWrapper } from '../../src/components/layout/ScreenWrapper';
+import { Screen } from '../../src/components/layout/Screen';
 import { Typography } from '../../src/components/ui/Typography';
 import { Input } from '../../src/components/ui/Input';
 import { Button } from '../../src/components/ui/Button';
 import { ProgressBar } from '../../src/components/ui/ProgressBar';
-import { Ionicons } from '@expo/vector-icons';
 
 const DOSAGE_UNITS = [
   { label: 'tablet', icon: 'ellipse' },
@@ -18,45 +20,46 @@ const DOSAGE_UNITS = [
 ];
 
 const MEDICATION_COLORS = [
-  '#06B6D4', // Primary cyan
-  '#F97316', // Orange
-  '#8B5CF6', // Violet
-  '#22C55E', // Green
-  '#EF4444', // Red
-  '#EC4899', // Pink
-  '#F59E0B', // Amber
-  '#6366F1', // Indigo
+  '#06B6D4',
+  '#F97316',
+  '#8B5CF6',
+  '#22C55E',
+  '#EF4444',
+  '#EC4899',
+  '#F59E0B',
+  '#6366F1',
 ];
 
 export default function AddMedicationStep1() {
+  const insets = useSafeAreaInsets();
   const { formData, updateFormData, isEditing } = useMedicationForm();
 
   const canProceed = formData.name.trim().length > 0 && formData.dosage.trim().length > 0;
 
-  const handleNext = () => {
-    router.push('/medication/schedule');
-  };
-
   return (
-    <ScreenWrapper>
+    <View className="flex-1 bg-surface-50">
       <ProgressBar current={1} total={5} />
 
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="flex-1"
+      <Screen
+        scroll
+        keyboardAvoiding
+        includeTopInset={false}
+        padX={16}
+        padY={16}
+        padBottomExtra={140}
       >
-        <ScrollView className="flex-1 px-6 py-6">
-          <Typography variant="h2" className="text-surface-900 dark:text-white mb-1">
-            {isEditing ? 'Edit Medication' : 'Add Medication'}
-          </Typography>
-          <Typography variant="body" className="text-surface-500 dark:text-surface-400 mb-6">
-            Step 1 of 5: What medication is this?
-          </Typography>
+        <Typography variant="h2" className="text-surface-900 mb-1">
+          {isEditing ? 'Edit medication' : 'Add medication'}
+        </Typography>
+        <Typography variant="body" className="text-surface-500 mb-6">
+          Step 1 of 5 · Basics
+        </Typography>
 
-          {/* Medication Name */}
-          <View className="mb-6">
-            <Typography variant="label" className="text-surface-600 dark:text-surface-400 mb-3 uppercase tracking-wider text-xs">
-              Medication Name
+        <View className="bg-white rounded-3xl border border-surface-100 p-5">
+          {/* Name */}
+          <View className="mb-5">
+            <Typography variant="label" className="text-surface-600 mb-2 uppercase tracking-wider text-xs">
+              Medication name
             </Typography>
             <Input
               value={formData.name}
@@ -69,8 +72,8 @@ export default function AddMedicationStep1() {
           </View>
 
           {/* Dosage */}
-          <View className="mb-6">
-            <Typography variant="label" className="text-surface-600 dark:text-surface-400 mb-3 uppercase tracking-wider text-xs">
+          <View className="mb-5">
+            <Typography variant="label" className="text-surface-600 mb-2 uppercase tracking-wider text-xs">
               Dosage
             </Typography>
             <View className="flex-row gap-3">
@@ -93,96 +96,74 @@ export default function AddMedicationStep1() {
               </View>
             </View>
 
-            {/* Quick Unit Selection */}
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              className="mt-3 -mx-1"
-              contentContainerStyle={{ paddingHorizontal: 4 }}
-            >
-              {DOSAGE_UNITS.map((unit) => (
-                <Pressable
-                  key={unit.label}
-                  onPress={() => updateFormData({ dosageUnit: unit.label })}
-                  className={`px-3 py-2 rounded-lg mr-2 flex-row items-center ${
-                    formData.dosageUnit === unit.label
-                      ? 'bg-primary-100 dark:bg-primary-900'
-                      : 'bg-surface-100 dark:bg-surface-800'
-                  }`}
-                >
-                  <Ionicons
-                    name={unit.icon as any}
-                    size={14}
-                    color={formData.dosageUnit === unit.label ? '#06B6D4' : '#737373'}
-                  />
-                  <Typography
-                    variant="small"
-                    className={`ml-1.5 font-medium ${
-                      formData.dosageUnit === unit.label
-                        ? 'text-primary-600 dark:text-primary-400'
-                        : 'text-surface-600 dark:text-surface-400'
-                    }`}
+            <View className="flex-row flex-wrap gap-2 mt-3">
+              {DOSAGE_UNITS.map((unit) => {
+                const selected = formData.dosageUnit === unit.label;
+                return (
+                  <Pressable
+                    key={unit.label}
+                    onPress={() => updateFormData({ dosageUnit: unit.label })}
+                    className={`px-3 py-2 rounded-xl flex-row items-center ${selected ? 'bg-primary-100' : 'bg-surface-100'}`}
                   >
-                    {unit.label}
-                  </Typography>
-                </Pressable>
-              ))}
-            </ScrollView>
+                    <Ionicons name={unit.icon as any} size={14} color={selected ? '#06B6D4' : '#737373'} />
+                    <Typography variant="small" className={`ml-1.5 font-medium ${selected ? 'text-primary-700' : 'text-surface-600'}`}>
+                      {unit.label}
+                    </Typography>
+                  </Pressable>
+                );
+              })}
+            </View>
           </View>
 
-          {/* Instructions (optional) */}
-          <View className="mb-6">
-            <Typography variant="label" className="text-surface-600 dark:text-surface-400 mb-3 uppercase tracking-wider text-xs">
-              Special Instructions
-              <Typography variant="small" className="text-surface-400 dark:text-surface-500 normal-case tracking-normal">
-                {' '}(optional)
-              </Typography>
+          {/* Instructions */}
+          <View className="mb-5">
+            <Typography variant="label" className="text-surface-600 mb-2 uppercase tracking-wider text-xs">
+              Instructions <Typography variant="small" className="text-surface-400 normal-case">(optional)</Typography>
             </Typography>
             <Input
               value={formData.instructions}
               onChangeText={(text) => updateFormData({ instructions: text })}
-              placeholder="e.g., Take with full glass of water"
+              placeholder="e.g., Take with a full glass of water"
               multiline
               numberOfLines={2}
               size="lg"
             />
           </View>
 
-          {/* Color Selection */}
-          <View className="mb-6">
-            <Typography variant="label" className="text-surface-600 dark:text-surface-400 mb-3 uppercase tracking-wider text-xs">
-              Color Tag
+          {/* Color */}
+          <View>
+            <Typography variant="label" className="text-surface-600 mb-2 uppercase tracking-wider text-xs">
+              Color tag
             </Typography>
             <View className="flex-row flex-wrap gap-3">
-              {MEDICATION_COLORS.map((color) => (
-                <Pressable
-                  key={color}
-                  onPress={() => updateFormData({ color })}
-                  className={`w-10 h-10 rounded-xl items-center justify-center ${
-                    formData.color === color ? 'border-2 border-surface-900 dark:border-white' : ''
-                  }`}
-                  style={{ backgroundColor: color }}
-                >
-                  {formData.color === color && (
-                    <Ionicons name="checkmark" size={20} color="#fff" />
-                  )}
-                </Pressable>
-              ))}
+              {MEDICATION_COLORS.map((color) => {
+                const selected = formData.color === color;
+                return (
+                  <Pressable
+                    key={color}
+                    onPress={() => updateFormData({ color })}
+                    className={`w-10 h-10 rounded-2xl items-center justify-center ${selected ? 'border-2 border-surface-900' : ''}`}
+                    style={{ backgroundColor: color }}
+                  >
+                    {selected ? <Ionicons name="checkmark" size={18} color="#fff" /> : null}
+                  </Pressable>
+                );
+              })}
             </View>
           </View>
-        </ScrollView>
-
-        {/* Footer */}
-        <View className="px-6 pb-8 pt-4 bg-white dark:bg-surface-900 border-t border-surface-100 dark:border-surface-800">
-          <Button
-            title="Next: Set Schedule"
-            onPress={handleNext}
-            disabled={!canProceed}
-            size="lg"
-            fullWidth
-          />
         </View>
-      </KeyboardAvoidingView>
-    </ScreenWrapper>
+      </Screen>
+
+      {/* Footer */}
+      <View className="px-6 pt-4 bg-white border-t border-surface-100" style={{ paddingBottom: insets.bottom + 16 }}>
+        <Button
+          title="Next: Schedule"
+          onPress={() => router.push('/medication/schedule')}
+          disabled={!canProceed}
+          size="lg"
+          fullWidth
+        />
+      </View>
+    </View>
   );
 }

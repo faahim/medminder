@@ -4,6 +4,7 @@ import '../global.css';
 
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { DatabaseProvider, SettingsProvider } from '../src/contexts';
 import { NotificationService } from '../src/services/notification.service';
 
@@ -13,13 +14,15 @@ NotificationService.setupNotificationCategories().catch(console.error);
 
 export default function RootLayout() {
   return (
-    <DatabaseProvider>
-      <SettingsProvider>
-        <StatusBar style="auto" />
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(tabs)" />
-        </Stack>
-      </SettingsProvider>
-    </DatabaseProvider>
+    <SafeAreaProvider>
+      <DatabaseProvider>
+        <SettingsProvider>
+          <StatusBar style="dark" />
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(tabs)" />
+          </Stack>
+        </SettingsProvider>
+      </DatabaseProvider>
+    </SafeAreaProvider>
   );
 }

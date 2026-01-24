@@ -1,26 +1,27 @@
-import { View, ScrollView } from 'react-native';
+import { ReactNode } from 'react';
+import { Screen } from './Screen';
 
 interface ScreenWrapperProps {
-  children: React.ReactNode;
+  children: ReactNode;
   scrollable?: boolean;
   className?: string;
 }
 
+// Legacy wrapper used across the app.
+// Prefer using <Screen /> directly for new screens.
 export function ScreenWrapper({ children, scrollable = false, className = '' }: ScreenWrapperProps) {
-  if (scrollable) {
-    return (
-      <ScrollView 
-        className={`flex-1 bg-gray-50 dark:bg-gray-900 ${className}`}
-        contentContainerStyle={{ paddingVertical: 16 }}
-      >
-        {children}
-      </ScrollView>
-    );
-  }
-
   return (
-    <View className={`flex-1 bg-gray-50 dark:bg-gray-900 ${className}`}>
+    <Screen
+      scroll={scrollable}
+      keyboardAvoiding={scrollable}
+      padX={0}
+      padY={0}
+      backgroundClassName="bg-surface-50"
+      className={className}
+      includeTopInset
+      includeBottomInset
+    >
       {children}
-    </View>
+    </Screen>
   );
 }
