@@ -47,7 +47,7 @@ export function MedicationCard({ medication, allMedications = [], showChevron = 
           style={{ backgroundColor: medication.color + '15' }}
         >
           <Ionicons
-            name={isAsNeeded ? 'flash' : 'medical'}
+            name={isAsNeeded ? 'flash' : 'medkit'}
             size={26}
             color={medication.color}
           />

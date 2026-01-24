@@ -125,7 +125,7 @@ export default function MedicationDetailScreen() {
         {/* Header */}
         <View className="bg-white rounded-3xl border border-surface-100 p-6 mb-4 items-center">
           <View className="w-20 h-20 rounded-3xl items-center justify-center mb-4" style={{ backgroundColor: medication.color }}>
-            <Ionicons name="medical" size={36} color="#fff" />
+            <Ionicons name="medkit" size={36} color="#fff" />
           </View>
           <Typography variant="h2" className="text-surface-900 text-center mb-1">
             {medication.name}

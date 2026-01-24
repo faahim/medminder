@@ -177,7 +177,7 @@ export default function HistoryScreen() {
                         className="w-10 h-10 rounded-2xl items-center justify-center mr-3"
                         style={{ backgroundColor: log.medication?.color || '#06B6D4' }}
                       >
-                        <Ionicons name="medical" size={18} color="#fff" />
+                        <Ionicons name="medkit" size={18} color="#fff" />
                       </View>
                       <View className="flex-1">
                         <Typography variant="body" className="text-surface-900 font-semibold">

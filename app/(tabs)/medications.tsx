@@ -51,7 +51,7 @@ export default function MedicationsScreen() {
               className={`flex-1 flex-row items-center justify-center py-2.5 rounded-xl ${!showArchived ? 'bg-white' : ''}`}
               style={!showArchived ? { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 } : {}}
             >
-              <Ionicons name="medical" size={16} color={!showArchived ? '#06B6D4' : '#A3A3A3'} />
+              <Ionicons name="medkit" size={16} color={!showArchived ? '#06B6D4' : '#A3A3A3'} />
               <Typography
                 variant="body"
                 className={`ml-2 font-semibold ${!showArchived ? 'text-primary-700' : 'text-surface-500'}`}
@@ -108,7 +108,7 @@ export default function MedicationsScreen() {
         ItemSeparatorComponent={() => <View className="h-3" />}
         ListEmptyComponent={
           <EmptyState
-            icon={showArchived ? 'archive-outline' : 'medical-outline'}
+            icon={showArchived ? 'archive-outline' : 'medkit-outline'}
             title={showArchived ? 'No archived medications' : 'No medications yet'}
             subtitle={showArchived ? 'Archived medications will appear here' : 'Add your first medication to get started'}
             actionLabel={showArchived ? undefined : 'Add Medication'}

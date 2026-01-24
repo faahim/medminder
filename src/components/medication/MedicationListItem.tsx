@@ -25,7 +25,7 @@ export function MedicationListItem({ medication, onPress }: MedicationListItemPr
           className="w-12 h-12 rounded-full items-center justify-center mr-4"
           style={{ backgroundColor: medication.color + '30' }}
         >
-          <Ionicons name="medical" size={24} color={medication.color} />
+          <Ionicons name="medkit" size={24} color={medication.color} />
         </View>
 
         {/* Info */}

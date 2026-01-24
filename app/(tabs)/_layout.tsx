@@ -46,7 +46,7 @@ export default function TabLayout() {
         options={{
           title: 'Today',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="today" focused={focused} color={color} />
+            <TabIcon name="calendar" focused={focused} color={color} />
           ),
         }}
       />
@@ -55,7 +55,7 @@ export default function TabLayout() {
         options={{
           title: 'Meds',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="medical" focused={focused} color={color} />
+            <TabIcon name="medkit" focused={focused} color={color} />
           ),
         }}
       />

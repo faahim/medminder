@@ -140,7 +140,7 @@ export default function HomeScreen() {
 
         {isEmpty ? (
           <EmptyState
-            icon="medical-outline"
+            icon="medkit-outline"
             title="No medications yet"
             subtitle="Add your first medication to start tracking your doses"
             actionLabel="Add Medication"
@@ -192,16 +192,18 @@ export default function HomeScreen() {
         )}
       </Screen>
 
-      {/* Floating Action Button */}
-      <Pressable
-        onPress={() => router.push('/medication/add')}
-        className="absolute right-6"
-        style={{ bottom: 96, shadowColor: '#06B6D4', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.25, shadowRadius: 12, elevation: 10 }}
-      >
-        <LinearGradient colors={['#06B6D4', '#0891B2']} className="w-14 h-14 rounded-full items-center justify-center">
-          <Ionicons name="add" size={28} color="#fff" />
-        </LinearGradient>
-      </Pressable>
+      {/* Floating Action Button (hide when empty to avoid duplicate CTAs) */}
+      {!isEmpty && (
+        <Pressable
+          onPress={() => router.push('/medication/add')}
+          className="absolute right-6"
+          style={{ bottom: 96, shadowColor: '#06B6D4', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.25, shadowRadius: 12, elevation: 10 }}
+        >
+          <LinearGradient colors={['#06B6D4', '#0891B2']} className="w-14 h-14 rounded-full items-center justify-center">
+            <Ionicons name="add" size={28} color="#fff" />
+          </LinearGradient>
+        </Pressable>
+      )}
     </View>
   );
 }

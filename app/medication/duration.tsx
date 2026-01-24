@@ -161,7 +161,7 @@ export default function AddMedicationStep4() {
                       className="flex-row items-center px-4 py-3 border-b border-surface-100"
                     >
                       <View className="w-10 h-10 rounded-2xl items-center justify-center mr-3" style={{ backgroundColor: med.color + '20' }}>
-                        <Ionicons name="medical" size={18} color={med.color} />
+                        <Ionicons name="medkit" size={18} color={med.color} />
                       </View>
                       <View className="flex-1">
                         <Typography variant="body" className="text-surface-900 font-medium">

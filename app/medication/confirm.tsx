@@ -76,7 +76,7 @@ export default function AddMedicationStep5() {
           <View className="p-5 border-b border-surface-100">
             <View className="flex-row items-start mb-4">
               <View className="w-14 h-14 rounded-2xl items-center justify-center mr-4" style={{ backgroundColor: formData.color }}>
-                <Ionicons name="medical" size={24} color="#fff" />
+                <Ionicons name="medkit" size={24} color="#fff" />
               </View>
               <View className="flex-1">
                 <Typography variant="h3" className="text-surface-900 font-bold mb-1">
