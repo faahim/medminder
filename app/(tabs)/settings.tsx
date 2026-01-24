@@ -7,6 +7,10 @@ import { AppHeader } from '../../src/components/layout/AppHeader';
 import { Screen } from '../../src/components/layout/Screen';
 import { Typography } from '../../src/components/ui/Typography';
 import { Select } from '../../src/components/ui/Select';
+import { Input } from '../../src/components/ui/Input';
+import { Modal } from '../../src/components/ui/Modal';
+import { Button } from '../../src/components/ui/Button';
+import { OpenAIKeyService } from '../../src/services/openaiKey.service';
 import { Settings } from '../../src/types';
 import { SettingsService } from '../../src/services/settings.service';
 
@@ -98,6 +102,9 @@ function Row({
 
 export default function SettingsScreen() {
   const [settings, setSettings] = useState<Settings | null>(null);
+  const [apiKeyPreview, setApiKeyPreview] = useState<string>('');
+  const [apiKeyModalOpen, setApiKeyModalOpen] = useState(false);
+  const [apiKeyDraft, setApiKeyDraft] = useState('');
 
   useEffect(() => {
     SettingsService.get()
@@ -117,6 +124,15 @@ export default function SettingsScreen() {
           reminderAdvanceMinutes: 0,
         });
       });
+
+    OpenAIKeyService.get().then((key) => {
+      if (!key) {
+        setApiKeyPreview('Not set');
+        return;
+      }
+      const masked = `${key.slice(0, 5)}…${key.slice(-4)}`;
+      setApiKeyPreview(masked);
+    });
   }, []);
 
   const updateSetting = async <K extends keyof Settings>(key: K, value: Settings[K]) => {
@@ -257,6 +273,25 @@ export default function SettingsScreen() {
           />
         </View>
 
+        {/* AI */}
+        <SectionLabel>AI</SectionLabel>
+        <View className="bg-white rounded-3xl border border-surface-100 overflow-hidden mb-6">
+          <Row
+            icon="key-outline"
+            iconBgClass="bg-surface-100"
+            iconColor="#737373"
+            title="OpenAI API Key"
+            subtitle={apiKeyPreview === 'Not set' ? 'Required for prescription scan' : apiKeyPreview}
+            border={false}
+            onPress={async () => {
+              const current = await OpenAIKeyService.get();
+              setApiKeyDraft(current ?? '');
+              setApiKeyModalOpen(true);
+            }}
+            right={<Ionicons name="chevron-forward" size={20} color="#A3A3A3" />}
+          />
+        </View>
+
         {/* Data */}
         <SectionLabel>Data</SectionLabel>
         <View className="bg-white rounded-3xl border border-surface-100 overflow-hidden mb-6">
@@ -295,6 +330,67 @@ export default function SettingsScreen() {
             }
           />
         </View>
+        <Modal
+          visible={apiKeyModalOpen}
+          onClose={() => setApiKeyModalOpen(false)}
+        >
+          <View>
+            <Typography variant="h3" className="text-surface-900 font-semibold mb-2">
+              OpenAI API Key
+            </Typography>
+            <Typography variant="body" className="text-surface-600 mb-4">
+              Stored on-device. Needed for prescription scanning.
+            </Typography>
+
+            <Input
+              label="API Key"
+              value={apiKeyDraft}
+              onChangeText={setApiKeyDraft}
+              placeholder="sk-..."
+              autoCapitalize="none"
+              autoCorrect={false}
+              secureTextEntry
+              size="lg"
+            />
+
+            <View className="flex-row gap-3 mt-5">
+              <Button
+                title="Cancel"
+                variant="secondary"
+                size="lg"
+                onPress={() => setApiKeyModalOpen(false)}
+                className="flex-1"
+              />
+              <Button
+                title="Save"
+                size="lg"
+                onPress={async () => {
+                  await OpenAIKeyService.set(apiKeyDraft);
+                  const key = await OpenAIKeyService.get();
+                  setApiKeyPreview(key ? `${key.slice(0, 5)}…${key.slice(-4)}` : 'Not set');
+                  setApiKeyModalOpen(false);
+                  Alert.alert('Saved', 'OpenAI API key updated.');
+                }}
+                className="flex-1"
+              />
+            </View>
+
+            <Pressable
+              onPress={async () => {
+                await OpenAIKeyService.clear();
+                setApiKeyPreview('Not set');
+                setApiKeyDraft('');
+                setApiKeyModalOpen(false);
+                Alert.alert('Removed', 'OpenAI API key removed from this device.');
+              }}
+              className="mt-4 py-2"
+            >
+              <Typography variant="body" className="text-danger-600 text-center font-medium">
+                Remove key
+              </Typography>
+            </Pressable>
+          </View>
+        </Modal>
       </Screen>
     </View>
   );

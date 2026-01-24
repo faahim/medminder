@@ -1,19 +1,24 @@
 import Constants from 'expo-constants';
 import { MedicationFormData, MealTiming, ScheduleType } from '../types';
+import { OpenAIKeyService } from './openaiKey.service';
 
 export type PrescriptionMedicationDraft = MedicationFormData & {
   // Optional helper to represent sequential protocols.
   dependsOnMedicationName?: string | null;
 };
 
-function getOpenAIApiKey(): string {
+async function getOpenAIApiKey(): Promise<string> {
+  // 1) Preferred: user-provided key (stored locally)
+  const stored = await OpenAIKeyService.get();
+  if (stored) return stored;
+
+  // 2) Fallback: app config extra (EAS/ENV)
   const key = (Constants.expoConfig as any)?.extra?.openaiApiKey as string | undefined;
-  if (!key) {
-    throw new Error(
-      'Missing OpenAI API key. Set OPENAI_API_KEY in the environment (temporary dev setup).'
-    );
-  }
-  return key;
+  if (key) return key;
+
+  throw new Error(
+    'Missing OpenAI API key. Add it in Settings → OpenAI API Key (recommended), or configure expo.extra.openaiApiKey for builds.'
+  );
 }
 
 const DEFAULT_TIMES = {
@@ -35,7 +40,7 @@ export const PrescriptionVisionService = {
     localeHint?: string;
     startDateISO?: string; // default: today
   }): Promise<PrescriptionMedicationDraft[]> {
-    const apiKey = getOpenAIApiKey();
+    const apiKey = await getOpenAIApiKey();
     const { base64, mimeType = 'image/jpeg', localeHint = 'bn-BD', startDateISO } = params;
 
     const todayISO = startDateISO ?? new Date().toISOString().slice(0, 10);
