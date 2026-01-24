@@ -110,6 +110,8 @@ export const MedicationService = {
     if (data.scheduleIntervalHours !== undefined) updateData.scheduleIntervalHours = data.scheduleIntervalHours;
     if (data.startDate !== undefined) updateData.startDate = data.startDate.toISOString().split('T')[0];
     if (data.endDate !== undefined) updateData.endDate = data.endDate ? data.endDate.toISOString().split('T')[0] : null;
+    if (data.dependsOnMedicationId !== undefined) updateData.dependsOnMedicationId = data.dependsOnMedicationId;
+    if (data.dependsOnOffsetDays !== undefined) updateData.dependsOnOffsetDays = data.dependsOnOffsetDays;
     if (data.color !== undefined) updateData.color = data.color;
 
     await db
