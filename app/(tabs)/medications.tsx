@@ -29,19 +29,27 @@ export default function MedicationsScreen() {
               Medications
             </Typography>
           </View>
-          <Pressable
-            onPress={() => router.push('/medication/add')}
-            className="w-12 h-12 rounded-xl bg-primary-500 items-center justify-center"
-            style={{
-              shadowColor: '#06B6D4',
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.3,
-              shadowRadius: 8,
-              elevation: 4,
-            }}
-          >
-            <Ionicons name="add" size={24} color="#fff" />
-          </Pressable>
+          <View className="flex-row gap-2">
+            <Pressable
+              onPress={() => router.push('/prescription/import')}
+              className="w-12 h-12 rounded-xl bg-surface-100 dark:bg-surface-800 items-center justify-center"
+            >
+              <Ionicons name="camera" size={22} color="#06B6D4" />
+            </Pressable>
+            <Pressable
+              onPress={() => router.push('/medication/add')}
+              className="w-12 h-12 rounded-xl bg-primary-500 items-center justify-center"
+              style={{
+                shadowColor: '#06B6D4',
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 8,
+                elevation: 4,
+              }}
+            >
+              <Ionicons name="add" size={24} color="#fff" />
+            </Pressable>
+          </View>
         </View>
 
         {/* Toggle */}
