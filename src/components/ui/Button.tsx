@@ -26,18 +26,18 @@ const variantStyles: Record<ButtonVariant, { container: string; text: string; sp
     spinner: '#fff',
   },
   secondary: {
-    container: 'bg-surface-100 dark:bg-surface-800 active:bg-surface-200 dark:active:bg-surface-700',
-    text: 'text-surface-900 dark:text-white',
+    container: 'bg-surface-100 active:bg-surface-200',
+    text: 'text-surface-900',
     spinner: '#171717',
   },
   outline: {
-    container: 'bg-transparent border-2 border-primary-500 active:bg-primary-50 dark:active:bg-primary-950',
-    text: 'text-primary-600 dark:text-primary-400',
+    container: 'bg-transparent border-2 border-primary-500 active:bg-primary-50',
+    text: 'text-primary-600',
     spinner: '#06B6D4',
   },
   ghost: {
-    container: 'bg-transparent active:bg-surface-100 dark:active:bg-surface-800',
-    text: 'text-primary-600 dark:text-primary-400',
+    container: 'bg-transparent active:bg-surface-100',
+    text: 'text-primary-600',
     spinner: '#06B6D4',
   },
   danger: {

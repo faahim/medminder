@@ -21,16 +21,16 @@ export function Input({
   return (
     <View>
       {label && (
-        <Typography variant="label" className="text-surface-600 dark:text-surface-400 mb-2 uppercase tracking-wider text-xs">
+        <Typography variant="label" className="text-surface-600 mb-2 uppercase tracking-wider text-xs">
           {label}
         </Typography>
       )}
       <TextInput
         className={`
-          bg-surface-100 dark:bg-surface-800
+          bg-surface-100
           border-2 border-transparent
           rounded-xl
-          text-surface-900 dark:text-white
+          text-surface-900
           ${sizeClass}
           ${error ? 'border-danger-500' : 'focus:border-primary-500'}
           ${className}

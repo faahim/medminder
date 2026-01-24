@@ -22,9 +22,9 @@ const sizeMap: Record<IconButtonSize, { container: string; icon: number }> = {
 
 const colorMap: Record<IconButtonVariant, { bg: string; icon: string }> = {
   primary: { bg: 'bg-primary-500 active:bg-primary-600', icon: '#FFFFFF' },
-  secondary: { bg: 'bg-gray-200 dark:bg-gray-700', icon: '#374151' },
-  ghost: { bg: 'bg-transparent active:bg-gray-100', icon: '#4CAF50' },
-  danger: { bg: 'bg-red-500 active:bg-red-600', icon: '#FFFFFF' },
+  secondary: { bg: 'bg-surface-100 active:bg-surface-200', icon: '#0A0A0A' },
+  ghost: { bg: 'bg-transparent active:bg-surface-100', icon: '#06B6D4' },
+  danger: { bg: 'bg-danger-500 active:bg-danger-600', icon: '#FFFFFF' },
 };
 
 export function IconButton({

@@ -31,7 +31,7 @@ export function MedicationCard({ medication, allMedications = [], showChevron = 
 
   return (
     <View
-      className="bg-white dark:bg-surface-800 rounded-2xl p-4 border border-surface-100 dark:border-surface-700"
+      className="bg-white rounded-2xl p-4 border border-surface-100"
       style={{
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -56,18 +56,18 @@ export function MedicationCard({ medication, allMedications = [], showChevron = 
         {/* Info */}
         <View className="flex-1">
           <View className="flex-row items-center mb-0.5">
-            <Typography variant="h3" className="text-surface-900 dark:text-white font-semibold">
+            <Typography variant="h3" className="text-surface-900 font-semibold">
               {medication.name}
             </Typography>
             {isAsNeeded && (
-              <View className="ml-2 px-2 py-0.5 bg-accent-100 dark:bg-accent-900/30 rounded-full">
-                <Typography variant="small" className="text-accent-600 dark:text-accent-400 font-medium text-xs">
+              <View className="ml-2 px-2 py-0.5 bg-accent-100 rounded-full">
+                <Typography variant="small" className="text-accent-600 font-medium text-xs">
                   PRN
                 </Typography>
               </View>
             )}
           </View>
-          <Typography variant="small" className="text-surface-500 dark:text-surface-400 mb-1.5">
+          <Typography variant="small" className="text-surface-500 mb-1.5">
             {medication.dosage} {medication.dosageUnit} · {scheduleLabel}
           </Typography>
           <View className="flex-row items-center flex-wrap gap-2">
@@ -75,9 +75,9 @@ export function MedicationCard({ medication, allMedications = [], showChevron = 
 
             {/* Duration badge */}
             {medication.endDate && (
-              <View className="flex-row items-center px-2 py-0.5 bg-surface-100 dark:bg-surface-700 rounded-full">
+              <View className="flex-row items-center px-2 py-0.5 bg-surface-100 rounded-full">
                 <Ionicons name="calendar-outline" size={11} color="#737373" />
-                <Typography variant="small" className="text-surface-500 dark:text-surface-400 ml-1 text-xs">
+                <Typography variant="small" className="text-surface-500 ml-1 text-xs">
                   Until {format(new Date(medication.endDate), 'MMM d')}
                 </Typography>
               </View>
@@ -93,16 +93,16 @@ export function MedicationCard({ medication, allMedications = [], showChevron = 
 
       {/* Dependency Status Banner */}
       {dependencyStatus.isWaiting && (
-        <View className="mt-3 pt-3 border-t border-surface-100 dark:border-surface-700">
-          <View className="flex-row items-center bg-violet-50 dark:bg-violet-950 rounded-xl px-3 py-2.5">
-            <View className="w-8 h-8 rounded-lg bg-violet-100 dark:bg-violet-900 items-center justify-center mr-3">
+        <View className="mt-3 pt-3 border-t border-surface-100">
+          <View className="flex-row items-center bg-violet-50 rounded-xl px-3 py-2.5">
+            <View className="w-8 h-8 rounded-lg bg-violet-100 items-center justify-center mr-3">
               <Ionicons name="time-outline" size={16} color="#8B5CF6" />
             </View>
             <View className="flex-1">
-              <Typography variant="small" className="text-violet-700 dark:text-violet-300 font-medium">
+              <Typography variant="small" className="text-violet-700 font-medium">
                 Waiting to start
               </Typography>
-              <Typography variant="small" className="text-violet-600/70 dark:text-violet-400/70 text-xs">
+              <Typography variant="small" className="text-violet-600/70 text-xs">
                 {dependencyStatus.daysUntilStart
                   ? `Starts in ${dependencyStatus.daysUntilStart} day${dependencyStatus.daysUntilStart > 1 ? 's' : ''} after ${dependencyStatus.dependencyName}`
                   : `Starts after ${dependencyStatus.dependencyName} completes`

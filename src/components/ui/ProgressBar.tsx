@@ -11,9 +11,9 @@ export function ProgressBar({ current, total, showLabel = false }: ProgressBarPr
   const progress = (current / total) * 100;
 
   return (
-    <View className="px-6 py-4 bg-white dark:bg-surface-900 border-b border-surface-100 dark:border-surface-800">
+    <View className="px-6 py-4 bg-white border-b border-surface-100">
       {showLabel && (
-        <Typography variant="small" className="text-surface-500 dark:text-surface-400 mb-2 text-center">
+        <Typography variant="small" className="text-surface-500 mb-2 text-center">
           Step {current} of {total}
         </Typography>
       )}
@@ -25,8 +25,8 @@ export function ProgressBar({ current, total, showLabel = false }: ProgressBarPr
               index < current
                 ? 'bg-primary-500'
                 : index === current
-                ? 'bg-primary-200 dark:bg-primary-800'
-                : 'bg-surface-200 dark:bg-surface-700'
+                ? 'bg-primary-200'
+                : 'bg-surface-200'
             }`}
           />
         ))}

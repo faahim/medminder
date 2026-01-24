@@ -19,7 +19,7 @@ export function MedicationListItem({ medication, onPress }: MedicationListItemPr
       accessibilityRole="button"
       accessibilityHint="Tap to view details"
     >
-      <View className="bg-white dark:bg-gray-800 rounded-2xl p-4 flex-row items-center shadow-sm active:bg-gray-50 dark:active:bg-gray-700">
+      <View className="bg-white rounded-2xl p-4 flex-row items-center shadow-sm active:bg-surface-50">
         {/* Color indicator */}
         <View
           className="w-12 h-12 rounded-full items-center justify-center mr-4"
@@ -30,10 +30,10 @@ export function MedicationListItem({ medication, onPress }: MedicationListItemPr
 
         {/* Info */}
         <View className="flex-1">
-          <Typography variant="h3" className="text-gray-900 dark:text-white">
+          <Typography variant="h3" className="text-surface-900">
             {medication.name}
           </Typography>
-          <Typography variant="small" className="text-gray-500 dark:text-gray-400">
+          <Typography variant="small" className="text-surface-500">
             {medication.dosage} {medication.dosageUnit} · {frequency}
           </Typography>
         </View>

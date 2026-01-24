@@ -9,12 +9,7 @@ interface SegmentedControlProps {
   disabled?: boolean;
 }
 
-export function SegmentedControl({
-  options,
-  selectedIndex,
-  onChange,
-  disabled = false,
-}: SegmentedControlProps) {
+export function SegmentedControl({ options, selectedIndex, onChange, disabled = false }: SegmentedControlProps) {
   const handleSelect = (index: number) => {
     if (!disabled && index !== selectedIndex) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -23,41 +18,25 @@ export function SegmentedControl({
   };
 
   return (
-    <View 
-      className="flex-row bg-gray-200 dark:bg-gray-700 rounded-xl p-1"
-      accessibilityRole="tablist"
-    >
-      {options.map((option, index) => (
-        <Pressable
-          key={option}
-          onPress={() => handleSelect(index)}
-          disabled={disabled}
-          accessibilityRole="tab"
-          accessibilityState={{ selected: index === selectedIndex }}
-          accessibilityLabel={option}
-          className={`
-            flex-1 py-3 px-4 rounded-lg items-center justify-center
-            ${index === selectedIndex 
-              ? 'bg-white dark:bg-gray-600 shadow-sm' 
-              : 'bg-transparent'
-            }
-            ${disabled ? 'opacity-50' : ''}
-          `}
-        >
-          <Typography
-            variant="body"
-            className={`
-              font-semibold
-              ${index === selectedIndex 
-                ? 'text-primary-600 dark:text-primary-400' 
-                : 'text-gray-600 dark:text-gray-400'
-              }
-            `}
+    <View className="flex-row bg-surface-100 rounded-2xl p-1" accessibilityRole="tablist">
+      {options.map((option, index) => {
+        const selected = index === selectedIndex;
+        return (
+          <Pressable
+            key={option}
+            onPress={() => handleSelect(index)}
+            disabled={disabled}
+            accessibilityRole="tab"
+            accessibilityState={{ selected }}
+            accessibilityLabel={option}
+            className={`flex-1 py-3 px-4 rounded-xl items-center justify-center ${selected ? 'bg-white shadow-sm' : 'bg-transparent'} ${disabled ? 'opacity-50' : ''}`}
           >
-            {option}
-          </Typography>
-        </Pressable>
-      ))}
+            <Typography variant="body" className={`font-semibold ${selected ? 'text-primary-600' : 'text-surface-600'}`}>
+              {option}
+            </Typography>
+          </Pressable>
+        );
+      })}
     </View>
   );
 }

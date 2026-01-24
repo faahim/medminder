@@ -55,7 +55,7 @@ export default function EditMedicationScreen() {
   }, [id, updateFormData, setIsEditing, setEditingId]);
 
   return (
-    <View className="flex-1 items-center justify-center bg-gray-50 dark:bg-gray-900">
+    <View className="flex-1 items-center justify-center bg-surface-50">
       <Typography variant="body">Loading medication...</Typography>
     </View>
   );

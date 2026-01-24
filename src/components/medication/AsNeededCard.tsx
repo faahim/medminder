@@ -29,7 +29,7 @@ export function AsNeededCard({ medication, onLogDose, todayCount = 0 }: AsNeeded
 
   return (
     <View
-      className="bg-white dark:bg-surface-800 rounded-2xl border border-accent-200 dark:border-accent-800 mb-3 overflow-hidden"
+      className="bg-white rounded-2xl border border-accent-200 mb-3 overflow-hidden"
       style={{
         shadowColor: '#F97316',
         shadowOffset: { width: 0, height: 2 },
@@ -51,16 +51,16 @@ export function AsNeededCard({ medication, onLogDose, todayCount = 0 }: AsNeeded
           {/* Medication Info */}
           <View className="flex-1">
             <View className="flex-row items-center mb-0.5">
-              <Typography variant="h3" className="text-surface-900 dark:text-white font-semibold">
+              <Typography variant="h3" className="text-surface-900 font-semibold">
                 {medication.name}
               </Typography>
-              <View className="ml-2 px-2 py-0.5 bg-accent-100 dark:bg-accent-900/30 rounded-full">
-                <Typography variant="small" className="text-accent-600 dark:text-accent-400 font-medium">
+              <View className="ml-2 px-2 py-0.5 bg-accent-100 rounded-full">
+                <Typography variant="small" className="text-accent-600 font-medium">
                   PRN
                 </Typography>
               </View>
             </View>
-            <Typography variant="small" className="text-surface-500 dark:text-surface-400 mb-1">
+            <Typography variant="small" className="text-surface-500 mb-1">
               {medication.dosage} {medication.dosageUnit}
             </Typography>
             <View className="flex-row items-center">
@@ -68,7 +68,7 @@ export function AsNeededCard({ medication, onLogDose, todayCount = 0 }: AsNeeded
               {localCount > 0 && (
                 <View className="ml-2 flex-row items-center">
                   <Ionicons name="checkmark-circle" size={14} color="#22C55E" />
-                  <Typography variant="small" className="text-success-600 dark:text-success-400 ml-1">
+                  <Typography variant="small" className="text-success-600 ml-1">
                     {localCount}x today
                   </Typography>
                 </View>
@@ -97,8 +97,8 @@ export function AsNeededCard({ medication, onLogDose, todayCount = 0 }: AsNeeded
 
         {/* Instructions (if any) */}
         {medication.instructions && (
-          <View className="mt-3 pt-3 border-t border-surface-100 dark:border-surface-700">
-            <Typography variant="small" className="text-surface-500 dark:text-surface-400 italic">
+          <View className="mt-3 pt-3 border-t border-surface-100">
+            <Typography variant="small" className="text-surface-500 italic">
               {medication.instructions}
             </Typography>
           </View>

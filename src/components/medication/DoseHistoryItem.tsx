@@ -37,12 +37,12 @@ export function DoseHistoryItem({ log, medication }: DoseHistoryItemProps) {
   };
 
   return (
-    <View className="flex-row items-center justify-between py-3 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
+    <View className="flex-row items-center justify-between py-3 border-b border-surface-100 last:border-b-0">
       <View className="flex-1">
-        <Typography variant="body" className="text-gray-900 dark:text-white font-medium">
+        <Typography variant="body" className="text-surface-900 font-medium">
           {medication?.name || 'Unknown medication'}
         </Typography>
-        <Typography variant="small" className="text-gray-500 dark:text-gray-400">
+        <Typography variant="small" className="text-surface-500">
           {formatDate(log.scheduledDate)} at {formatTime(log.scheduledTime)}
         </Typography>
       </View>

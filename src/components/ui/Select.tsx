@@ -43,7 +43,7 @@ export function Select<T extends string | number>({
         accessibilityState={{ expanded: isOpen, disabled }}
         className={`
           flex-row items-center justify-between
-          bg-gray-100 dark:bg-gray-700 
+          bg-surface-100 
           rounded-xl
           ${compactClass}
           ${disabled ? 'opacity-50' : ''}
@@ -51,7 +51,7 @@ export function Select<T extends string | number>({
       >
         <Typography 
           variant="body" 
-          className={selectedOption ? 'text-gray-900 dark:text-white' : 'text-gray-400'}
+          className={selectedOption ? 'text-surface-900' : 'text-surface-400'}
         >
           {selectedOption?.label || placeholder}
         </Typography>
@@ -68,9 +68,9 @@ export function Select<T extends string | number>({
           onPress={() => setIsOpen(false)}
           className="flex-1 bg-black/50 justify-end"
         >
-          <View className="bg-white dark:bg-gray-800 rounded-t-3xl max-h-96">
-            <View className="p-4 border-b border-gray-200 dark:border-gray-700">
-              <Typography variant="h3" className="text-gray-900 dark:text-white text-center">
+          <View className="bg-white rounded-t-3xl max-h-96">
+            <View className="p-4 border-b border-surface-100">
+              <Typography variant="h3" className="text-surface-900 text-center">
                 Select Option
               </Typography>
             </View>
@@ -85,20 +85,20 @@ export function Select<T extends string | number>({
                   }}
                   className={`
                     p-4 flex-row items-center justify-between
-                    ${item.value === value ? 'bg-primary-50 dark:bg-primary-900' : ''}
+                    ${item.value === value ? 'bg-primary-50' : ''}
                   `}
                 >
                   <Typography 
                     variant="body" 
                     className={item.value === value 
-                      ? 'text-primary-600 dark:text-primary-400 font-semibold' 
-                      : 'text-gray-900 dark:text-white'
+                      ? 'text-primary-600 font-semibold' 
+                      : 'text-surface-900'
                     }
                   >
                     {item.label}
                   </Typography>
                   {item.value === value && (
-                    <Ionicons name="checkmark" size={24} color="#4CAF50" />
+                    <Ionicons name="checkmark" size={24} color="#06B6D4" />
                   )}
                 </Pressable>
               )}
@@ -106,9 +106,9 @@ export function Select<T extends string | number>({
             <View className="p-4 pb-8">
               <Pressable
                 onPress={() => setIsOpen(false)}
-                className="py-4 bg-gray-100 dark:bg-gray-700 rounded-xl"
+                className="py-4 bg-surface-100 rounded-xl"
               >
-                <Typography variant="body" className="text-gray-900 dark:text-white text-center font-semibold">
+                <Typography variant="body" className="text-surface-900 text-center font-semibold">
                   Cancel
                 </Typography>
               </Pressable>

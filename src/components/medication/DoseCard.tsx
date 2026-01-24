@@ -15,36 +15,36 @@ interface DoseCardProps {
 
 const STATUS_CONFIG = {
   pending: {
-    bg: 'bg-white dark:bg-surface-800',
-    border: 'border-surface-200 dark:border-surface-700',
+    bg: 'bg-white',
+    border: 'border-surface-200',
     icon: null,
     iconColor: '',
     label: null,
     labelColor: '',
   },
   taken: {
-    bg: 'bg-success-50 dark:bg-success-950',
-    border: 'border-success-200 dark:border-success-800',
+    bg: 'bg-success-50',
+    border: 'border-success-200',
     icon: 'checkmark-circle',
     iconColor: '#22C55E',
     label: 'Taken',
-    labelColor: 'text-success-600 dark:text-success-400',
+    labelColor: 'text-success-600',
   },
   missed: {
-    bg: 'bg-danger-50 dark:bg-danger-950',
-    border: 'border-danger-200 dark:border-danger-800',
+    bg: 'bg-danger-50',
+    border: 'border-danger-200',
     icon: 'close-circle',
     iconColor: '#EF4444',
     label: 'Missed',
-    labelColor: 'text-danger-600 dark:text-danger-400',
+    labelColor: 'text-danger-600',
   },
   skipped: {
-    bg: 'bg-surface-100 dark:bg-surface-800',
-    border: 'border-surface-300 dark:border-surface-600',
+    bg: 'bg-surface-100',
+    border: 'border-surface-300',
     icon: 'remove-circle-outline',
     iconColor: '#737373',
     label: 'Skipped',
-    labelColor: 'text-surface-500 dark:text-surface-400',
+    labelColor: 'text-surface-500',
   },
 };
 
@@ -123,11 +123,11 @@ export function DoseCard({ dose, onStatusChange, onLogDose }: DoseCardProps) {
           {/* Medication Info */}
           <View className="flex-1">
             <View className="flex-row items-center mb-0.5">
-              <Typography variant="h3" className="text-surface-900 dark:text-white font-semibold">
+              <Typography variant="h3" className="text-surface-900 font-semibold">
                 {dose.medication.name}
               </Typography>
             </View>
-            <Typography variant="small" className="text-surface-500 dark:text-surface-400 mb-1">
+            <Typography variant="small" className="text-surface-500 mb-1">
               {dose.medication.dosage} {dose.medication.dosageUnit}
             </Typography>
             <MealTimingBadge timing={dose.medication.mealTiming} />
@@ -192,10 +192,10 @@ export function DoseCard({ dose, onStatusChange, onLogDose }: DoseCardProps) {
               <Pressable
                 onPress={handleSkip}
                 disabled={isLogging}
-                className="flex-1 bg-surface-200 dark:bg-surface-700 py-3.5 rounded-xl items-center flex-row justify-center"
+                className="flex-1 bg-surface-200 py-3.5 rounded-xl items-center flex-row justify-center"
               >
                 <Ionicons name="close" size={18} color="#737373" />
-                <Typography variant="button" className="text-surface-600 dark:text-surface-300 ml-1.5 font-medium">
+                <Typography variant="button" className="text-surface-600 ml-1.5 font-medium">
                   Skip
                 </Typography>
               </Pressable>
@@ -206,7 +206,7 @@ export function DoseCard({ dose, onStatusChange, onLogDose }: DoseCardProps) {
             onPress={() => setShowActions(!showActions)}
             className="pt-2.5 pb-0.5"
           >
-            <Typography variant="small" className="text-primary-500 dark:text-primary-400 text-center font-medium">
+            <Typography variant="small" className="text-primary-600 text-center font-medium">
               {showActions ? 'Cancel' : 'More options'}
             </Typography>
           </Pressable>

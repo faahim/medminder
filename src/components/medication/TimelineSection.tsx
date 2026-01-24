@@ -26,11 +26,11 @@ export function TimelineSection({ title, doses, timeOfDay }: TimelineSectionProp
       <View className="mb-6">
         <View className="flex-row items-center mb-3">
           <Ionicons name={icon.name} size={24} color={icon.color} />
-          <Typography variant="h3" className="text-gray-700 dark:text-gray-300 ml-2">
+          <Typography variant="h3" className="text-surface-700 ml-2">
             {title}
           </Typography>
         </View>
-        <Typography variant="body" className="text-gray-400 dark:text-gray-500 italic ml-8">
+        <Typography variant="body" className="text-surface-400 italic ml-8">
           No medications scheduled
         </Typography>
       </View>
@@ -50,19 +50,19 @@ export function TimelineSection({ title, doses, timeOfDay }: TimelineSectionProp
       {/* Section Header */}
       <View className="flex-row items-center mb-3">
         <Ionicons name={icon.name} size={24} color={icon.color} />
-        <Typography variant="h3" className="text-gray-700 dark:text-gray-300 ml-2">
+        <Typography variant="h3" className="text-surface-700 ml-2">
           {title}
         </Typography>
       </View>
 
       {/* Timeline */}
-      <View className="ml-3 pl-5 border-l-2 border-gray-200 dark:border-gray-700">
+      <View className="ml-3 pl-5 border-l-2 border-surface-200">
         {Object.entries(byTime).map(([time, timeDoses]) => (
           <View key={time} className="mb-4">
             {/* Time Badge */}
             <View className="flex-row items-center mb-2 -ml-7">
               <View className="w-4 h-4 rounded-full bg-primary-500 mr-3" />
-              <Typography variant="body" className="text-gray-600 dark:text-gray-400 font-semibold">
+              <Typography variant="body" className="text-surface-600 font-semibold">
                 {formatTime(time)}
               </Typography>
             </View>

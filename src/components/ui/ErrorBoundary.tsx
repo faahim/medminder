@@ -39,11 +39,11 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <View className="flex-1 items-center justify-center p-8 bg-gray-50 dark:bg-gray-900">
-          <Typography variant="h2" className="text-gray-900 dark:text-white text-center mb-2">
+        <View className="flex-1 items-center justify-center p-8 bg-surface-50">
+          <Typography variant="h2" className="text-surface-900 text-center mb-2">
             Something went wrong
           </Typography>
-          <Typography variant="body" className="text-gray-500 dark:text-gray-400 text-center mb-6">
+          <Typography variant="body" className="text-surface-500 text-center mb-6">
             We're sorry, an unexpected error occurred. Please try again.
           </Typography>
           <Button 
@@ -52,8 +52,8 @@ export class ErrorBoundary extends Component<Props, State> {
             size="lg"
           />
           {__DEV__ && this.state.error && (
-            <View className="mt-4 p-4 bg-red-50 dark:bg-red-900/30 rounded-lg">
-              <Typography variant="small" className="text-red-600 dark:text-red-400 font-mono">
+            <View className="mt-4 p-4 bg-danger-50 rounded-lg">
+              <Typography variant="small" className="text-danger-600 font-mono">
                 {this.state.error.message}
               </Typography>
             </View>
