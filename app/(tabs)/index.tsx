@@ -1,4 +1,6 @@
 import { View, RefreshControl, Pressable } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { TAB_BAR_BASE_HEIGHT } from '../../src/constants/layout';
 import { useCallback, useState } from 'react';
 import { router } from 'expo-router';
 import { useTodaysDoses } from '../../src/hooks/useTodaysDoses';
@@ -13,6 +15,7 @@ import { AppHeader } from '../../src/components/layout/AppHeader';
 import { Screen } from '../../src/components/layout/Screen';
 
 export default function HomeScreen() {
+  const insets = useSafeAreaInsets();
   const { doses, isLoading, refresh, groupedDoses, logDose, asNeededMeds, logAsNeededDose } = useTodaysDoses();
   const [refreshing, setRefreshing] = useState(false);
 
@@ -197,7 +200,7 @@ export default function HomeScreen() {
         <Pressable
           onPress={() => router.push('/medication/add')}
           className="absolute right-6"
-          style={{ bottom: 96, shadowColor: '#06B6D4', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.25, shadowRadius: 12, elevation: 10 }}
+          style={{ bottom: TAB_BAR_BASE_HEIGHT + insets.bottom + 16, shadowColor: '#06B6D4', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.25, shadowRadius: 12, elevation: 10 }}
         >
           <LinearGradient colors={['#06B6D4', '#0891B2']} className="w-14 h-14 rounded-full items-center justify-center">
             <Ionicons name="add" size={28} color="#fff" />

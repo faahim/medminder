@@ -1,30 +1,40 @@
 import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, Feather } from '@expo/vector-icons';
 import { Platform, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { TAB_BAR_BASE_HEIGHT, TAB_BAR_TOP_PADDING } from '../../src/constants/layout';
 
 function TabIcon({ name, focused, color }: { name: string; focused: boolean; color: string }) {
-  const iconName = focused ? name : `${name}-outline`;
   return (
-    <View style={focused ? { backgroundColor: 'rgba(6, 182, 212, 0.1)', padding: 6, borderRadius: 12 } : { padding: 6 }}>
-      <Ionicons name={iconName as any} size={24} color={color} />
+    <View
+      style={
+        focused
+          ? { backgroundColor: 'rgba(6, 182, 212, 0.10)', padding: 7, borderRadius: 14 }
+          : { padding: 7 }
+      }
+    >
+      <Feather name={name as any} size={22} color={color} />
     </View>
   );
 }
 
 export default function TabLayout() {
+  const insets = useSafeAreaInsets();
+
+  const height = TAB_BAR_BASE_HEIGHT + insets.bottom;
+
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: '#06B6D4',
         tabBarInactiveTintColor: '#A3A3A3',
         tabBarStyle: {
-          position: 'absolute',
           backgroundColor: Platform.OS === 'ios' ? 'rgba(255, 255, 255, 0.92)' : '#FFFFFF',
           borderTopWidth: 0,
           elevation: 0,
-          height: Platform.OS === 'ios' ? 88 : 68,
-          paddingBottom: Platform.OS === 'ios' ? 28 : 12,
-          paddingTop: 12,
+          height,
+          paddingBottom: insets.bottom,
+          paddingTop: TAB_BAR_TOP_PADDING,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: -4 },
           shadowOpacity: 0.05,
@@ -36,7 +46,7 @@ export default function TabLayout() {
           marginTop: 4,
         },
         tabBarIconStyle: {
-          marginBottom: -2,
+          marginBottom: -1,
         },
         headerShown: false,
       }}
@@ -55,7 +65,7 @@ export default function TabLayout() {
         options={{
           title: 'Meds',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="medkit" focused={focused} color={color} />
+            <TabIcon name="activity" focused={focused} color={color} />
           ),
         }}
       />
@@ -64,7 +74,7 @@ export default function TabLayout() {
         options={{
           title: 'History',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="stats-chart" focused={focused} color={color} />
+            <TabIcon name="bar-chart-2" focused={focused} color={color} />
           ),
         }}
       />
@@ -73,7 +83,7 @@ export default function TabLayout() {
         options={{
           title: 'Settings',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="cog" focused={focused} color={color} />
+            <TabIcon name="settings" focused={focused} color={color} />
           ),
         }}
       />
