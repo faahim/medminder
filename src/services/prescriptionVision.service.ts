@@ -134,7 +134,7 @@ Locale hint: ${localeHint}.`;
       input: [
         {
           role: 'system',
-          content: [{ type: 'text', text: prompt }],
+          content: [{ type: 'input_text', text: prompt }],
         },
         {
           role: 'user',
