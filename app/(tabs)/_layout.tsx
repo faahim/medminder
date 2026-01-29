@@ -1,10 +1,19 @@
 import { Tabs } from 'expo-router';
-import { Ionicons, Feather } from '@expo/vector-icons';
+import { NativeTabs, Icon, Label } from 'expo-router/unstable-native-tabs';
+import { Feather } from '@expo/vector-icons';
 import { Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TAB_BAR_BASE_HEIGHT, TAB_BAR_TOP_PADDING } from '../../src/constants/layout';
 
-function TabIcon({ name, focused, color }: { name: string; focused: boolean; color: string }) {
+function AndroidTabIcon({
+  name,
+  focused,
+  color,
+}: {
+  name: string;
+  focused: boolean;
+  color: string;
+}) {
   return (
     <View
       style={
@@ -18,9 +27,40 @@ function TabIcon({ name, focused, color }: { name: string; focused: boolean; col
   );
 }
 
-export default function TabLayout() {
-  const insets = useSafeAreaInsets();
+function IOSTabLayout() {
+  return (
+    <NativeTabs
+      tintColor="#06B6D4"
+      iconColor={{ default: '#A3A3A3', selected: '#06B6D4' }}
+      labelStyle={{
+        default: { fontSize: 11, fontWeight: '600', color: '#A3A3A3' },
+        selected: { fontSize: 11, fontWeight: '600', color: '#06B6D4' },
+      }}
+      blurEffect="systemUltraThinMaterial"
+      shadowColor="rgba(0,0,0,0.08)"
+    >
+      <NativeTabs.Trigger name="index">
+        <Icon sf="calendar" />
+        <Label>Today</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="medications">
+        <Icon sf="pills.fill" />
+        <Label>Meds</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="history">
+        <Icon sf="chart.bar.fill" />
+        <Label>History</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings">
+        <Icon sf="gearshape.fill" />
+        <Label>Settings</Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
 
+function AndroidTabLayout() {
+  const insets = useSafeAreaInsets();
   const height = TAB_BAR_BASE_HEIGHT + insets.bottom;
 
   return (
@@ -29,7 +69,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: '#06B6D4',
         tabBarInactiveTintColor: '#A3A3A3',
         tabBarStyle: {
-          backgroundColor: Platform.OS === 'ios' ? 'rgba(255, 255, 255, 0.92)' : '#FFFFFF',
+          backgroundColor: '#FFFFFF',
           borderTopWidth: 0,
           elevation: 0,
           height,
@@ -56,7 +96,7 @@ export default function TabLayout() {
         options={{
           title: 'Today',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="calendar" focused={focused} color={color} />
+            <AndroidTabIcon name="calendar" focused={focused} color={color} />
           ),
         }}
       />
@@ -65,7 +105,7 @@ export default function TabLayout() {
         options={{
           title: 'Meds',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="activity" focused={focused} color={color} />
+            <AndroidTabIcon name="activity" focused={focused} color={color} />
           ),
         }}
       />
@@ -74,7 +114,7 @@ export default function TabLayout() {
         options={{
           title: 'History',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="bar-chart-2" focused={focused} color={color} />
+            <AndroidTabIcon name="bar-chart-2" focused={focused} color={color} />
           ),
         }}
       />
@@ -83,10 +123,14 @@ export default function TabLayout() {
         options={{
           title: 'Settings',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="settings" focused={focused} color={color} />
+            <AndroidTabIcon name="settings" focused={focused} color={color} />
           ),
         }}
       />
     </Tabs>
   );
+}
+
+export default function TabLayout() {
+  return Platform.OS === 'ios' ? <IOSTabLayout /> : <AndroidTabLayout />;
 }

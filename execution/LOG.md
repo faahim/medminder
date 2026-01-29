@@ -26,6 +26,22 @@
 - Added smoke test screen: `app/dev/deps-test.tsx`
 - Verified: `npx tsc --noEmit` and `npx expo export --platform ios`
 
+### [22:38] ✅ M1-003 Native Tabs Migration - COMPLETED
+**Executor**: Subagent medminder-M1-003
+
+**Summary**: Migrated iOS tab navigation to `NativeTabs` with SF Symbols, while keeping the existing JS `Tabs` implementation on Android.
+
+**Changes**:
+- `app/(tabs)/_layout.tsx`
+  - iOS: `NativeTabs` + `<Icon sf="..." />` using SF Symbols
+  - Android: retained `Tabs` + Feather icons + existing styling
+
+**Verification**:
+- `npx tsc --noEmit`
+- `npx expo export --platform ios`
+
+---
+
 ### [22:35] Phase 1 Planning Complete
 - Created 15 tasks for Phase 1: UI/UX Overhaul
 - Created task files in `tasks/phase-1/`
