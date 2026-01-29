@@ -1,9 +1,9 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-01-29T22:10:00Z",
+  "lastUpdated": "2026-01-29T22:30:00Z",
   "summary": {
-    "total": 0,
-    "pending": 0,
+    "total": 15,
+    "pending": 15,
     "claimed": 0,
     "inProgress": 0,
     "completed": 0,
@@ -12,24 +12,175 @@
   },
   "phases": {
     "phase-0": {
-      "name": "Foundation (Complete)",
+      "name": "Foundation (Pre-existing)",
       "total": 0,
       "completed": 0,
       "status": "completed",
-      "note": "Initial app structure, UI components, database, screens already built"
+      "note": "Initial app structure already built"
     },
     "phase-1": {
-      "name": "Notifications & Reminders",
-      "total": 0,
+      "name": "UI/UX Overhaul",
+      "total": 15,
       "completed": 0,
-      "status": "not_started"
+      "status": "in_progress"
     },
     "phase-2": {
-      "name": "Polish & Testing",
+      "name": "Notifications & Reminders",
       "total": 0,
       "completed": 0,
       "status": "not_started"
     }
   },
-  "tasks": []
+  "tasks": [
+    {
+      "id": "M1-001",
+      "title": "Design System Foundation",
+      "phase": 1,
+      "status": "pending",
+      "priority": "P0",
+      "estimate": 45,
+      "dependencies": [],
+      "blocks": ["M1-002", "M1-003", "M1-004", "M1-005", "M1-006", "M1-007", "M1-008", "M1-009"]
+    },
+    {
+      "id": "M1-002",
+      "title": "Install & Configure New Dependencies",
+      "phase": 1,
+      "status": "pending",
+      "priority": "P0",
+      "estimate": 20,
+      "dependencies": ["M1-001"],
+      "blocks": ["M1-003"]
+    },
+    {
+      "id": "M1-003",
+      "title": "Native Tabs Migration",
+      "phase": 1,
+      "status": "pending",
+      "priority": "P0",
+      "estimate": 40,
+      "dependencies": ["M1-002"],
+      "blocks": ["M1-010"]
+    },
+    {
+      "id": "M1-004",
+      "title": "Core UI Components Rebuild",
+      "phase": 1,
+      "status": "pending",
+      "priority": "P0",
+      "estimate": 60,
+      "dependencies": ["M1-001"],
+      "blocks": ["M1-005", "M1-006", "M1-007", "M1-008"]
+    },
+    {
+      "id": "M1-005",
+      "title": "Today Screen Redesign",
+      "phase": 1,
+      "status": "pending",
+      "priority": "P0",
+      "estimate": 90,
+      "dependencies": ["M1-004"],
+      "blocks": ["M1-010"]
+    },
+    {
+      "id": "M1-006",
+      "title": "Medications Screen Redesign",
+      "phase": 1,
+      "status": "pending",
+      "priority": "P0",
+      "estimate": 75,
+      "dependencies": ["M1-004"],
+      "blocks": ["M1-010"]
+    },
+    {
+      "id": "M1-007",
+      "title": "History Screen Redesign",
+      "phase": 1,
+      "status": "pending",
+      "priority": "P0",
+      "estimate": 75,
+      "dependencies": ["M1-004"],
+      "blocks": ["M1-010"]
+    },
+    {
+      "id": "M1-008",
+      "title": "Settings Screen Redesign",
+      "phase": 1,
+      "status": "pending",
+      "priority": "P0",
+      "estimate": 60,
+      "dependencies": ["M1-004"],
+      "blocks": ["M1-010"]
+    },
+    {
+      "id": "M1-009",
+      "title": "Add Medication Wizard Redesign",
+      "phase": 1,
+      "status": "pending",
+      "priority": "P0",
+      "estimate": 90,
+      "dependencies": ["M1-001", "M1-004"],
+      "blocks": ["M1-010"]
+    },
+    {
+      "id": "M1-010",
+      "title": "Medication Detail & Edit Screens",
+      "phase": 1,
+      "status": "pending",
+      "priority": "P0",
+      "estimate": 60,
+      "dependencies": ["M1-005", "M1-006"],
+      "blocks": ["M1-011"]
+    },
+    {
+      "id": "M1-011",
+      "title": "Prescription Import Flow Redesign",
+      "phase": 1,
+      "status": "pending",
+      "priority": "P1",
+      "estimate": 45,
+      "dependencies": ["M1-010"],
+      "blocks": ["M1-012"]
+    },
+    {
+      "id": "M1-012",
+      "title": "Animations & Micro-interactions",
+      "phase": 1,
+      "status": "pending",
+      "priority": "P0",
+      "estimate": 60,
+      "dependencies": ["M1-005", "M1-006", "M1-007", "M1-008"],
+      "blocks": ["M1-013"]
+    },
+    {
+      "id": "M1-013",
+      "title": "Haptics Integration",
+      "phase": 1,
+      "status": "pending",
+      "priority": "P1",
+      "estimate": 30,
+      "dependencies": ["M1-012"],
+      "blocks": ["M1-014"]
+    },
+    {
+      "id": "M1-014",
+      "title": "Empty States & Error States",
+      "phase": 1,
+      "status": "pending",
+      "priority": "P1",
+      "estimate": 40,
+      "dependencies": ["M1-004"],
+      "blocks": ["M1-015"]
+    },
+    {
+      "id": "M1-015",
+      "title": "QA & Polish Pass",
+      "phase": 1,
+      "status": "pending",
+      "priority": "P0",
+      "estimate": 60,
+      "dependencies": ["M1-003", "M1-005", "M1-006", "M1-007", "M1-008", "M1-009", "M1-010", "M1-011", "M1-012", "M1-013", "M1-014"],
+      "blocks": []
+    }
+  ]
 }
