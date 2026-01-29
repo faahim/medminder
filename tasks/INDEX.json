@@ -1,12 +1,12 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-01-29T22:26:00Z",
+  "lastUpdated": "2026-01-29T22:35:00Z",
   "summary": {
     "total": 15,
-    "pending": 14,
+    "pending": 13,
     "claimed": 0,
     "inProgress": 0,
-    "completed": 1,
+    "completed": 2,
     "failed": 0,
     "blocked": 0
   },
@@ -21,7 +21,7 @@
     "phase-1": {
       "name": "UI/UX Overhaul",
       "total": 15,
-      "completed": 1,
+      "completed": 2,
       "status": "in_progress"
     },
     "phase-2": {
@@ -40,17 +40,30 @@
       "priority": "P0",
       "estimate": 45,
       "dependencies": [],
-      "blocks": ["M1-002", "M1-003", "M1-004", "M1-005", "M1-006", "M1-007", "M1-008", "M1-009"]
+      "blocks": [
+        "M1-002",
+        "M1-003",
+        "M1-004",
+        "M1-005",
+        "M1-006",
+        "M1-007",
+        "M1-008",
+        "M1-009"
+      ]
     },
     {
       "id": "M1-002",
       "title": "Install & Configure New Dependencies",
       "phase": 1,
-      "status": "pending",
+      "status": "completed",
       "priority": "P0",
       "estimate": 20,
-      "dependencies": ["M1-001"],
-      "blocks": ["M1-003"]
+      "dependencies": [
+        "M1-001"
+      ],
+      "blocks": [
+        "M1-003"
+      ]
     },
     {
       "id": "M1-003",
@@ -59,8 +72,12 @@
       "status": "pending",
       "priority": "P0",
       "estimate": 40,
-      "dependencies": ["M1-002"],
-      "blocks": ["M1-010"]
+      "dependencies": [
+        "M1-002"
+      ],
+      "blocks": [
+        "M1-010"
+      ]
     },
     {
       "id": "M1-004",
@@ -69,8 +86,15 @@
       "status": "pending",
       "priority": "P0",
       "estimate": 60,
-      "dependencies": ["M1-001"],
-      "blocks": ["M1-005", "M1-006", "M1-007", "M1-008"]
+      "dependencies": [
+        "M1-001"
+      ],
+      "blocks": [
+        "M1-005",
+        "M1-006",
+        "M1-007",
+        "M1-008"
+      ]
     },
     {
       "id": "M1-005",
@@ -79,8 +103,12 @@
       "status": "pending",
       "priority": "P0",
       "estimate": 90,
-      "dependencies": ["M1-004"],
-      "blocks": ["M1-010"]
+      "dependencies": [
+        "M1-004"
+      ],
+      "blocks": [
+        "M1-010"
+      ]
     },
     {
       "id": "M1-006",
@@ -89,8 +117,12 @@
       "status": "pending",
       "priority": "P0",
       "estimate": 75,
-      "dependencies": ["M1-004"],
-      "blocks": ["M1-010"]
+      "dependencies": [
+        "M1-004"
+      ],
+      "blocks": [
+        "M1-010"
+      ]
     },
     {
       "id": "M1-007",
@@ -99,8 +131,12 @@
       "status": "pending",
       "priority": "P0",
       "estimate": 75,
-      "dependencies": ["M1-004"],
-      "blocks": ["M1-010"]
+      "dependencies": [
+        "M1-004"
+      ],
+      "blocks": [
+        "M1-010"
+      ]
     },
     {
       "id": "M1-008",
@@ -109,8 +145,12 @@
       "status": "pending",
       "priority": "P0",
       "estimate": 60,
-      "dependencies": ["M1-004"],
-      "blocks": ["M1-010"]
+      "dependencies": [
+        "M1-004"
+      ],
+      "blocks": [
+        "M1-010"
+      ]
     },
     {
       "id": "M1-009",
@@ -119,8 +159,13 @@
       "status": "pending",
       "priority": "P0",
       "estimate": 90,
-      "dependencies": ["M1-001", "M1-004"],
-      "blocks": ["M1-010"]
+      "dependencies": [
+        "M1-001",
+        "M1-004"
+      ],
+      "blocks": [
+        "M1-010"
+      ]
     },
     {
       "id": "M1-010",
@@ -129,8 +174,13 @@
       "status": "pending",
       "priority": "P0",
       "estimate": 60,
-      "dependencies": ["M1-005", "M1-006"],
-      "blocks": ["M1-011"]
+      "dependencies": [
+        "M1-005",
+        "M1-006"
+      ],
+      "blocks": [
+        "M1-011"
+      ]
     },
     {
       "id": "M1-011",
@@ -139,8 +189,12 @@
       "status": "pending",
       "priority": "P1",
       "estimate": 45,
-      "dependencies": ["M1-010"],
-      "blocks": ["M1-012"]
+      "dependencies": [
+        "M1-010"
+      ],
+      "blocks": [
+        "M1-012"
+      ]
     },
     {
       "id": "M1-012",
@@ -149,8 +203,15 @@
       "status": "pending",
       "priority": "P0",
       "estimate": 60,
-      "dependencies": ["M1-005", "M1-006", "M1-007", "M1-008"],
-      "blocks": ["M1-013"]
+      "dependencies": [
+        "M1-005",
+        "M1-006",
+        "M1-007",
+        "M1-008"
+      ],
+      "blocks": [
+        "M1-013"
+      ]
     },
     {
       "id": "M1-013",
@@ -159,8 +220,12 @@
       "status": "pending",
       "priority": "P1",
       "estimate": 30,
-      "dependencies": ["M1-012"],
-      "blocks": ["M1-014"]
+      "dependencies": [
+        "M1-012"
+      ],
+      "blocks": [
+        "M1-014"
+      ]
     },
     {
       "id": "M1-014",
@@ -169,8 +234,12 @@
       "status": "pending",
       "priority": "P1",
       "estimate": 40,
-      "dependencies": ["M1-004"],
-      "blocks": ["M1-015"]
+      "dependencies": [
+        "M1-004"
+      ],
+      "blocks": [
+        "M1-015"
+      ]
     },
     {
       "id": "M1-015",
@@ -179,7 +248,19 @@
       "status": "pending",
       "priority": "P0",
       "estimate": 60,
-      "dependencies": ["M1-003", "M1-005", "M1-006", "M1-007", "M1-008", "M1-009", "M1-010", "M1-011", "M1-012", "M1-013", "M1-014"],
+      "dependencies": [
+        "M1-003",
+        "M1-005",
+        "M1-006",
+        "M1-007",
+        "M1-008",
+        "M1-009",
+        "M1-010",
+        "M1-011",
+        "M1-012",
+        "M1-013",
+        "M1-014"
+      ],
       "blocks": []
     }
   ]

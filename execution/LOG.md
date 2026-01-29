@@ -20,6 +20,12 @@
 
 ---
 
+### [22:34] Completed M1-002 - Install & Configure New Dependencies
+- Installed `expo-symbols` and `expo-glass-effect`
+- Ensured Reanimated plugin is configured in `babel.config.js`
+- Added smoke test screen: `app/dev/deps-test.tsx`
+- Verified: `npx tsc --noEmit` and `npx expo export --platform ios`
+
 ### [22:35] Phase 1 Planning Complete
 - Created 15 tasks for Phase 1: UI/UX Overhaul
 - Created task files in `tasks/phase-1/`
