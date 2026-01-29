@@ -1,0 +1,35 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2026-01-29T22:10:00Z",
+  "summary": {
+    "total": 0,
+    "pending": 0,
+    "claimed": 0,
+    "inProgress": 0,
+    "completed": 0,
+    "failed": 0,
+    "blocked": 0
+  },
+  "phases": {
+    "phase-0": {
+      "name": "Foundation (Complete)",
+      "total": 0,
+      "completed": 0,
+      "status": "completed",
+      "note": "Initial app structure, UI components, database, screens already built"
+    },
+    "phase-1": {
+      "name": "Notifications & Reminders",
+      "total": 0,
+      "completed": 0,
+      "status": "not_started"
+    },
+    "phase-2": {
+      "name": "Polish & Testing",
+      "total": 0,
+      "completed": 0,
+      "status": "not_started"
+    }
+  },
+  "tasks": []
+}
