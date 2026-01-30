@@ -1,9 +1,9 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-01-30T05:45:00Z",
+  "lastUpdated": "2026-01-30T07:08:10Z",
   "summary": {
-    "total": 15,
-    "pending": 0,
+    "total": 26,
+    "pending": 11,
     "claimed": 0,
     "inProgress": 0,
     "completed": 15,
@@ -27,9 +27,10 @@
     },
     "phase-2": {
       "name": "Notifications & Reminders",
-      "total": 0,
+      "total": 11,
       "completed": 0,
-      "status": "not_started"
+      "status": "inProgress",
+      "lastUpdated": "2026-01-30T07:08:10Z"
     }
   },
   "tasks": [
@@ -261,6 +262,157 @@
         "M1-012",
         "M1-013",
         "M1-014"
+      ],
+      "blocks": []
+    },
+    {
+      "id": "M2-001",
+      "title": "App Lifecycle & Notification Setup",
+      "phase": 2,
+      "status": "pending",
+      "priority": "P0",
+      "estimate": 30,
+      "dependencies": [
+        "Phase 1 Complete"
+      ],
+      "blocks": [
+        "M2-002",
+        "M2-003"
+      ]
+    },
+    {
+      "id": "M2-002",
+      "title": "Notification Settings Screen",
+      "phase": 2,
+      "status": "pending",
+      "priority": "P0",
+      "estimate": 45,
+      "dependencies": [
+        "M2-001"
+      ],
+      "blocks": [
+        "M2-005"
+      ]
+    },
+    {
+      "id": "M2-003",
+      "title": "Interactive Notification Actions",
+      "phase": 2,
+      "status": "pending",
+      "priority": "P0",
+      "estimate": 40,
+      "dependencies": [
+        "M2-001"
+      ],
+      "blocks": [
+        "M2-006"
+      ]
+    },
+    {
+      "id": "M2-004",
+      "title": "Background Rescheduling Task",
+      "phase": 2,
+      "status": "pending",
+      "priority": "P1",
+      "estimate": 30,
+      "dependencies": [
+        "M2-001"
+      ],
+      "blocks": []
+    },
+    {
+      "id": "M2-005",
+      "title": "Missed Dose Detection & Follow-up",
+      "phase": 2,
+      "status": "pending",
+      "priority": "P0",
+      "estimate": 50,
+      "dependencies": [
+        "M2-002",
+        "M2-003"
+      ],
+      "blocks": []
+    },
+    {
+      "id": "M2-006",
+      "title": "Per-Medication Notification Settings",
+      "phase": 2,
+      "status": "pending",
+      "priority": "P1",
+      "estimate": 40,
+      "dependencies": [
+        "M2-003"
+      ],
+      "blocks": []
+    },
+    {
+      "id": "M2-007",
+      "title": "Permission Onboarding Flow",
+      "phase": 2,
+      "status": "pending",
+      "priority": "P1",
+      "estimate": 30,
+      "dependencies": [
+        "M2-001"
+      ],
+      "blocks": []
+    },
+    {
+      "id": "M2-008",
+      "title": "Notification Content Polish",
+      "phase": 2,
+      "status": "pending",
+      "priority": "P1",
+      "estimate": 20,
+      "dependencies": [
+        "M2-001"
+      ],
+      "blocks": []
+    },
+    {
+      "id": "M2-009",
+      "title": "Today View Notification Sync",
+      "phase": 2,
+      "status": "pending",
+      "priority": "P0",
+      "estimate": 30,
+      "dependencies": [
+        "M2-003"
+      ],
+      "blocks": [
+        "M2-010"
+      ]
+    },
+    {
+      "id": "M2-010",
+      "title": "Refill Reminders",
+      "phase": 2,
+      "status": "pending",
+      "priority": "P1",
+      "estimate": 35,
+      "dependencies": [
+        "M2-009"
+      ],
+      "blocks": []
+    },
+    {
+      "id": "M2-011",
+      "title": "Notifications QA & Polish",
+      "phase": 2,
+      "status": "pending",
+      "priority": "P0",
+      "estimate": 45,
+      "dependencies": [
+        "M2-001",
+        "M2-002",
+        "M2-003",
+        "M2-004",
+        "M2-005",
+        "M2-006",
+        "M2-007",
+        "M2-008",
+        "M2-009",
+        "M2-010"
       ],
       "blocks": []
     }
