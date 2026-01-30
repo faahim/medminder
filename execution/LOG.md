@@ -2,6 +2,47 @@
 
 ## 2026-01-30
 
+### [04:45] ✅ M1-011 Prescription Import Flow Redesign - COMPLETED (PM Recovery)
+**Executor**: Subagent medminder-M1-011, completed by PM watchdog recovery
+
+**Summary**: Redesigned the prescription import flow with camera/photo options, processing states, and review screen. Sub-agent completed all code work but stalled before updating tracking files. PM watchdog recovered by fixing TypeScript errors, verifying build, and updating tracking files.
+
+**Changes**:
+- `src/components/prescription/ExtractedMedicationCard.tsx` - New component showing extracted medication with color indicator, name, dosage, meal timing, and schedule type. Includes expandable edit form and remove button.
+- `src/components/prescription/index.ts` - Index file for prescription components
+- `app/prescription/import.tsx` - Complete redesign with:
+  - Two clear import options: Camera and Photo Library via ImportOptionCard component
+  - Image preview area with camera frame corners
+  - Processing state with animated spinner icon
+  - Error state with shake animation icon
+  - Success state with animated checkmark showing medication count
+  - Photo tips card for best results
+- `app/prescription/review.tsx` - Complete redesign with:
+  - Review screen showing extracted medications count
+  - ExtractedMedicationCard for each medication (editable/removable)
+  - Full edit modal with schedule configuration (daily, weekly, interval, as-needed)
+  - Quick schedule presets (1x-4x per day)
+  - Meal timing selection
+  - "Add all medications" button for batch import
+
+**Acceptance Criteria Met**:
+- ✅ Import screen with two clear options: Camera, Photo Library
+- ✅ Camera preview with capture button
+- ✅ Processing state with animated indicator
+- ✅ Review screen shows extracted medications in editable cards
+- ✅ Each extracted medication can be edited or removed
+- ✅ "Add All" button to import all medications at once
+- ✅ Error state for failed OCR
+- ✅ Success state with count of imported medications
+- ✅ All icons are SF Symbols (via Icon component with fallbacks)
+
+**Verification**:
+- `npx expo export --platform ios` - passed
+
+**Commit**: (pending)
+
+---
+
 ### [04:30] ✅ M1-012 Animations & Micro-interactions - COMPLETED (PM Recovery)
 **Executor**: Subagent medminder-M1-012, completed by PM watchdog recovery
 

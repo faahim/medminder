@@ -1,12 +1,12 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-01-30T04:15:00Z",
+  "lastUpdated": "2026-01-30T05:00:00Z",
   "summary": {
     "total": 15,
-    "pending": 2,
-    "claimed": 0,
-    "inProgress": 0,
-    "completed": 11,
+    "pending": 1,
+    "claimed": 1,
+    "inProgress": 1,
+    "completed": 12,
     "failed": 0,
     "blocked": 0
   },
@@ -21,9 +21,9 @@
     "phase-1": {
       "name": "UI/UX Overhaul",
       "total": 15,
-      "completed": 11,
+      "completed": 12,
       "status": "in_progress",
-      "lastUpdated": "2026-01-30T04:30:00Z"
+      "lastUpdated": "2026-01-30T05:00:00Z"
     },
     "phase-2": {
       "name": "Notifications & Reminders",
@@ -187,7 +187,7 @@
       "id": "M1-011",
       "title": "Prescription Import Flow Redesign",
       "phase": 1,
-      "status": "ready",
+      "status": "completed",
       "priority": "P1",
       "estimate": 45,
       "dependencies": [
@@ -218,7 +218,7 @@
       "id": "M1-013",
       "title": "Haptics Integration",
       "phase": 1,
-      "status": "pending",
+      "status": "inProgress",
       "priority": "P1",
       "estimate": 30,
       "dependencies": [

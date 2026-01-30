@@ -2,6 +2,7 @@ import { View, ScrollView, Alert, Pressable } from 'react-native';
 import { useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
+import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 
 import { Screen } from '../../src/components/layout/Screen';
 import { Typography } from '../../src/components/ui/Typography';
@@ -51,6 +52,8 @@ const REMINDER_ADVANCE_OPTIONS = [
   { label: '15 minutes early', value: 15 },
   { label: '30 minutes early', value: 30 },
 ];
+
+const AnimatedView = Animated.View;
 
 export default function SettingsScreen() {
   const [settings, setSettings] = useState<Settings | null>(null);
@@ -172,17 +175,19 @@ export default function SettingsScreen() {
   if (!settings) {
     return (
       <View style={{ flex: 1, backgroundColor: colors.surface[50] }}>
-        <View
-          style={{
-            paddingTop: 60,
-            paddingHorizontal: spacing.md,
-            paddingBottom: spacing.sm,
-          }}
-        >
-          <Typography variant="h1" style={{ fontSize: 34, fontWeight: '700' }}>
-            Settings
-          </Typography>
-        </View>
+        <Animated.View entering={FadeIn.duration(300)}>
+          <View
+            style={{
+              paddingTop: 60,
+              paddingHorizontal: spacing.md,
+              paddingBottom: spacing.sm,
+            }}
+          >
+            <Typography variant="h1" style={{ fontSize: 34, fontWeight: '700' }}>
+              Settings
+            </Typography>
+          </View>
+        </Animated.View>
         <Screen padX={16} padY={16}>
           <Typography variant="body" style={{ color: colors.surface[500] }}>
             Loading…
@@ -207,264 +212,278 @@ export default function SettingsScreen() {
         contentInsetAdjustmentBehavior="automatic"
       >
         {/* Large Title with safe area */}
-        <View
-          style={{
-            paddingTop: 60,
-            paddingHorizontal: spacing.md,
-            paddingBottom: spacing.sm,
-          }}
-        >
-          <Typography
-            variant="display"
+        <Animated.View entering={FadeIn.duration(300)}>
+          <View
             style={{
-              fontSize: 34,
-              fontWeight: '700',
-              color: colors.surface[900],
+              paddingTop: 60,
+              paddingHorizontal: spacing.md,
+              paddingBottom: spacing.sm,
             }}
           >
-            Settings
-          </Typography>
-        </View>
+            <Typography
+              variant="display"
+              style={{
+                fontSize: 34,
+                fontWeight: '700',
+                color: colors.surface[900],
+              }}
+            >
+              Settings
+            </Typography>
+          </View>
+        </Animated.View>
 
         <View style={{ paddingHorizontal: spacing.md }}>
           {/* NOTIFICATIONS Section */}
-          <SettingSection title="Notifications">
-            <SettingRow
-              icon="bell.badge"
-              iconFallback="notifications"
-              iconBg={colors.primary[50]}
-              iconColor={colors.primary[700]}
-              title="Reminders"
-              subtitle="Get notified at scheduled times"
-              showChevron
-              pressable
-              onPress={() => {
-                triggerHaptic('light');
-                Alert.alert('Reminders', 'Notification permissions are managed in system settings.');
-              }}
-            />
+          <AnimatedView entering={FadeInDown.delay(100).springify()}>
+            <SettingSection title="Notifications">
+              <SettingRow
+                icon="bell.badge"
+                iconFallback="notifications"
+                iconBg={colors.primary[50]}
+                iconColor={colors.primary[700]}
+                title="Reminders"
+                subtitle="Get notified at scheduled times"
+                showChevron
+                pressable
+                onPress={() => {
+                  triggerHaptic('light');
+                  Alert.alert('Reminders', 'Notification permissions are managed in system settings.');
+                }}
+              />
 
-            <SettingRow
-              icon="bell.fill"
-              iconFallback="notifications"
-              iconBg={colors.warning[50]}
-              iconColor={colors.warning[600]}
-              title="Snooze Duration"
-              right={
-                <Select
-                  value={settings.snoozeDurationMinutes}
-                  options={SNOOZE_OPTIONS}
-                  onChange={(v) => updateSetting('snoozeDurationMinutes', v)}
-                  compact
-                />
-              }
-            />
+              <SettingRow
+                icon="bell.fill"
+                iconFallback="notifications"
+                iconBg={colors.warning[50]}
+                iconColor={colors.warning[600]}
+                title="Snooze Duration"
+                right={
+                  <Select
+                    value={settings.snoozeDurationMinutes}
+                    options={SNOOZE_OPTIONS}
+                    onChange={(v) => updateSetting('snoozeDurationMinutes', v)}
+                    compact
+                  />
+                }
+              />
 
-            <SettingRow
-              icon="clock.badge.exclamationmark"
-              iconFallback="time-outline"
-              iconBg={colors.warning[50]}
-              iconColor={colors.warning[600]}
-              title="Auto-Miss After"
-              subtitle="Mark as missed if not taken"
-              right={
-                <Select
-                  value={settings.missedThresholdMinutes}
-                  options={THRESHOLD_OPTIONS}
-                  onChange={(v) => updateSetting('missedThresholdMinutes', v)}
-                  compact
-                />
-              }
-            />
+              <SettingRow
+                icon="clock.badge.exclamationmark"
+                iconFallback="time-outline"
+                iconBg={colors.warning[50]}
+                iconColor={colors.warning[600]}
+                title="Auto-Miss After"
+                subtitle="Mark as missed if not taken"
+                right={
+                  <Select
+                    value={settings.missedThresholdMinutes}
+                    options={THRESHOLD_OPTIONS}
+                    onChange={(v) => updateSetting('missedThresholdMinutes', v)}
+                    compact
+                  />
+                }
+              />
 
-            <SettingRow
-              icon="speaker.wave.2.fill"
-              iconFallback="volume-medium"
-              iconBg={colors.surface[100]}
-              iconColor={colors.surface[700]}
-              title="Sound"
-              right={
-                <Select
-                  value={settings.notificationSound}
-                  options={SOUND_OPTIONS}
-                  onChange={(v) => updateSetting('notificationSound', v as any)}
-                  compact
-                />
-              }
-            />
+              <SettingRow
+                icon="speaker.wave.2.fill"
+                iconFallback="volume-medium"
+                iconBg={colors.surface[100]}
+                iconColor={colors.surface[700]}
+                title="Sound"
+                right={
+                  <Select
+                    value={settings.notificationSound}
+                    options={SOUND_OPTIONS}
+                    onChange={(v) => updateSetting('notificationSound', v as any)}
+                    compact
+                  />
+                }
+              />
 
-            <SettingRowWithSwitch
-              icon="iphone.radiowaves.left.and.right"
-              iconFallback="phone-portrait"
-              iconBg={colors.success[50]}
-              iconColor={colors.success[600]}
-              title="Vibration"
-              switchValue={settings.hapticFeedback}
-              onValueChange={(v) => updateSetting('hapticFeedback', v)}
-            />
+              <SettingRowWithSwitch
+                icon="iphone.radiowaves.left.and.right"
+                iconFallback="phone-portrait"
+                iconBg={colors.success[50]}
+                iconColor={colors.success[600]}
+                title="Vibration"
+                switchValue={settings.hapticFeedback}
+                onValueChange={(v) => updateSetting('hapticFeedback', v)}
+              />
 
-            <SettingRow
-              icon="clock.arrow.circlepath"
-              iconFallback="refresh"
-              iconBg={colors.primary[50]}
-              iconColor={colors.primary[700]}
-              title="Remind Early"
-              showBorder={false}
-              right={
-                <Select
-                  value={settings.reminderAdvanceMinutes}
-                  options={REMINDER_ADVANCE_OPTIONS}
-                  onChange={(v) => updateSetting('reminderAdvanceMinutes', v)}
-                  compact
-                />
-              }
-            />
-          </SettingSection>
+              <SettingRow
+                icon="clock.arrow.circlepath"
+                iconFallback="refresh"
+                iconBg={colors.primary[50]}
+                iconColor={colors.primary[700]}
+                title="Remind Early"
+                showBorder={false}
+                right={
+                  <Select
+                    value={settings.reminderAdvanceMinutes}
+                    options={REMINDER_ADVANCE_OPTIONS}
+                    onChange={(v) => updateSetting('reminderAdvanceMinutes', v)}
+                    compact
+                  />
+                }
+              />
+            </SettingSection>
+          </AnimatedView>
 
           {/* APPEARANCE Section */}
-          <SettingSection title="Appearance">
-            <SettingRow
-              icon="textformat"
-              iconFallback="text-outline"
-              iconBg={colors.surface[100]}
-              iconColor={colors.surface[700]}
-              title="Text Size"
-              showBorder={false}
-              right={
-                <Select
-                  value={settings.fontSize}
-                  options={FONT_SIZE_OPTIONS}
-                  onChange={(v) => updateSetting('fontSize', v as any)}
-                  compact
-                />
-              }
-            />
-          </SettingSection>
+          <AnimatedView entering={FadeInDown.delay(200).springify()}>
+            <SettingSection title="Appearance">
+              <SettingRow
+                icon="textformat"
+                iconFallback="text-outline"
+                iconBg={colors.surface[100]}
+                iconColor={colors.surface[700]}
+                title="Text Size"
+                showBorder={false}
+                right={
+                  <Select
+                    value={settings.fontSize}
+                    options={FONT_SIZE_OPTIONS}
+                    onChange={(v) => updateSetting('fontSize', v as any)}
+                    compact
+                  />
+                }
+              />
+            </SettingSection>
+          </AnimatedView>
 
           {/* AI Section */}
-          <SettingSection title="AI">
-            <SettingRow
-              icon="key"
-              iconFallback="key-outline"
-              iconBg={colors.surface[100]}
-              iconColor={colors.surface[700]}
-              title="OpenAI API Key"
-              subtitle={apiKeyPreview === 'Not set' ? 'Required for prescription scan' : apiKeyPreview}
-              showChevron
-              showBorder={false}
-              pressable
-              onPress={handleOpenAIKeyPress}
-            />
-          </SettingSection>
+          <AnimatedView entering={FadeInDown.delay(300).springify()}>
+            <SettingSection title="AI">
+              <SettingRow
+                icon="key"
+                iconFallback="key-outline"
+                iconBg={colors.surface[100]}
+                iconColor={colors.surface[700]}
+                title="OpenAI API Key"
+                subtitle={apiKeyPreview === 'Not set' ? 'Required for prescription scan' : apiKeyPreview}
+                showChevron
+                showBorder={false}
+                pressable
+                onPress={handleOpenAIKeyPress}
+              />
+            </SettingSection>
+          </AnimatedView>
 
           {/* DATA Section */}
-          <SettingSection title="Data">
-            <SettingRow
-              icon="square.and.arrow.up"
-              iconFallback="download"
-              iconBg={colors.success[50]}
-              iconColor={colors.success[600]}
-              title="Export Data"
-              subtitle="Export medications and history"
-              showChevron
-              pressable
-              onPress={handleExportData}
-            />
+          <AnimatedView entering={FadeInDown.delay(400).springify()}>
+            <SettingSection title="Data">
+              <SettingRow
+                icon="square.and.arrow.up"
+                iconFallback="download"
+                iconBg={colors.success[50]}
+                iconColor={colors.success[600]}
+                title="Export Data"
+                subtitle="Export medications and history"
+                showChevron
+                pressable
+                onPress={handleExportData}
+              />
 
-            <SettingRow
-              icon="square.and.arrow.down"
-              iconFallback="download"
-              iconBg={colors.primary[50]}
-              iconColor={colors.primary[700]}
-              title="Import Data"
-              subtitle="Restore from backup"
-              showChevron
-              pressable
-              onPress={() => {
-                triggerHaptic('light');
-                Alert.alert('Import Data', 'This feature will be available in a future update.');
-              }}
-            />
+              <SettingRow
+                icon="square.and.arrow.down"
+                iconFallback="download"
+                iconBg={colors.primary[50]}
+                iconColor={colors.primary[700]}
+                title="Import Data"
+                subtitle="Restore from backup"
+                showChevron
+                pressable
+                onPress={() => {
+                  triggerHaptic('light');
+                  Alert.alert('Import Data', 'This feature will be available in a future update.');
+                }}
+              />
 
-            <SettingRow
-              icon="trash.fill"
-              iconFallback="trash"
-              iconBg={colors.error[50]}
-              iconColor={colors.error[600]}
-              title="Clear All Data"
-              subtitle="Delete medications, history, and settings"
-              destructive
-              showChevron
-              showBorder={false}
-              pressable
-              onPress={handleClearData}
-            />
-          </SettingSection>
+              <SettingRow
+                icon="trash.fill"
+                iconFallback="trash"
+                iconBg={colors.error[50]}
+                iconColor={colors.error[600]}
+                title="Clear All Data"
+                subtitle="Delete medications, history, and settings"
+                destructive
+                showChevron
+                showBorder={false}
+                pressable
+                onPress={handleClearData}
+              />
+            </SettingSection>
+          </AnimatedView>
 
           {/* ABOUT Section */}
-          <SettingSection title="About">
-            <SettingRow
-              icon="questionmark.circle.fill"
-              iconFallback="help-circle"
-              iconBg={colors.surface[100]}
-              iconColor={colors.surface[700]}
-              title="Help & Support"
-              showChevron
-              pressable
-              onPress={handleHelpSupport}
-            />
+          <AnimatedView entering={FadeInDown.delay(500).springify()}>
+            <SettingSection title="About">
+              <SettingRow
+                icon="questionmark.circle.fill"
+                iconFallback="help-circle"
+                iconBg={colors.surface[100]}
+                iconColor={colors.surface[700]}
+                title="Help & Support"
+                showChevron
+                pressable
+                onPress={handleHelpSupport}
+              />
 
-            <SettingRow
-              icon="star.fill"
-              iconFallback="star"
-              iconBg={colors.warning[50]}
-              iconColor={colors.warning[600]}
-              title="Rate App"
-              showChevron
-              pressable
-              onPress={handleRateApp}
-            />
+              <SettingRow
+                icon="star.fill"
+                iconFallback="star"
+                iconBg={colors.warning[50]}
+                iconColor={colors.warning[600]}
+                title="Rate App"
+                showChevron
+                pressable
+                onPress={handleRateApp}
+              />
 
-            <SettingRow
-              icon="doc.text.fill"
-              iconFallback="document"
-              iconBg={colors.surface[100]}
-              iconColor={colors.surface[700]}
-              title="Privacy Policy"
-              showChevron
-              showBorder={false}
-              pressable
-              onPress={handlePrivacyPolicy}
-            />
-          </SettingSection>
+              <SettingRow
+                icon="doc.text.fill"
+                iconFallback="document"
+                iconBg={colors.surface[100]}
+                iconColor={colors.surface[700]}
+                title="Privacy Policy"
+                showChevron
+                showBorder={false}
+                pressable
+                onPress={handlePrivacyPolicy}
+              />
+            </SettingSection>
+          </AnimatedView>
 
           {/* Version Info */}
-          <View
-            style={{
-              alignItems: 'center',
-              paddingVertical: spacing.xl,
-              marginTop: spacing.md,
-            }}
-          >
-            <Typography
-              variant="label"
+          <AnimatedView entering={FadeInDown.delay(600).springify()}>
+            <View
               style={{
-                color: colors.surface[500],
-                fontSize: 13,
+                alignItems: 'center',
+                paddingVertical: spacing.xl,
+                marginTop: spacing.md,
               }}
             >
-              Medminder v{Constants.expoConfig?.version || '1.0.0'}
-            </Typography>
-            <Typography
-              variant="small"
-              style={{
-                color: colors.surface[500],
-                marginTop: 4,
-              }}
-            >
-              Made with ❤️
-            </Typography>
-          </View>
+              <Typography
+                variant="label"
+                style={{
+                  color: colors.surface[500],
+                  fontSize: 13,
+                }}
+              >
+                Medminder v{Constants.expoConfig?.version || '1.0.0'}
+              </Typography>
+              <Typography
+                variant="small"
+                style={{
+                  color: colors.surface[500],
+                  marginTop: 4,
+                }}
+              >
+                Made with ❤️
+              </Typography>
+            </View>
+          </AnimatedView>
         </View>
       </ScrollView>
 

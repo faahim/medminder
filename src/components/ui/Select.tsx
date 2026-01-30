@@ -2,6 +2,7 @@ import { View, Pressable, Modal, FlatList } from 'react-native';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Typography } from './Typography';
+import { triggerHaptic } from '../../utils/haptics';
 
 export interface SelectOption<T = string | number> {
   label: string;
@@ -80,6 +81,7 @@ export function Select<T extends string | number>({
               renderItem={({ item }) => (
                 <Pressable
                   onPress={() => {
+                    triggerHaptic('selection');
                     onChange(item.value);
                     setIsOpen(false);
                   }}
@@ -88,10 +90,10 @@ export function Select<T extends string | number>({
                     ${item.value === value ? 'bg-primary-50' : ''}
                   `}
                 >
-                  <Typography 
-                    variant="body" 
-                    className={item.value === value 
-                      ? 'text-primary-600 font-semibold' 
+                  <Typography
+                    variant="body"
+                    className={item.value === value
+                      ? 'text-primary-600 font-semibold'
                       : 'text-surface-900'
                     }
                   >

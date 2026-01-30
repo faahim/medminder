@@ -1,15 +1,23 @@
 import * as Haptics from 'expo-haptics';
+import { Platform } from 'react-native';
 
 /**
  * Haptic feedback utility for consistent user feedback
+ * Only triggers on iOS - graceful no-op on Android
  */
 
 export type HapticFeedbackType = 'light' | 'medium' | 'heavy' | 'success' | 'warning' | 'error' | 'selection';
 
 /**
  * Trigger haptic feedback based on type
+ * iOS only - Android gracefully does nothing
  */
 export function triggerHaptic(type: HapticFeedbackType): void {
+  // Only trigger haptics on iOS
+  if (Platform.OS !== 'ios') {
+    return;
+  }
+
   try {
     switch (type) {
       case 'light':
@@ -43,6 +51,7 @@ export function triggerHaptic(type: HapticFeedbackType): void {
 
 /**
  * Trigger haptic only if haptic feedback is enabled in settings
+ * iOS only - Android gracefully does nothing
  */
 export function triggerHapticIfEnabled(enabled: boolean, type: HapticFeedbackType = 'light'): void {
   if (enabled) {

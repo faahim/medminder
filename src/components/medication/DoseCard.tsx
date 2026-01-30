@@ -1,12 +1,12 @@
 import { View } from 'react-native';
 import { useState } from 'react';
-import * as Haptics from 'expo-haptics';
 
 import { Typography } from '../ui/Typography';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { Icon } from '../ui/Icon';
 import { MealTimingBadge } from './MealTimingBadge';
+import { triggerHaptic } from '../../utils/haptics';
 
 import type { ScheduledDose, DoseStatus } from '../../types';
 import { colors, radii, spacing, shadows } from '../../design';

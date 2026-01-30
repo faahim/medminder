@@ -1,6 +1,6 @@
 import { View, Pressable } from 'react-native';
 import { Typography } from './Typography';
-import * as Haptics from 'expo-haptics';
+import { triggerHaptic } from '../../utils/haptics';
 
 interface SegmentedControlProps {
   options: string[];
@@ -12,7 +12,7 @@ interface SegmentedControlProps {
 export function SegmentedControl({ options, selectedIndex, onChange, disabled = false }: SegmentedControlProps) {
   const handleSelect = (index: number) => {
     if (!disabled && index !== selectedIndex) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      triggerHaptic('selection');
       onChange(index);
     }
   };

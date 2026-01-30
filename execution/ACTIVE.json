@@ -1,11 +1,12 @@
 {
-  "lastUpdated": "2026-01-30T04:30:00Z",
+  "lastUpdated": "2026-01-30T05:00:00Z",
   "claims": [
     {
-      "taskId": "M1-011",
-      "title": "Prescription Import Flow Redesign",
-      "phase": 1,
-      "claimedAt": "2026-01-30T04:30:00Z"
+      "taskId": "M1-013",
+      "taskTitle": "Haptics Integration",
+      "agentSessionKey": "agent:main:subagent:ca052d6c-1ac0-4c9a-afc6-032d0d341503",
+      "claimedAt": "2026-01-30T05:00:00Z",
+      "phase": 1
     }
   ]
 }
