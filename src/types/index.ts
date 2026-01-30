@@ -67,6 +67,11 @@ export interface Settings {
   notificationsPermission: NotificationPermissionStatus; // Permission status: 'not-determined' | 'granted' | 'denied'
   notificationOnboardingShown: boolean; // Whether permission onboarding modal has been shown
   notificationOnboardingLastShown: string | null; // ISO timestamp of last onboarding show
+  // Quiet hours
+  quietHoursEnabled: boolean;     // Enable quiet hours (default: false)
+  quietHoursStart: string;        // Start time "22:00" (default: "22:00")
+  quietHoursEnd: string;          // End time "07:00" (default: "07:00")
+  badgeEnabled: boolean;           // Show badge count on app icon (default: true)
 }
 
 // ============ DERIVED TYPES ============

@@ -1,4 +1,4 @@
-import { Modal, View, Pressable, Alert } from 'react-native';
+import { Modal, View, Pressable, Alert, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Modal as ExpoModal } from 'react-native';
 import { useState } from 'react';
@@ -123,20 +123,25 @@ export function SnoozeModal({ visible, onClose, onSnooze, medicationName }: Snoo
                 <Typography variant="small" style={{ color: colors.surface[500], marginBottom: spacing.xs }}>
                   Enter minutes (1-480):
                 </Typography>
-                <View style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  borderWidth: 1,
-                  borderColor: colors.surface[300],
-                  borderRadius: radii.md,
-                  paddingHorizontal: spacing.md,
-                  paddingVertical: spacing.sm,
-                  backgroundColor: colors.surface[50],
-                }}>
-                  <Typography variant="body" style={{ color: colors.surface[900] }}>
-                    {customMinutes}
-                  </Typography>
-                </View>
+                <TextInput
+                  value={customMinutes}
+                  onChangeText={setCustomMinutes}
+                  placeholder="15"
+                  placeholderTextColor={colors.surface[400]}
+                  keyboardType="number-pad"
+                  maxLength={3}
+                  style={{
+                    borderWidth: 1,
+                    borderColor: colors.surface[300],
+                    borderRadius: radii.md,
+                    paddingHorizontal: spacing.md,
+                    paddingVertical: spacing.sm,
+                    backgroundColor: colors.surface[50],
+                    color: colors.surface[900],
+                    fontSize: 16,
+                  }}
+                  autoFocus
+                />
               </View>
             )}
           </View>

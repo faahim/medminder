@@ -1,5 +1,5 @@
 import { View, ScrollView, Platform, Linking, Alert } from 'react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
@@ -13,6 +13,7 @@ import { Icon } from '../../src/components/ui/Icon';
 import { SettingSection, SettingRow, SettingRowWithSwitch } from '../../src/components/settings';
 import { Settings, SettingsService } from '../../src/services/settings.service';
 import { NotificationService } from '../../src/services/notification.service';
+import { MedicationService } from '../../src/services/medication.service';
 import { colors, radii, spacing } from '../../src/design/tokens';
 import { triggerHaptic } from '../../src/utils/haptics';
 import { NotificationPermissionStatus } from '../../src/types';
@@ -46,6 +47,26 @@ const GRACE_PERIOD_OPTIONS = [
   { label: '30 minutes', value: 30 },
   { label: '60 minutes', value: 60 },
 ];
+
+// Quiet hours start/end time options (in 30-minute increments)
+const TIME_OPTIONS = [
+  '00:00', '00:30', '01:00', '01:30', '02:00', '02:30', '03:00', '03:30',
+  '04:00', '04:30', '05:00', '05:30', '06:00', '06:30', '07:00', '07:30',
+  '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+  '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30',
+  '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30',
+  '20:00', '20:30', '21:00', '21:30', '22:00', '22:30', '23:00', '23:30',
+] as const;
+
+const formatTimeDisplay = (time: string): string => {
+  const [hour, minute] = time.split(':').map(Number);
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  const displayHour = hour % 12 || 12;
+  const displayMinute = minute.toString().padStart(2, '0');
+  return `${displayHour}:${displayMinute} ${ampm}`;
+};
+
+const TIME_SELECT_OPTIONS = TIME_OPTIONS.map(t => ({ label: formatTimeDisplay(t), value: t as string }));
 
 const AnimatedView = Animated.View;
 
@@ -96,6 +117,33 @@ export default function NotificationSettingsScreen() {
     }
   };
 
+  // Debounced reschedule for settings changes
+  let rescheduleTimeout: NodeJS.Timeout | null = null;
+
+  const rescheduleNotifications = useCallback(async () => {
+    if (rescheduleTimeout) {
+      clearTimeout(rescheduleTimeout);
+    }
+
+    rescheduleTimeout = setTimeout(async () => {
+      try {
+        const medications = await MedicationService.getAll();
+        await NotificationService.rescheduleAllNotifications(medications);
+        await NotificationService.updatePendingBadgeCount();
+      } catch (error) {
+        console.error('[NotificationSettings] Failed to reschedule notifications:', error);
+      }
+    }, 500);
+  }, []);
+
+  const updateBadgeCount = useCallback(async () => {
+    try {
+      await NotificationService.updatePendingBadgeCount();
+    } catch (error) {
+      console.error('[NotificationSettings] Failed to update badge count:', error);
+    }
+  }, []);
+
   const updateSetting = async <K extends keyof Settings>(key: K, value: Settings[K]) => {
     if (!settings) return;
     const next = { ...settings, [key]: value };
@@ -103,6 +151,16 @@ export default function NotificationSettingsScreen() {
 
     try {
       await SettingsService.update({ [key]: value } as any);
+
+      // Reschedule notifications for relevant settings
+      if (['notificationsEnabled', 'quietHoursEnabled', 'quietHoursStart', 'quietHoursEnd', 'reminderAdvanceMinutes'].includes(key)) {
+        rescheduleNotifications();
+      }
+
+      // Update badge count when badge setting changes
+      if (key === 'badgeEnabled') {
+        updateBadgeCount();
+      }
     } catch {
       // noop; UI still updates
     }
@@ -368,6 +426,51 @@ export default function NotificationSettingsScreen() {
           {settings.notificationsEnabled && (
             <AnimatedView entering={FadeInDown.delay(150).springify()}>
               <SettingSection title="Timing">
+                <SettingRowWithSwitch
+                  icon="moon.fill"
+                  iconFallback="moon"
+                  iconBg={settings.quietHoursEnabled ? colors.primary[50] : colors.surface[100]}
+                  iconColor={settings.quietHoursEnabled ? colors.primary[700] : colors.surface[700]}
+                  title="Quiet Hours"
+                  subtitle={settings.quietHoursEnabled ? `${formatTimeDisplay(settings.quietHoursStart ?? '22:00')} - ${formatTimeDisplay(settings.quietHoursEnd ?? '07:00')}` : 'Mute notifications during specific times'}
+                  switchValue={settings.quietHoursEnabled ?? false}
+                  onValueChange={(v) => updateSetting('quietHoursEnabled', v)}
+                  hapticType="light"
+                  showBorder={settings.quietHoursEnabled}
+                />
+
+                {settings.quietHoursEnabled && (
+                  <>
+                    <SettingRow
+                      icon=""
+                      title="Start Time"
+                      subtitle="When quiet hours begin"
+                      showBorder
+                      right={
+                        <Select
+                          value={settings.quietHoursStart ?? '22:00'}
+                          options={TIME_SELECT_OPTIONS}
+                          onChange={(v) => updateSetting('quietHoursStart', v)}
+                          compact
+                        />
+                      }
+                    />
+                    <SettingRow
+                      icon=""
+                      title="End Time"
+                      subtitle="When quiet hours end"
+                      showBorder
+                      right={
+                        <Select
+                          value={settings.quietHoursEnd ?? '07:00'}
+                          options={TIME_SELECT_OPTIONS}
+                          onChange={(v) => updateSetting('quietHoursEnd', v)}
+                          compact
+                        />
+                      }
+                    />
+                  </>
+                )}
                 <SettingRow
                   icon="clock.fill"
                   iconFallback="time"
@@ -462,6 +565,18 @@ export default function NotificationSettingsScreen() {
                   subtitle="Vibrate with notifications"
                   switchValue={settings.hapticFeedback}
                   onValueChange={(v) => updateSetting('hapticFeedback', v)}
+                  hapticType="light"
+                  showBorder
+                />
+                <SettingRowWithSwitch
+                  icon="app.badge.fill"
+                  iconFallback="notifications"
+                  iconBg={settings.badgeEnabled ? colors.primary[50] : colors.surface[100]}
+                  iconColor={settings.badgeEnabled ? colors.primary[700] : colors.surface[700]}
+                  title="Badge Count"
+                  subtitle="Show pending dose count on app icon"
+                  switchValue={settings.badgeEnabled ?? true}
+                  onValueChange={(v) => updateSetting('badgeEnabled', v)}
                   hapticType="light"
                   showBorder={false}
                 />

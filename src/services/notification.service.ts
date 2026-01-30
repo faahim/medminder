@@ -63,6 +63,43 @@ const formatTimeDisplay = (time: string): string => {
   return `${displayHour}:${displayMinute} ${ampm}`;
 };
 
+// Convert time string "HH:MM" to minutes since midnight
+const timeToMinutes = (time: string): number => {
+  const [hour, minute] = time.split(':').map(Number);
+  return hour * 60 + minute;
+};
+
+// Check if current time is within quiet hours
+const isWithinQuietHours = (
+  currentTime: Date,
+  quietHoursEnabled: boolean,
+  quietHoursStart: string,
+  quietHoursEnd: string
+): boolean => {
+  if (!quietHoursEnabled) return false;
+
+  const currentMinutes = timeToMinutes(currentTime.toTimeString().slice(0, 5));
+  const startMinutes = timeToMinutes(quietHoursStart);
+  const endMinutes = timeToMinutes(quietHoursEnd);
+
+  // Handle overnight quiet hours (e.g., 22:00 to 07:00)
+  if (startMinutes > endMinutes) {
+    // Quiet period crosses midnight
+    return currentMinutes >= startMinutes || currentMinutes < endMinutes;
+  } else {
+    // Normal quiet period within same day
+    return currentMinutes >= startMinutes && currentMinutes < endMinutes;
+  }
+};
+
+// Parse time string "HH:MM" to today's Date object at that time
+const parseTimeToToday = (time: string): Date => {
+  const [hour, minute] = time.split(':').map(Number);
+  const date = new Date();
+  date.setHours(hour, minute, 0, 0);
+  return date;
+};
+
 export const NotificationService = {
   // Check if notifications are available
   isAvailable(): boolean {
@@ -112,6 +149,12 @@ export const NotificationService = {
     const notif = await getNotifications();
     if (!notif) return;
 
+    // Get settings to check quiet hours
+    const settings = await SettingsService.get();
+
+    // If notifications are globally disabled, don't schedule
+    if (!settings.notificationsEnabled) return;
+
     const times = JSON.parse(medication.scheduleTimes) as string[];
     const mealText = getMealTimingText(medication.mealTiming);
 
@@ -134,6 +177,51 @@ export const NotificationService = {
       // Cancel existing notification for this slot
       await notif.cancelScheduledNotificationAsync(notificationId).catch(() => {});
 
+      // Check if this time falls within quiet hours
+      const scheduledTimeForToday = parseTimeToToday(time);
+      const isQuietTime = isWithinQuietHours(
+        scheduledTimeForToday,
+        settings.quietHoursEnabled,
+        settings.quietHoursStart,
+        settings.quietHoursEnd
+      );
+
+      let trigger: any;
+
+      if (isQuietTime) {
+        // The scheduled time falls within quiet hours
+        // If quiet hours end today (same day), schedule for after quiet hours end
+        const quietEndMinutes = timeToMinutes(settings.quietHoursEnd);
+        const scheduledMinutes = timeToMinutes(time);
+
+        if (quietEndMinutes < scheduledMinutes) {
+          // Quiet hours ended earlier in the day, but current time is within quiet hours
+          // This happens when quiet period crosses midnight (e.g., 22:00-07:00)
+          // Schedule for tomorrow at the same time
+          const tomorrow = addDays(new Date(), 1);
+          trigger = {
+            type: notif.SchedulableTriggerInputTypes.DATE,
+            date: new Date(tomorrow.setHours(hour, minute, 0, 0)),
+          };
+        } else {
+          // Quiet hours end later today - schedule for after quiet hours end
+          const [endHour, endMinute] = settings.quietHoursEnd.split(':').map(Number);
+          const today = new Date();
+          today.setHours(endHour, endMinute, 0, 0);
+          trigger = {
+            type: notif.SchedulableTriggerInputTypes.DATE,
+            date: today,
+          };
+        }
+      } else {
+        // Normal schedule - use daily trigger
+        trigger = {
+          type: notif.SchedulableTriggerInputTypes.DAILY,
+          hour,
+          minute,
+        };
+      }
+
       // Schedule new notification
       const mealIcon = getMealTimingIcon(medication.mealTiming);
       const displayTime = formatTimeDisplay(time);
@@ -153,11 +241,7 @@ export const NotificationService = {
           categoryIdentifier: 'medication',
           sound: getSound(medication.notificationSound),
         },
-        trigger: {
-          type: notif.SchedulableTriggerInputTypes.DAILY,
-          hour,
-          minute,
-        },
+        trigger,
       });
 
       // Schedule advance reminder if enabled
@@ -181,6 +265,30 @@ export const NotificationService = {
           advanceHour += 24;
         }
 
+        // Check if advance reminder time falls within quiet hours
+        const advanceTimeForToday = new Date();
+        advanceTimeForToday.setHours(advanceHour, advanceMinute, 0, 0);
+        const isAdvanceQuietTime = isWithinQuietHours(
+          advanceTimeForToday,
+          settings.quietHoursEnabled,
+          settings.quietHoursStart,
+          settings.quietHoursEnd
+        );
+
+        let advanceTrigger: any;
+
+        if (isAdvanceQuietTime) {
+          // Advance reminder falls within quiet hours - skip it
+          console.log(`[NotificationService] Skipping advance reminder for ${medication.name} at ${time} (falls within quiet hours)`);
+          continue;
+        } else {
+          advanceTrigger = {
+            type: notif.SchedulableTriggerInputTypes.DAILY,
+            hour: advanceHour,
+            minute: advanceMinute,
+          };
+        }
+
         const mealIcon = getMealTimingIcon(medication.mealTiming);
         const displayTime = formatTimeDisplay(time);
 
@@ -199,11 +307,7 @@ export const NotificationService = {
             categoryIdentifier: 'medication',
             sound: getSound(medication.notificationSound),
           },
-          trigger: {
-            type: notif.SchedulableTriggerInputTypes.DAILY,
-            hour: advanceHour,
-            minute: advanceMinute,
-          },
+          trigger: advanceTrigger,
         });
       }
     }
@@ -375,9 +479,33 @@ export const NotificationService = {
     const notif = await getNotifications();
     if (!notif) return;
 
+    const settings = await SettingsService.get();
+
+    // If badge is disabled, set to 0
+    if (!settings.badgeEnabled) {
+      await notif.setBadgeCountAsync(0);
+      return;
+    }
+
     const today = format(new Date(), 'yyyy-MM-dd');
+    const now = new Date();
+
     const pendingLogs = await DoseLogService.getDosesForDate(today);
-    const pendingCount = pendingLogs.filter(log => log.status === 'pending').length;
+
+    // Only count pending doses that are still in the future (or within a small window of now)
+    // This prevents showing badges for doses that have already passed
+    const pendingCount = pendingLogs.filter(log => {
+      if (log.status !== 'pending') return false;
+
+      const [hour, minute] = log.scheduledTime.split(':').map(Number);
+      const scheduledTime = new Date();
+      scheduledTime.setHours(hour, minute, 0, 0);
+
+      // Include doses that are still upcoming or within 15 minutes of now
+      const minutesDiff = (scheduledTime.getTime() - now.getTime()) / (1000 * 60);
+      return minutesDiff > -15; // Show if within 15 minutes past scheduled time
+    }).length;
+
     await notif.setBadgeCountAsync(pendingCount);
   },
 

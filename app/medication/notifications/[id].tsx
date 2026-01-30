@@ -1,4 +1,4 @@
-import { View, Pressable } from 'react-native';
+import { View, Pressable, Alert } from 'react-native';
 import { useLocalSearchParams, Stack, router } from 'expo-router';
 import { useState, useEffect } from 'react';
 import * as Haptics from 'expo-haptics';

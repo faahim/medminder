@@ -54,4 +54,9 @@ export const settings = sqliteTable('settings', {
   reminderAdvanceMinutes: integer('reminder_advance_minutes').notNull().default(0),
   notificationsEnabled: integer('notifications_enabled', { mode: 'boolean' }).notNull().default(true),
   notificationsPermission: text('notifications_permission').notNull().default('not-determined'),
+  // Quiet hours
+  quietHoursEnabled: integer('quiet_hours_enabled', { mode: 'boolean' }).notNull().default(false),
+  quietHoursStart: text('quiet_hours_start').notNull().default('22:00'),
+  quietHoursEnd: text('quiet_hours_end').notNull().default('07:00'),
+  badgeEnabled: integer('badge_enabled', { mode: 'boolean' }).notNull().default(true),
 });

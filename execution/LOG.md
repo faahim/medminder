@@ -2,6 +2,92 @@
 
 ## Completed Tasks
 
+### M2-011: Notifications QA & Polish
+**Status**: ✅ COMPLETED
+**Date**: 2026-01-30
+
+**Issues Found and Fixed:**
+
+1. **SnoozeModal Custom Input Not Editable** (`src/components/modals/SnoozeModal.tsx`)
+   - Issue: Custom minutes input was read-only (displayed as text)
+   - Fix: Added `TextInput` import and made the input field editable with `onChangeText`
+   - Result: Users can now enter custom snooze durations
+
+2. **Missing Alert Import** (`app/medication/notifications/[id].tsx`)
+   - Issue: `Alert` used but not imported
+   - Fix: Added `Alert` to imports from 'react-native'
+   - Result: Code compiles correctly
+
+3. **Quiet Hours Not Implemented** (Feature gap from M2-002)
+   - Issue: Quiet hours were specified in M2-002 but never implemented
+   - Fix: Implemented full quiet hours functionality:
+     - Added `quietHoursEnabled`, `quietHoursStart`, `quietHoursEnd` to Settings type
+     - Added `badgeEnabled` setting for badge count control
+     - Updated database schema with new settings fields
+     - Updated SettingsService defaults
+     - Implemented `isWithinQuietHours()` helper in NotificationService
+     - Updated `scheduleMedicationNotifications()` to respect quiet hours (delays notifications until after quiet period)
+     - Updated advance reminders to skip if they fall within quiet hours
+     - Added quiet hours UI to notification settings screen
+   - Result: Users can now set quiet hours to mute notifications overnight
+
+4. **Badge Count Issues** (`src/services/notification.service.ts`)
+   - Issue: Badge counted all pending doses including those already past
+   - Issue: No way to disable badge count
+   - Fix: Added `badgeEnabled` setting
+   - Fix: Updated `updatePendingBadgeCount()` to:
+     - Respect `badgeEnabled` setting (set to 0 when disabled)
+     - Only count pending doses that are within 15 minutes of scheduled time (filters overdue doses)
+   - Result: Accurate badge count reflecting actual pending doses
+
+5. **Settings Changes Not Triggering Reschedule** (`app/settings/notifications.tsx`)
+   - Issue: Changing notification settings didn't immediately reschedule notifications
+   - Fix: Added debounced rescheduling logic:
+     - Reschedules when `notificationsEnabled`, `quietHours*`, `reminderAdvanceMinutes` change
+     - Updates badge count when `badgeEnabled` changes
+   - Result: Settings take immediate effect
+
+6. **TypeScript Issues Fixed**
+   - Added `Settings` type export from SettingsService
+   - Fixed TIME_OPTIONS typing with `as const` assertion
+   - Created `TIME_SELECT_OPTIONS` as pre-computed mapping
+
+**Code Review Findings (No Issues Found):**
+
+1. ✅ Notifications fire on time for all schedule types - Verified in `scheduleMedicationNotifications()`
+2. ✅ Quiet hours respected - Now implemented with proper overnight handling
+3. ✅ Take/Snooze/Skip actions work correctly - Verified in `useNotificationLifecycle.ts`
+4. ✅ Today view updates after notification actions - Uses `setDoses` state updates in `useTodaysDoses`
+5. ✅ Settings changes immediately affect behavior - Now with debounced rescheduling
+6. ✅ Missed doses detected and follow-up sent - Verified in `checkAndUpdateMissedDoses()` and `scheduleMissedDoseFollowUp()`
+7. ✅ Refill reminders trigger at correct time - Verified in `scheduleRefillReminder()`
+8. ✅ Permission onboarding shows correctly - PermissionRequestModal properly configured
+9. ✅ Badge count accurate - Now filtered and respects badgeEnabled setting
+10. ✅ Background rescheduling works - Verified in `BackgroundTaskService`
+11. ✅ No notification spam (duplicate/cancelled properly) - All notifications cancelled before rescheduling
+
+**Build Status:** ✅ PASSED - `npx expo export --platform ios`
+
+**TypeScript Status:** ℹ️ Pre-existing type errors remain (SFSymbols, color indices, React Native types) - Not related to notification code
+
+**Acceptance Criteria Met:**
+1. ✅ Notifications fire on time for all schedule types
+2. ✅ Quiet hours respected
+3. ✅ Take/Snooze/Skip actions work correctly
+4. ✅ Today view updates after notification actions
+5. ✅ Settings changes immediately affect behavior
+6. ✅ Missed doses detected and follow-up sent
+7. ✅ Refill reminders trigger at correct time
+8. ✅ Permission onboarding shows correctly
+9. ✅ Badge count accurate
+10. ✅ Background rescheduling works
+11. ✅ No notification spam (duplicate/cancelled properly)
+12. ✅ iOS export passes
+13. ℹ️ TypeScript compiles with pre-existing errors (unrelated to notifications)
+14. ✅ No console errors or warnings in reviewed notification code
+
+---
+
 ### M2-010: Refill Reminders
 **Status**: ✅ COMPLETED
 **Date**: 2026-01-30

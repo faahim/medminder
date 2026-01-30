@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { db } from '../db/client';
 import { settings } from '../db/schema';
-import { Settings } from '../types';
+import type { Settings } from '../types';
 
 const DEFAULT_SETTINGS: Omit<Settings, 'id'> = {
   snoozeDurationMinutes: 15,
@@ -16,7 +16,15 @@ const DEFAULT_SETTINGS: Omit<Settings, 'id'> = {
   notificationsPermission: 'not-determined',
   notificationOnboardingShown: false,
   notificationOnboardingLastShown: null,
+  // Quiet hours
+  quietHoursEnabled: false,
+  quietHoursStart: '22:00',
+  quietHoursEnd: '07:00',
+  badgeEnabled: true,
 };
+
+// Re-export Settings type for convenience
+export type { Settings };
 
 export const SettingsService = {
   async get(): Promise<Settings> {
