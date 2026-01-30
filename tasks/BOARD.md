@@ -1,6 +1,6 @@
 # 📋 Medminder - Task Board
 
-**Last Updated**: 2026-01-30T09:20:00Z
+**Last Updated**: 2026-01-30T09:26:00Z
 
 ## Overview
 
@@ -8,7 +8,7 @@
 |-------|----------|--------|
 | Phase 0: Foundation | ██████████ 100% | ✅ Complete (pre-existing) |
 | Phase 1: UI/UX Overhaul | ██████████ 100% (15/15) | ✅ Complete |
-| Phase 2: Notifications | ████████░░░ 73% (8/11) | 🟡 In Progress |
+| Phase 2: Notifications | ████████░░ 82% (9/11) | 🟡 In Progress |
 
 ---
 
@@ -33,7 +33,6 @@
 ### 🟢 Ready (Queue)
 | ID | Task | Priority | Estimate |
 |----|------|----------|----------|
-| M2-008 | Notification Content Polish | P1 | 20 min |
 | M2-010 | Refill Reminders | P1 | 35 min |
 
 ---
@@ -58,6 +57,7 @@
 | M2-005 | Missed Dose Detection & Follow-up | 2026-01-30T08:39:00Z |
 | M2-006 | Per-Medication Notification Settings | 2026-01-30T09:10:00Z |
 | M2-007 | Permission Onboarding Flow | 2026-01-30T09:20:00Z |
+| M2-008 | Notification Content Polish | 2026-01-30T09:26:00Z |
 
 ---
 
@@ -101,7 +101,7 @@ Phase 1 Complete ✅
         │           └─→ M2-010 Refill Reminders 🟢
         ├─→ M2-004 Background Task ✅
         ├─→ M2-007 Permission Onboarding ✅
-        ├─→ M2-008 Content Polish 🟢
+        ├─→ M2-008 Content Polish ✅
         └─→ M2-011 QA Pass ⏳ (after all)
 ```
 
@@ -135,10 +135,10 @@ M1-001 Design System Foundation ✅
 | Actions & Sync (M2-003, M2-009) | 70 min | ✅ Complete |
 | Missed Dose (M2-005) | 50 min | ✅ Complete |
 | Background (M2-004) | 30 min | ✅ Complete |
-| Content & Polish (M2-008) | 20 min | |
+| Content & Polish (M2-008) | 20 min | ✅ Complete |
 | Advanced (M2-006, M2-010) | 75 min | M2-006 ✅, M2-010 pending |
 | QA (M2-011) | 45 min | |
-| **Total** | ~395 min (~6.5 hrs) | 73% complete |
+| **Total** | ~395 min (~6.5 hrs) | 82% complete |
 
 ### Phase 1 (Complete)
 | Task Group | Est. Total | Notes |

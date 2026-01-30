@@ -1,12 +1,12 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-01-30T09:20:00Z",
+  "lastUpdated": "2026-01-30T09:26:00Z",
   "summary": {
     "total": 26,
-    "pending": 1,
+    "pending": 0,
     "claimed": 0,
     "inProgress": 0,
-    "completed": 23,
+    "completed": 24,
     "failed": 0,
     "blocked": 0
   },
@@ -28,9 +28,9 @@
     "phase-2": {
       "name": "Notifications & Reminders",
       "total": 11,
-      "completed": 8,
+      "completed": 9,
       "status": "inProgress",
-      "lastUpdated": "2026-01-30T09:20:00Z"
+      "lastUpdated": "2026-01-30T09:26:00Z"
     }
   },
   "tasks": [
@@ -361,13 +361,14 @@
       "id": "M2-008",
       "title": "Notification Content Polish",
       "phase": 2,
-      "status": "ready",
+      "status": "completed",
       "priority": "P1",
       "estimate": 20,
       "dependencies": [
         "M2-001"
       ],
-      "blocks": []
+      "blocks": [],
+      "completedAt": "2026-01-30T09:26:00Z"
     },
     {
       "id": "M2-009",

@@ -141,8 +141,8 @@ export const NotificationService = {
       await notif.scheduleNotificationAsync({
         identifier: notificationId,
         content: {
-          title: `${mealIcon}💊 Time for your medication`,
-          body: `${medication.name} — ${medication.dosage} ${medication.dosageUnit}\n${mealText ? mealText + '\n' : ''}🕐 ${displayTime}`,
+          title: `💊 Time for ${medication.name}`,
+          body: `${medication.dosage} ${medication.dosageUnit}\n${mealText ? mealText + '\n' : ''}🕐 ${displayTime}${mealIcon ? ' ' + mealIcon : ''}`,
           data: {
             medicationId: medication.id,
             medicationName: medication.name,
@@ -188,7 +188,7 @@ export const NotificationService = {
           identifier: advanceId,
           content: {
             title: `⏰ Upcoming: ${medication.name}`,
-            body: `${medication.dosage} ${medication.dosageUnit} in ${advanceMinutes} min\n${mealText ? mealText + '\n' : ''}🕐 ${displayTime}${mealIcon ? ' ' + mealIcon : ''}`,
+            body: `💊 ${medication.dosage} ${medication.dosageUnit} at ${displayTime}\n${mealText ? mealText + '\n' : ''}In ${advanceMinutes} min${mealIcon ? ' ' + mealIcon : ''}`,
             data: {
               medicationId: medication.id,
               medicationName: medication.name,
@@ -266,8 +266,8 @@ export const NotificationService = {
     await notif.scheduleNotificationAsync({
       identifier: snoozeId,
       content: {
-        title: `⏰💊 Reminder: ${medication.name}`,
-        body: `${medication.dosage} ${medication.dosageUnit}${mealIcon ? ' ' + mealIcon : ''}\nOriginally scheduled for ${displayTime}`,
+        title: `💊 Reminder (snoozed): ${medication.name}`,
+        body: `${medication.dosage} ${medication.dosageUnit}${mealIcon ? ' ' + mealIcon : ''}\n🕐 Originally scheduled for ${displayTime}`,
         data: {
           medicationId: medication.id,
           medicationName: medication.name,

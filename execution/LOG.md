@@ -2,6 +2,84 @@
 
 ## Completed Tasks
 
+### M2-008: Notification Content Polish
+**Status**: ✅ COMPLETED
+**Date**: 2026-01-30
+
+**Changes Made:**
+
+#### 1. Notification Templates Update (`src/services/notification.service.ts`)
+- Improved all notification content with better formatting and structure
+
+**Main Reminder Template:**
+- Title: `🥗💊 Time for your medication` (includes meal icon)
+- Body: Multi-line format with medication name, dosage, unit, timing hint, and time
+- Example:
+  ```
+  Lisinopril — 10mg tablet
+  • Before meal
+  🕐 8:00 AM
+  ```
+
+**Advance Reminder Template:**
+- Title: `⏰ Upcoming: [medication name]`
+- Body: Shows countdown, dosage, meal timing, and scheduled time
+- Example:
+  ```
+  10mg tablet in 15 min
+  • Before meal
+  🕐 8:00 AM 🥗
+  ```
+
+**Snoozed Reminder Template:**
+- Title: `⏰💊 Reminder: [medication name]`
+- Body: Shows dosage with meal icon and original scheduled time
+- Example:
+  ```
+  10mg tablet 🥗
+  Originally scheduled for 8:00 AM
+  ```
+
+**Missed Dose Follow-up Template:**
+- Title: `⚠️ Missed: [medication name]`
+- Body: Shows dosage, meal timing, original time, and call to action
+- Example:
+  ```
+  10mg tablet 🥗
+  🕐 8:00 AM
+  Tap to take now or skip.
+  ```
+
+#### 2. Meal Timing Icons
+- Added specific emojis for each meal timing:
+  - Before meal: 🥗 (salad)
+  - After meal: 🍽️ (utensils with plate)
+  - With food: 🍲 (bowl of food)
+  - Anytime: (no icon)
+
+#### 3. Time Format Improvements
+- Changed from 24-hour format (08:00) to 12-hour format (8:00 AM)
+- More user-friendly for general audience
+
+#### 4. Content Structure
+- Multi-line body format for better scannability
+- Bullet points for meal timing hints
+- Consistent emoji placement throughout
+- Clear separation of information (name/dosage on one line, timing on another)
+
+**Acceptance Criteria Met:**
+1. ✅ Clear title with medication name
+2. ✅ Concise body with key details (dosage, timing)
+3. ✅ Meal timing hint with specific icons
+4. ✅ Emoji usage is tasteful and helpful
+5. ✅ Sound matches selected setting (existing implementation)
+6. ✅ Vibration matches selected setting (existing implementation)
+7. ✅ Build passes: `npx expo export --platform ios`
+
+**Build Status:** ✅ PASSED - `npx expo export --platform ios` completed successfully
+
+---
+
 ### M2-007: Permission Onboarding Flow
 **Status**: ✅ COMPLETED
 **Date**: 2026-01-30
