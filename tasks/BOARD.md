@@ -1,6 +1,6 @@
 # 📋 Medminder - Task Board
 
-**Last Updated**: 2025-01-23T12:00:00Z
+**Last Updated**: 2026-01-30T01:30:00Z
 
 ## Overview
 
@@ -26,6 +26,7 @@
 
 | ID | Task | Priority | Estimate |
 |----|------|----------|----------|
+| M1-007 | History Screen Redesign | P0 | 75 min |
 
 ---
 
@@ -33,7 +34,6 @@
 
 | ID | Task | Priority | Estimate |
 |----|------|----------|----------|
-| M1-007 | History Screen Redesign | P0 | 75 min |
 | M1-008 | Settings Screen Redesign | P0 | 60 min |
 | M1-009 | Add Medication Wizard Redesign | P0 | 90 min |
 | M1-014 | Empty States & Error States | P1 | 40 min |

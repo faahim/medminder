@@ -3,9 +3,9 @@
   "lastUpdated": "2026-01-30T01:25:00Z",
   "summary": {
     "total": 15,
-    "pending": 9,
+    "pending": 8,
     "claimed": 0,
-    "inProgress": 0,
+    "inProgress": 1,
     "completed": 6,
     "failed": 0,
     "blocked": 0
@@ -128,7 +128,7 @@
       "id": "M1-007",
       "title": "History Screen Redesign",
       "phase": 1,
-      "status": "pending",
+      "status": "in_progress",
       "priority": "P0",
       "estimate": 75,
       "dependencies": [
