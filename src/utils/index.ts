@@ -4,3 +4,4 @@ export * from './validation';
 export * from './errorHandling';
 export * from './date';
 export * from './schedule';
+export * from './haptics';

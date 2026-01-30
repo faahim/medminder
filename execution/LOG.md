@@ -2,6 +2,33 @@
 
 ## 2026-01-30
 
+### [02:20] ✅ M1-008 Settings Screen Redesign - COMPLETED
+**Executor**: Subagent medminder-M1-008
+
+**Summary**: Redesigned Settings screen with native iOS patterns, including grouped sections with headers, native Switch components, Select pickers, chevron indicators, destructive action styling, and haptic feedback on all interactive elements.
+
+**Changes**:
+- `src/utils/haptics.ts` (new) - Haptic feedback utility with triggerHaptic and triggerHapticIfEnabled functions
+- `src/components/settings/SettingRow.tsx` (new) - Reusable setting row component with icon, title, value/control support
+- `src/components/settings/SettingSection.tsx` (new) - Grouped section component with header and card container
+- `src/components/settings/index.ts` (new) - Barrel export for settings components
+- `src/utils/index.ts` - Added haptics export
+- `app/(tabs)/settings.tsx` - Complete redesign with:
+  - Large title navigation header (34pt iOS style)
+  - Grouped sections: Notifications, Appearance, AI, Data, About
+  - SettingRow components with native Switch and Select controls
+  - Chevron indicators for drill-down items
+  - Destructive actions (Clear All Data) styled in red
+  - Version info at bottom
+  - Haptic feedback on all interactive elements
+  - SF Symbols via Icon component for all icons
+
+**Verification**:
+- `npx tsc --noEmit` - passed
+- `npx expo export --platform ios` - passed
+
+---
+
 ### [02:00] ✅ M1-007 History Screen Redesign - COMPLETED (PM Recovery)
 **Executor**: Subagent medminder-M1-007, completed by PM watchdog recovery
 

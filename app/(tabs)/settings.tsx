@@ -1,19 +1,22 @@
-import { View, Switch, Alert, Pressable } from 'react-native';
+import { View, ScrollView, Alert, Pressable } from 'react-native';
 import { useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 
-import { AppHeader } from '../../src/components/layout/AppHeader';
 import { Screen } from '../../src/components/layout/Screen';
 import { Typography } from '../../src/components/ui/Typography';
 import { Select } from '../../src/components/ui/Select';
 import { Input } from '../../src/components/ui/Input';
 import { Modal } from '../../src/components/ui/Modal';
 import { Button } from '../../src/components/ui/Button';
+import { SettingSection, SettingRow, SettingRowWithSwitch } from '../../src/components/settings';
 import { OpenAIKeyService } from '../../src/services/openaiKey.service';
 import { Settings } from '../../src/types';
 import { SettingsService } from '../../src/services/settings.service';
+import { colors, spacing } from '../../src/design/tokens';
+import { triggerHaptic } from '../../src/utils/haptics';
 
+// Select options
 const SNOOZE_OPTIONS = [
   { label: '5 minutes', value: 5 },
   { label: '10 minutes', value: 10 },
@@ -41,64 +44,13 @@ const FONT_SIZE_OPTIONS = [
   { label: 'Extra Large', value: 'xlarge' },
 ];
 
-function SectionLabel({ children }: { children: string }) {
-  return (
-    <Typography variant="label" className="text-surface-500 mb-2 ml-4 uppercase tracking-wider text-xs">
-      {children}
-    </Typography>
-  );
-}
-
-function Row({
-  icon,
-  iconBgClass,
-  iconColor,
-  title,
-  subtitle,
-  right,
-  border = true,
-  onPress,
-}: {
-  icon: string;
-  iconBgClass: string;
-  iconColor: string;
-  title: string;
-  subtitle?: string;
-  right?: React.ReactNode;
-  border?: boolean;
-  onPress?: () => void;
-}) {
-  const content = (
-    <View className={`flex-row items-center justify-between p-4 ${border ? 'border-b border-surface-100' : ''}`}>
-      <View className="flex-row items-center flex-1 mr-3">
-        <View className={`w-10 h-10 rounded-2xl items-center justify-center mr-3 ${iconBgClass}`}>
-          <Ionicons name={icon as any} size={18} color={iconColor} />
-        </View>
-        <View className="flex-1">
-          <Typography variant="body" className="text-surface-900 font-medium">
-            {title}
-          </Typography>
-          {subtitle ? (
-            <Typography variant="small" className="text-surface-500 mt-0.5">
-              {subtitle}
-            </Typography>
-          ) : null}
-        </View>
-      </View>
-      {right ? right : null}
-    </View>
-  );
-
-  if (onPress) {
-    return (
-      <Pressable onPress={onPress} className="active:opacity-80">
-        {content}
-      </Pressable>
-    );
-  }
-
-  return content;
-}
+const REMINDER_ADVANCE_OPTIONS = [
+  { label: 'At scheduled time', value: 0 },
+  { label: '5 minutes early', value: 5 },
+  { label: '10 minutes early', value: 10 },
+  { label: '15 minutes early', value: 15 },
+  { label: '30 minutes early', value: 30 },
+];
 
 export default function SettingsScreen() {
   const [settings, setSettings] = useState<Settings | null>(null);
@@ -106,34 +58,40 @@ export default function SettingsScreen() {
   const [apiKeyModalOpen, setApiKeyModalOpen] = useState(false);
   const [apiKeyDraft, setApiKeyDraft] = useState('');
 
+  // Load settings on mount
   useEffect(() => {
-    SettingsService.get()
-      .then((s) => {
-        // Light-only app: keep persisted values, but normalize darkMode to 'light'.
-        setSettings({ ...s, darkMode: 'light' });
-      })
-      .catch(() => {
-        setSettings({
-          id: 1,
-          snoozeDurationMinutes: 15,
-          missedThresholdMinutes: 60,
-          notificationSound: 'default',
-          hapticFeedback: true,
-          darkMode: 'light',
-          fontSize: 'normal',
-          reminderAdvanceMinutes: 0,
-        });
-      });
-
-    OpenAIKeyService.get().then((key) => {
-      if (!key) {
-        setApiKeyPreview('Not set');
-        return;
-      }
-      const masked = `${key.slice(0, 5)}…${key.slice(-4)}`;
-      setApiKeyPreview(masked);
-    });
+    loadSettings();
+    loadApiKey();
   }, []);
+
+  const loadSettings = async () => {
+    try {
+      const s = await SettingsService.get();
+      // Light-only app: keep persisted values, but normalize darkMode to 'light'
+      setSettings({ ...s, darkMode: 'light' });
+    } catch {
+      setSettings({
+        id: 1,
+        snoozeDurationMinutes: 15,
+        missedThresholdMinutes: 60,
+        notificationSound: 'default',
+        hapticFeedback: true,
+        darkMode: 'light',
+        fontSize: 'normal',
+        reminderAdvanceMinutes: 0,
+      });
+    }
+  };
+
+  const loadApiKey = async () => {
+    const key = await OpenAIKeyService.get();
+    if (!key) {
+      setApiKeyPreview('Not set');
+      return;
+    }
+    const masked = `${key.slice(0, 5)}…${key.slice(-4)}`;
+    setApiKeyPreview(masked);
+  };
 
   const updateSetting = async <K extends keyof Settings>(key: K, value: Settings[K]) => {
     if (!settings) return;
@@ -141,18 +99,26 @@ export default function SettingsScreen() {
     setSettings(next);
 
     try {
-      // Persist where supported. (If db schema still has darkMode, it will store 'light'.)
       await SettingsService.update({ [key]: value } as any);
     } catch {
-      // noop; UI still updates.
+      // noop; UI still updates
     }
   };
 
+  const handleOpenAIKeyPress = async () => {
+    triggerHaptic('selection');
+    const current = await OpenAIKeyService.get();
+    setApiKeyDraft(current ?? '');
+    setApiKeyModalOpen(true);
+  };
+
   const handleExportData = () => {
+    triggerHaptic('light');
     Alert.alert('Export Data', 'This feature will be available in a future update.');
   };
 
   const handleClearData = () => {
+    triggerHaptic('warning');
     Alert.alert(
       'Clear All Data?',
       'This will permanently delete all your medications, history, and settings. This cannot be undone.',
@@ -162,6 +128,7 @@ export default function SettingsScreen() {
           text: 'Clear Everything',
           style: 'destructive',
           onPress: () => {
+            triggerHaptic('error');
             Alert.alert('Done', 'All data has been cleared.');
           },
         },
@@ -169,12 +136,55 @@ export default function SettingsScreen() {
     );
   };
 
+  const handleHelpSupport = () => {
+    triggerHaptic('light');
+    Alert.alert('Help & Support', 'This feature will be available in a future update.');
+  };
+
+  const handleRateApp = () => {
+    triggerHaptic('light');
+    Alert.alert('Rate App', 'Thank you for using Medminder! This feature will be available soon.');
+  };
+
+  const handlePrivacyPolicy = () => {
+    triggerHaptic('light');
+    Alert.alert('Privacy Policy', 'This feature will be available in a future update.');
+  };
+
+  const handleSaveApiKey = async () => {
+    await OpenAIKeyService.set(apiKeyDraft);
+    const key = await OpenAIKeyService.get();
+    setApiKeyPreview(key ? `${key.slice(0, 5)}…${key.slice(-4)}` : 'Not set');
+    setApiKeyModalOpen(false);
+    triggerHaptic('success');
+    Alert.alert('Saved', 'OpenAI API key updated.');
+  };
+
+  const handleRemoveApiKey = async () => {
+    await OpenAIKeyService.clear();
+    setApiKeyPreview('Not set');
+    setApiKeyDraft('');
+    setApiKeyModalOpen(false);
+    triggerHaptic('warning');
+    Alert.alert('Removed', 'OpenAI API key removed from this device.');
+  };
+
   if (!settings) {
     return (
-      <View className="flex-1 bg-surface-50">
-        <AppHeader title="Settings" subtitle="Preferences" />
-        <Screen includeTopInset={false} padX={16} padY={16}>
-          <Typography variant="body" className="text-surface-500">
+      <View style={{ flex: 1, backgroundColor: colors.surface[50] }}>
+        <View
+          style={{
+            paddingTop: 60,
+            paddingHorizontal: spacing.md,
+            paddingBottom: spacing.sm,
+          }}
+        >
+          <Typography variant="h1" style={{ fontSize: 34, fontWeight: '700' }}>
+            Settings
+          </Typography>
+        </View>
+        <Screen padX={16} padY={16}>
+          <Typography variant="body" style={{ color: colors.surface[500] }}>
             Loading…
           </Typography>
         </Screen>
@@ -182,216 +192,332 @@ export default function SettingsScreen() {
     );
   }
 
+  const getSnoozeLabel = () => SNOOZE_OPTIONS.find(o => o.value === settings.snoozeDurationMinutes)?.label || '15 minutes';
+  const getThresholdLabel = () => THRESHOLD_OPTIONS.find(o => o.value === settings.missedThresholdMinutes)?.label || '1 hour';
+  const getSoundLabel = () => SOUND_OPTIONS.find(o => o.value === settings.notificationSound)?.label || 'Default';
+  const getFontSizeLabel = () => FONT_SIZE_OPTIONS.find(o => o.value === settings.fontSize)?.label || 'Normal';
+  const getAdvanceLabel = () => REMINDER_ADVANCE_OPTIONS.find(o => o.value === settings.reminderAdvanceMinutes)?.label || 'At scheduled time';
+
   return (
-    <View className="flex-1 bg-surface-50">
-      <AppHeader title="Settings" subtitle="Preferences" />
-
-      <Screen scroll includeTopInset={false} padX={16} padY={16} padBottomExtra={100}>
-        {/* Notifications */}
-        <SectionLabel>Notifications</SectionLabel>
-        <View className="bg-white rounded-3xl border border-surface-100 overflow-hidden mb-6">
-          <Row
-            icon="alarm-outline"
-            iconBgClass="bg-primary-50"
-            iconColor="#06B6D4"
-            title="Snooze Duration"
-            right={
-              <Select
-                value={settings.snoozeDurationMinutes}
-                options={SNOOZE_OPTIONS}
-                onChange={(v) => updateSetting('snoozeDurationMinutes', v)}
-                compact
-              />
-            }
-          />
-
-          <Row
-            icon="time-outline"
-            iconBgClass="bg-warning-50"
-            iconColor="#F59E0B"
-            title="Mark as Missed After"
-            subtitle="Auto-mark pending doses as missed"
-            right={
-              <Select
-                value={settings.missedThresholdMinutes}
-                options={THRESHOLD_OPTIONS}
-                onChange={(v) => updateSetting('missedThresholdMinutes', v)}
-                compact
-              />
-            }
-          />
-
-          <Row
-            icon="volume-medium-outline"
-            iconBgClass="bg-surface-100"
-            iconColor="#737373"
-            title="Reminder Sound"
-            right={
-              <Select
-                value={settings.notificationSound}
-                options={SOUND_OPTIONS}
-                onChange={(v) => updateSetting('notificationSound', v as any)}
-                compact
-              />
-            }
-          />
-
-          <Row
-            icon="phone-portrait-outline"
-            iconBgClass="bg-accent-50"
-            iconColor="#F97316"
-            title="Vibration"
-            border={false}
-            right={
-              <Switch
-                value={settings.hapticFeedback}
-                onValueChange={(v) => updateSetting('hapticFeedback', v)}
-                trackColor={{ false: '#E5E5E5', true: '#06B6D480' }}
-                thumbColor={settings.hapticFeedback ? '#06B6D4' : '#f4f3f4'}
-              />
-            }
-          />
-        </View>
-
-        {/* Display */}
-        <SectionLabel>Display</SectionLabel>
-        <View className="bg-white rounded-3xl border border-surface-100 overflow-hidden mb-6">
-          <Row
-            icon="text-outline"
-            iconBgClass="bg-surface-100"
-            iconColor="#737373"
-            title="Text Size"
-            border={false}
-            right={
-              <Select
-                value={settings.fontSize}
-                options={FONT_SIZE_OPTIONS}
-                onChange={(v) => updateSetting('fontSize', v as any)}
-                compact
-              />
-            }
-          />
-        </View>
-
-        {/* AI */}
-        <SectionLabel>AI</SectionLabel>
-        <View className="bg-white rounded-3xl border border-surface-100 overflow-hidden mb-6">
-          <Row
-            icon="key-outline"
-            iconBgClass="bg-surface-100"
-            iconColor="#737373"
-            title="OpenAI API Key"
-            subtitle={apiKeyPreview === 'Not set' ? 'Required for prescription scan' : apiKeyPreview}
-            border={false}
-            onPress={async () => {
-              const current = await OpenAIKeyService.get();
-              setApiKeyDraft(current ?? '');
-              setApiKeyModalOpen(true);
-            }}
-            right={<Ionicons name="chevron-forward" size={20} color="#A3A3A3" />}
-          />
-        </View>
-
-        {/* Data */}
-        <SectionLabel>Data</SectionLabel>
-        <View className="bg-white rounded-3xl border border-surface-100 overflow-hidden mb-6">
-          <Row
-            icon="download-outline"
-            iconBgClass="bg-success-50"
-            iconColor="#22C55E"
-            title="Export Data"
-            onPress={handleExportData}
-          />
-
-          <Row
-            icon="trash-outline"
-            iconBgClass="bg-danger-50"
-            iconColor="#EF4444"
-            title="Clear All Data"
-            border={false}
-            onPress={handleClearData}
-            right={<Ionicons name="chevron-forward" size={20} color="#A3A3A3" />}
-          />
-        </View>
-
-        {/* About */}
-        <SectionLabel>About</SectionLabel>
-        <View className="bg-white rounded-3xl border border-surface-100 overflow-hidden mb-2">
-          <Row
-            icon="information-outline"
-            iconBgClass="bg-primary-50"
-            iconColor="#06B6D4"
-            title="App Version"
-            border={false}
-            right={
-              <Typography variant="body" className="text-surface-500">
-                {Constants.expoConfig?.version || '1.0.0'}
-              </Typography>
-            }
-          />
-        </View>
-        <Modal
-          visible={apiKeyModalOpen}
-          onClose={() => setApiKeyModalOpen(false)}
+    <View style={{ flex: 1, backgroundColor: colors.surface[50] }}>
+      {/* Large Title Header - iOS style */}
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: 40 }}
+        contentInsetAdjustmentBehavior="automatic"
+      >
+        {/* Large Title with safe area */}
+        <View
+          style={{
+            paddingTop: 60,
+            paddingHorizontal: spacing.md,
+            paddingBottom: spacing.sm,
+          }}
         >
-          <View>
-            <Typography variant="h3" className="text-surface-900 font-semibold mb-2">
-              OpenAI API Key
-            </Typography>
-            <Typography variant="body" className="text-surface-600 mb-4">
-              Stored on-device. Needed for prescription scanning.
-            </Typography>
+          <Typography
+            variant="display"
+            style={{
+              fontSize: 34,
+              fontWeight: '700',
+              color: colors.surface[900],
+            }}
+          >
+            Settings
+          </Typography>
+        </View>
 
-            <Input
-              label="API Key"
-              value={apiKeyDraft}
-              onChangeText={setApiKeyDraft}
-              placeholder="sk-..."
-              autoCapitalize="none"
-              autoCorrect={false}
-              secureTextEntry
-              size="lg"
+        <View style={{ paddingHorizontal: spacing.md }}>
+          {/* NOTIFICATIONS Section */}
+          <SettingSection title="Notifications">
+            <SettingRow
+              icon="bell.badge"
+              iconFallback="notifications"
+              iconBg={colors.primary[50]}
+              iconColor={colors.primary[700]}
+              title="Reminders"
+              subtitle="Get notified at scheduled times"
+              showChevron
+              pressable
+              onPress={() => {
+                triggerHaptic('light');
+                Alert.alert('Reminders', 'Notification permissions are managed in system settings.');
+              }}
             />
 
-            <View className="flex-row gap-3 mt-5">
-              <Button
-                title="Cancel"
-                variant="secondary"
-                size="lg"
-                onPress={() => setApiKeyModalOpen(false)}
-                className="flex-1"
-              />
-              <Button
-                title="Save"
-                size="lg"
-                onPress={async () => {
-                  await OpenAIKeyService.set(apiKeyDraft);
-                  const key = await OpenAIKeyService.get();
-                  setApiKeyPreview(key ? `${key.slice(0, 5)}…${key.slice(-4)}` : 'Not set');
-                  setApiKeyModalOpen(false);
-                  Alert.alert('Saved', 'OpenAI API key updated.');
-                }}
-                className="flex-1"
-              />
-            </View>
+            <SettingRow
+              icon="bell.fill"
+              iconFallback="notifications"
+              iconBg={colors.warning[50]}
+              iconColor={colors.warning[600]}
+              title="Snooze Duration"
+              right={
+                <Select
+                  value={settings.snoozeDurationMinutes}
+                  options={SNOOZE_OPTIONS}
+                  onChange={(v) => updateSetting('snoozeDurationMinutes', v)}
+                  compact
+                />
+              }
+            />
 
-            <Pressable
-              onPress={async () => {
-                await OpenAIKeyService.clear();
-                setApiKeyPreview('Not set');
-                setApiKeyDraft('');
-                setApiKeyModalOpen(false);
-                Alert.alert('Removed', 'OpenAI API key removed from this device.');
+            <SettingRow
+              icon="clock.badge.exclamationmark"
+              iconFallback="time-outline"
+              iconBg={colors.warning[50]}
+              iconColor={colors.warning[600]}
+              title="Auto-Miss After"
+              subtitle="Mark as missed if not taken"
+              right={
+                <Select
+                  value={settings.missedThresholdMinutes}
+                  options={THRESHOLD_OPTIONS}
+                  onChange={(v) => updateSetting('missedThresholdMinutes', v)}
+                  compact
+                />
+              }
+            />
+
+            <SettingRow
+              icon="speaker.wave.2.fill"
+              iconFallback="volume-medium"
+              iconBg={colors.surface[100]}
+              iconColor={colors.surface[700]}
+              title="Sound"
+              right={
+                <Select
+                  value={settings.notificationSound}
+                  options={SOUND_OPTIONS}
+                  onChange={(v) => updateSetting('notificationSound', v as any)}
+                  compact
+                />
+              }
+            />
+
+            <SettingRowWithSwitch
+              icon="iphone.radiowaves.left.and.right"
+              iconFallback="phone-portrait"
+              iconBg={colors.success[50]}
+              iconColor={colors.success[600]}
+              title="Vibration"
+              switchValue={settings.hapticFeedback}
+              onValueChange={(v) => updateSetting('hapticFeedback', v)}
+            />
+
+            <SettingRow
+              icon="clock.arrow.circlepath"
+              iconFallback="refresh"
+              iconBg={colors.primary[50]}
+              iconColor={colors.primary[700]}
+              title="Remind Early"
+              showBorder={false}
+              right={
+                <Select
+                  value={settings.reminderAdvanceMinutes}
+                  options={REMINDER_ADVANCE_OPTIONS}
+                  onChange={(v) => updateSetting('reminderAdvanceMinutes', v)}
+                  compact
+                />
+              }
+            />
+          </SettingSection>
+
+          {/* APPEARANCE Section */}
+          <SettingSection title="Appearance">
+            <SettingRow
+              icon="textformat"
+              iconFallback="text-outline"
+              iconBg={colors.surface[100]}
+              iconColor={colors.surface[700]}
+              title="Text Size"
+              showBorder={false}
+              right={
+                <Select
+                  value={settings.fontSize}
+                  options={FONT_SIZE_OPTIONS}
+                  onChange={(v) => updateSetting('fontSize', v as any)}
+                  compact
+                />
+              }
+            />
+          </SettingSection>
+
+          {/* AI Section */}
+          <SettingSection title="AI">
+            <SettingRow
+              icon="key"
+              iconFallback="key-outline"
+              iconBg={colors.surface[100]}
+              iconColor={colors.surface[700]}
+              title="OpenAI API Key"
+              subtitle={apiKeyPreview === 'Not set' ? 'Required for prescription scan' : apiKeyPreview}
+              showChevron
+              showBorder={false}
+              pressable
+              onPress={handleOpenAIKeyPress}
+            />
+          </SettingSection>
+
+          {/* DATA Section */}
+          <SettingSection title="Data">
+            <SettingRow
+              icon="square.and.arrow.up"
+              iconFallback="download"
+              iconBg={colors.success[50]}
+              iconColor={colors.success[600]}
+              title="Export Data"
+              subtitle="Export medications and history"
+              showChevron
+              pressable
+              onPress={handleExportData}
+            />
+
+            <SettingRow
+              icon="square.and.arrow.down"
+              iconFallback="download"
+              iconBg={colors.primary[50]}
+              iconColor={colors.primary[700]}
+              title="Import Data"
+              subtitle="Restore from backup"
+              showChevron
+              pressable
+              onPress={() => {
+                triggerHaptic('light');
+                Alert.alert('Import Data', 'This feature will be available in a future update.');
               }}
-              className="mt-4 py-2"
+            />
+
+            <SettingRow
+              icon="trash.fill"
+              iconFallback="trash"
+              iconBg={colors.error[50]}
+              iconColor={colors.error[600]}
+              title="Clear All Data"
+              subtitle="Delete medications, history, and settings"
+              destructive
+              showChevron
+              showBorder={false}
+              pressable
+              onPress={handleClearData}
+            />
+          </SettingSection>
+
+          {/* ABOUT Section */}
+          <SettingSection title="About">
+            <SettingRow
+              icon="questionmark.circle.fill"
+              iconFallback="help-circle"
+              iconBg={colors.surface[100]}
+              iconColor={colors.surface[700]}
+              title="Help & Support"
+              showChevron
+              pressable
+              onPress={handleHelpSupport}
+            />
+
+            <SettingRow
+              icon="star.fill"
+              iconFallback="star"
+              iconBg={colors.warning[50]}
+              iconColor={colors.warning[600]}
+              title="Rate App"
+              showChevron
+              pressable
+              onPress={handleRateApp}
+            />
+
+            <SettingRow
+              icon="doc.text.fill"
+              iconFallback="document"
+              iconBg={colors.surface[100]}
+              iconColor={colors.surface[700]}
+              title="Privacy Policy"
+              showChevron
+              showBorder={false}
+              pressable
+              onPress={handlePrivacyPolicy}
+            />
+          </SettingSection>
+
+          {/* Version Info */}
+          <View
+            style={{
+              alignItems: 'center',
+              paddingVertical: spacing.xl,
+              marginTop: spacing.md,
+            }}
+          >
+            <Typography
+              variant="label"
+              style={{
+                color: colors.surface[500],
+                fontSize: 13,
+              }}
             >
-              <Typography variant="body" className="text-danger-600 text-center font-medium">
-                Remove key
-              </Typography>
-            </Pressable>
+              Medminder v{Constants.expoConfig?.version || '1.0.0'}
+            </Typography>
+            <Typography
+              variant="small"
+              style={{
+                color: colors.surface[500],
+                marginTop: 4,
+              }}
+            >
+              Made with ❤️
+            </Typography>
           </View>
-        </Modal>
-      </Screen>
+        </View>
+      </ScrollView>
+
+      {/* OpenAI API Key Modal */}
+      <Modal visible={apiKeyModalOpen} onClose={() => setApiKeyModalOpen(false)}>
+        <View>
+          <Typography variant="h3" style={{ color: colors.surface[900], fontWeight: '600', marginBottom: spacing.sm }}>
+            OpenAI API Key
+          </Typography>
+          <Typography variant="body" style={{ color: colors.surface[500], marginBottom: spacing.md }}>
+            Stored on-device. Needed for prescription scanning.
+          </Typography>
+
+          <Input
+            label="API Key"
+            value={apiKeyDraft}
+            onChangeText={setApiKeyDraft}
+            placeholder="sk-..."
+            autoCapitalize="none"
+            autoCorrect={false}
+            secureTextEntry
+            size="lg"
+          />
+
+          <View style={{ flexDirection: 'row', gap: spacing.sm, marginTop: spacing.lg }}>
+            <Button
+              title="Cancel"
+              variant="secondary"
+              size="lg"
+              onPress={() => {
+                triggerHaptic('light');
+                setApiKeyModalOpen(false);
+              }}
+              style={{ flex: 1 }}
+            />
+            <Button
+              title="Save"
+              size="lg"
+              onPress={handleSaveApiKey}
+              style={{ flex: 1 }}
+            />
+          </View>
+
+          <Pressable
+            onPress={handleRemoveApiKey}
+            style={{ marginTop: spacing.md, paddingVertical: spacing.sm }}
+          >
+            <Typography variant="body" style={{ color: colors.error[600], textAlign: 'center', fontWeight: '500' }}>
+              Remove key
+            </Typography>
+          </Pressable>
+        </View>
+      </Modal>
     </View>
   );
 }

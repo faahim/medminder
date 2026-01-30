@@ -1,13 +1,13 @@
 # 📋 Medminder - Task Board
 
-**Last Updated**: 2026-01-30T02:00:00Z
+**Last Updated**: 2026-01-30T02:20:00Z
 
 ## Overview
 
 | Phase | Progress | Status |
 |-------|----------|--------|
 | Phase 0: Foundation | ██████████ 100% | ✅ Complete (pre-existing) |
-| Phase 1: UI/UX Overhaul | ██████░░░░░ 47% (7/15) | 🟡 In Progress |
+| Phase 1: UI/UX Overhaul | ███████░░░░ 53% (8/15) | 🟡 In Progress |
 | Phase 2: Notifications | ░░░░░░░░░░ 0% | 🔲 Not Started |
 
 ---
@@ -32,7 +32,6 @@
 
 | ID | Task | Priority | Estimate |
 |----|------|----------|----------|
-| M1-008 | Settings Screen Redesign | P0 | 60 min |
 | M1-009 | Add Medication Wizard Redesign | P0 | 90 min |
 | M1-014 | Empty States & Error States | P1 | 40 min |
 
@@ -61,6 +60,7 @@
 | M1-005 | Today Screen Redesign | 2026-01-30T00:49:11Z |
 | M1-006 | Medications Screen Redesign | 2026-01-30T01:03:00Z |
 | M1-007 | History Screen Redesign | 2026-01-30T01:45:00Z |
+| M1-008 | Settings Screen Redesign | 2026-01-30T02:20:00Z |
 
 ---
 
@@ -74,7 +74,7 @@ M1-001 Design System Foundation ✅
         ├─→ M1-005 Today Screen ✅───┐
         ├─→ M1-006 Medications ✅───┼─→ M1-010 Detail/Edit
         ├─→ M1-007 History ──────────┤      └─→ M1-011 Prescription Import
-        ├─→ M1-008 Settings ─────────┤
+        ├─→ M1-008 Settings ✅────────┤
         ├─→ M1-009 Add Wizard ───────┤
         └─→ M1-014 Empty States      │
                                      └─→ M1-012 Animations
