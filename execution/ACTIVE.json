@@ -1,4 +1,11 @@
 {
-  "lastUpdated": "2026-01-30T05:27:00Z",
-  "claims": []
+  "lastUpdated": "2026-01-30T05:30:00Z",
+  "claims": [
+    {
+      "taskId": "M1-015",
+      "taskTitle": "QA & Polish Pass",
+      "sessionKey": "agent:main:subagent:medminder-M1-015",
+      "claimedAt": "2026-01-30T05:30:00Z"
+    }
+  ]
 }

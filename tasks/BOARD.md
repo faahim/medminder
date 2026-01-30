@@ -1,6 +1,6 @@
 # 📋 Medminder - Task Board
 
-**Last Updated**: 2026-01-30T05:27:00Z
+**Last Updated**: 2026-01-30T05:30:00Z
 
 ## Overview
 
@@ -24,15 +24,15 @@
 
 ### 🟡 In Progress
 
-*No tasks in progress*
+| ID | Task | Priority | Estimate |
+|----|------|----------|----------|
+| M1-015 | QA & Polish Pass | P0 | 60 min |
 
 ---
 
 ### 🟢 Ready (Queue)
 
-| ID | Task | Priority | Estimate |
-|----|------|----------|----------|
-| M1-015 | QA & Polish Pass | P0 | 60 min |
+*No tasks ready*
 
 ---
 
@@ -79,7 +79,7 @@ M1-001 Design System Foundation ✅
                                                              └─→ M1-011 Prescription Import ✅
                                                                    └─→ M1-012 Animations ✅
                                                                          └─→ M1-013 Haptics ✅
-                                                                               └─→ M1-015 QA Pass 🟢
+                                                                               └─→ M1-015 QA Pass 🟡
 ```
 
 ---
@@ -92,7 +92,7 @@ M1-001 Design System Foundation ✅
 | Navigation (M1-003) | 40 min | ✅ done |
 | Components (M1-004) | 60 min | ✅ done |
 | Screens (M1-005-011) | 555 min (~9 hrs) | ✅ all done |
-| Polish (M1-012-015) | 190 min (~3 hrs) | M1-012-014 done, M1-015 ready |
+| Polish (M1-012-015) | 190 min (~3 hrs) | M1-012-014 done, M1-015 in progress |
 | **Total** | ~910 min (~15 hrs) | |
 
 ---

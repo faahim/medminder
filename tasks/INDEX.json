@@ -1,11 +1,11 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-01-30T05:27:00Z",
+  "lastUpdated": "2026-01-30T05:30:00Z",
   "summary": {
     "total": 15,
     "pending": 0,
-    "claimed": 0,
-    "inProgress": 0,
+    "claimed": 1,
+    "inProgress": 1,
     "completed": 14,
     "failed": 0,
     "blocked": 0
@@ -23,7 +23,7 @@
       "total": 15,
       "completed": 14,
       "status": "in_progress",
-      "lastUpdated": "2026-01-30T05:27:00Z"
+      "lastUpdated": "2026-01-30T05:30:00Z"
     },
     "phase-2": {
       "name": "Notifications & Reminders",
@@ -246,7 +246,7 @@
       "id": "M1-015",
       "title": "QA & Polish Pass",
       "phase": 1,
-      "status": "ready",
+      "status": "in_progress",
       "priority": "P0",
       "estimate": 60,
       "dependencies": [
