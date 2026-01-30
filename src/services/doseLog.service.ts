@@ -194,6 +194,101 @@ export const DoseLogService = {
 
     return count;
   },
+
+  // Calculate current streak (consecutive days with >= 80% adherence)
+  async getCurrentStreak(asOfDate?: Date): Promise<number> {
+    const referenceDate = asOfDate || new Date();
+    let currentDate = new Date(referenceDate);
+    currentDate.setHours(0, 0, 0, 0);
+
+    let streak = 0;
+
+    // Check backwards from reference date
+    while (true) {
+      const dateStr = format(currentDate, 'yyyy-MM-dd');
+      const aggregate = await this.getDayAggregate(dateStr);
+
+      // Day has no doses - doesn't break streak, doesn't count
+      if (aggregate.totalDoses === 0) {
+        currentDate.setDate(currentDate.getDate() - 1);
+        // Skip backwards until we find a day with doses or reach a limit
+        const emptyDaysChecked = 30; // Safety limit
+        let emptyCount = 0;
+        while (emptyCount < emptyDaysChecked && aggregate.totalDoses === 0) {
+          currentDate.setDate(currentDate.getDate() - 1);
+          const prevDateStr = format(currentDate, 'yyyy-MM-dd');
+          const prevAggregate = await this.getDayAggregate(prevDateStr);
+          if (prevAggregate.totalDoses > 0) {
+            if (prevAggregate.adherencePercent >= 80) {
+              streak++;
+              currentDate.setDate(currentDate.getDate() - 1);
+            } else {
+              return streak;
+            }
+          }
+          emptyCount++;
+        }
+        return streak;
+      }
+
+      // Day has doses but adherence < 80% - break streak
+      if (aggregate.adherencePercent < 80) {
+        return streak;
+      }
+
+      // Day has doses with >= 80% adherence - continue streak
+      streak++;
+      currentDate.setDate(currentDate.getDate() - 1);
+
+      // Safety limit: don't go back more than a year
+      const daysDiff = Math.floor((referenceDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
+      if (daysDiff > 365) {
+        break;
+      }
+    }
+
+    return streak;
+  },
+
+  // Calculate best streak (longest consecutive days with >= 80% adherence)
+  async getBestStreak(startDate?: Date, endDate?: Date): Promise<number> {
+    const start = startDate ? new Date(startDate) : new Date();
+    start.setDate(start.getDate() - 365); // Default to last year
+    const end = endDate ? new Date(endDate) : new Date();
+
+    const aggregates = await this.getAggregatesForRange(
+      format(start, 'yyyy-MM-dd'),
+      format(end, 'yyyy-MM-dd')
+    );
+
+    // Group by date and filter days with doses and >= 80% adherence
+    const goodDays = aggregates
+      .filter(a => a.totalDoses > 0 && a.adherencePercent >= 80)
+      .map(a => a.date)
+      .sort();
+
+    if (goodDays.length === 0) return 0;
+
+    let bestStreak = 1;
+    let currentStreak = 1;
+
+    for (let i = 1; i < goodDays.length; i++) {
+      const prevDate = parseISO(goodDays[i - 1]);
+      const currDate = parseISO(goodDays[i]);
+      const diffDays = Math.floor((currDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24));
+
+      if (diffDays === 1) {
+        // Consecutive day
+        currentStreak++;
+      } else {
+        // Streak broken
+        bestStreak = Math.max(bestStreak, currentStreak);
+        currentStreak = 1;
+      }
+    }
+
+    return Math.max(bestStreak, currentStreak);
+  },
 };
 
 function mapToDoseLog(row: any): DoseLog {

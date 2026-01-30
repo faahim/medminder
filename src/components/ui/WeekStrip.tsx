@@ -5,7 +5,7 @@ import {
   Pressable,
   StyleSheet,
 } from 'react-native';
-import { format, addDays, subDays, startOfWeek, endOfWeek, isSameDay, isToday } from 'date-fns';
+import { format, addDays, startOfWeek, endOfWeek, isSameDay, isToday } from 'date-fns';
 import { colors, radii, spacing, iconSizes } from '../../design/tokens';
 import { Typography } from './Typography';
 import { Icon } from './Icon';
@@ -64,7 +64,7 @@ export function WeekStrip({
     const selectedIndex = weekDays.findIndex((day) => day.isSelected);
     if (selectedIndex !== -1 && scrollViewRef.current) {
       const itemWidth = 50; // Width of each day item
-      const scrollPosition = selectedIndex * itemWidth - (scrollViewRef.current.props.horizontal ?? true ? 100 : 0);
+      const scrollPosition = selectedIndex * itemWidth - 100;
       scrollViewRef.current.scrollTo({ x: Math.max(0, scrollPosition), animated: true });
     }
   }, [weekDays]);
@@ -129,7 +129,7 @@ export function WeekStrip({
               variant="small"
               style={[
                 styles.dayName,
-                day.isSelected && styles.dayNameSelected,
+                day.isSelected ? styles.dayNameSelected : {},
               ]}
             >
               {day.dayName}
@@ -138,7 +138,7 @@ export function WeekStrip({
               variant="h3"
               style={[
                 styles.dayNumber,
-                day.isSelected && styles.dayNumberSelected,
+                day.isSelected ? styles.dayNumberSelected : {},
               ]}
             >
               {day.dayNumber}

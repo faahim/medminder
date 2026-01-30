@@ -1,83 +1,49 @@
-import { View } from 'react-native';
 import { useState, useEffect, useCallback } from 'react';
-import { Calendar, DateData } from 'react-native-calendars';
-import { format, parseISO, startOfMonth, endOfMonth } from 'date-fns';
-import { Ionicons } from '@expo/vector-icons';
+import { View, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { format, startOfWeek, endOfWeek, addDays, addWeeks, subWeeks, isToday } from 'date-fns';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  FadeInDown,
+} from 'react-native-reanimated';
 
 import { DoseLogService } from '../../src/services/doseLog.service';
 import { MedicationService } from '../../src/services/medication.service';
 import { DayAggregate, DoseLog, Medication } from '../../src/types';
 import { Typography } from '../../src/components/ui/Typography';
-import { StatusIndicator } from '../../src/components/medication/StatusIndicator';
-import { AppHeader } from '../../src/components/layout/AppHeader';
+import { Card } from '../../src/components/ui/Card';
+import { Icon } from '../../src/components/ui/Icon';
+import { WeekStrip } from '../../src/components/ui/WeekStrip';
+import { AdherenceChart } from '../../src/components/ui/AdherenceChart';
+import { DoseHistoryItem } from '../../src/components/medication/DoseHistoryItem';
+import { DatePickerModal } from '../../src/components/ui/DatePickerModal';
 import { Screen } from '../../src/components/layout/Screen';
+import { colors, spacing, radii, animation } from '../../src/design/tokens';
 
-const CALENDAR_THEME = {
-  backgroundColor: 'transparent',
-  calendarBackground: 'transparent',
-  textSectionTitleColor: '#737373',
-  selectedDayBackgroundColor: '#06B6D4',
-  selectedDayTextColor: '#ffffff',
-  todayTextColor: '#06B6D4',
-  dayTextColor: '#171717',
-  textDisabledColor: '#D4D4D4',
-  arrowColor: '#06B6D4',
-  monthTextColor: '#171717',
-  textDayFontSize: 16,
-  textMonthFontSize: 18,
-  textDayHeaderFontSize: 14,
-};
+// Animated View wrapper
+const AnimatedView = Animated.View;
 
 export default function HistoryScreen() {
-  const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
-  const [markedDates, setMarkedDates] = useState<Record<string, any>>({});
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [weekData, setWeekData] = useState<Map<string, number>>(new Map());
   const [dayLogs, setDayLogs] = useState<(DoseLog & { medication?: Medication })[]>([]);
   const [dayAggregate, setDayAggregate] = useState<DayAggregate | null>(null);
   const [medications, setMedications] = useState<Map<string, Medication>>(new Map());
+  const [currentStreak, setCurrentStreak] = useState(0);
+  const [bestStreak, setBestStreak] = useState(0);
+  const [weeklyData, setWeeklyData] = useState<Array<{ dayLabel: string; adherencePercent: number; hasData: boolean }>>([]);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  // Animation values
+  const fadeValue = useSharedValue(0);
+  const slideValue = useSharedValue(20);
 
   useEffect(() => {
     loadMedications();
   }, []);
 
-  const loadMonthData = useCallback(
-    async (month: DateData) => {
-      const start = startOfMonth(new Date(month.year, month.month - 1));
-      const end = endOfMonth(start);
-
-      const aggregates = await DoseLogService.getAggregatesForRange(
-        format(start, 'yyyy-MM-dd'),
-        format(end, 'yyyy-MM-dd')
-      );
-
-      const marks: Record<string, any> = {};
-      for (const agg of aggregates) {
-        let dotColor = '#22C55E';
-        if (agg.missedCount > 0 && agg.takenCount > 0) dotColor = '#F59E0B';
-        if (agg.missedCount > 0 && agg.takenCount === 0) dotColor = '#EF4444';
-
-        marks[agg.date] = {
-          marked: true,
-          dotColor,
-          selected: agg.date === selectedDate,
-          selectedColor: agg.date === selectedDate ? '#06B6D4' : undefined,
-        };
-      }
-
-      marks[selectedDate] = {
-        ...marks[selectedDate],
-        selected: true,
-        selectedColor: '#06B6D4',
-      };
-
-      setMarkedDates(marks);
-    },
-    [selectedDate]
-  );
-
-  useEffect(() => {
-    loadDayDetails(selectedDate);
-  }, [selectedDate, medications]);
-
+  // Load medications
   const loadMedications = async () => {
     const meds = await MedicationService.getAll();
     const map = new Map<string, Medication>();
@@ -85,9 +51,42 @@ export default function HistoryScreen() {
     setMedications(map);
   };
 
-  const loadDayDetails = async (date: string) => {
-    const logs = await DoseLogService.getDosesForDate(date);
-    const aggregate = await DoseLogService.getDayAggregate(date);
+  // Load week data
+  const loadWeekData = useCallback(async (date: Date) => {
+    const weekStart = startOfWeek(date, { weekStartsOn: 0 });
+    const weekEnd = endOfWeek(date, { weekStartsOn: 0 });
+
+    const aggregates = await DoseLogService.getAggregatesForRange(
+      format(weekStart, 'yyyy-MM-dd'),
+      format(weekEnd, 'yyyy-MM-dd')
+    );
+
+    const data = new Map<string, number>();
+    for (const agg of aggregates) {
+      data.set(agg.date, agg.adherencePercent);
+    }
+    setWeekData(data);
+
+    // Also update weekly chart data
+    const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+    const chartData = days.map((dayLabel, i) => {
+      const d = addDays(weekStart, i);
+      const dateStr = format(d, 'yyyy-MM-dd');
+      const agg = aggregates.find(a => a.date === dateStr);
+      return {
+        dayLabel,
+        adherencePercent: agg?.adherencePercent ?? 0,
+        hasData: agg ? agg.totalDoses > 0 : false,
+      };
+    });
+    setWeeklyData(chartData);
+  }, []);
+
+  // Load day details
+  const loadDayDetails = useCallback(async (date: Date) => {
+    const dateStr = format(date, 'yyyy-MM-dd');
+    const logs = await DoseLogService.getDosesForDate(dateStr);
+    const aggregate = await DoseLogService.getDayAggregate(dateStr);
 
     const enrichedLogs = logs.map((log) => ({
       ...log,
@@ -96,115 +95,313 @@ export default function HistoryScreen() {
 
     setDayLogs(enrichedLogs);
     setDayAggregate(aggregate);
+
+    // Animate content change
+    fadeValue.value = 0;
+    slideValue.value = 10;
+    fadeValue.value = withTiming(1, { duration: animation.fast });
+    slideValue.value = withTiming(0, { duration: animation.fast });
+  }, [medications, fadeValue, slideValue]);
+
+  // Load streaks
+  const loadStreaks = useCallback(async () => {
+    const [current, best] = await Promise.all([
+      DoseLogService.getCurrentStreak(selectedDate),
+      DoseLogService.getBestStreak(),
+    ]);
+    setCurrentStreak(current);
+    setBestStreak(best);
+  }, [selectedDate]);
+
+  // Load all data when date changes
+  useEffect(() => {
+    loadWeekData(selectedDate);
+  }, [selectedDate, loadWeekData]);
+
+  useEffect(() => {
+    if (medications.size > 0) {
+      loadDayDetails(selectedDate);
+    }
+  }, [selectedDate, medications, loadDayDetails]);
+
+  useEffect(() => {
+    loadStreaks();
+  }, [loadStreaks]);
+
+  // Handle date selection
+  const handleDateSelect = (date: Date) => {
+    setSelectedDate(date);
   };
 
-  const handleDayPress = (day: DateData) => {
-    setSelectedDate(day.dateString);
+  // Handle week navigation
+  const handlePreviousWeek = () => {
+    setSelectedDate(subWeeks(selectedDate, 1));
   };
+
+  const handleNextWeek = () => {
+    setSelectedDate(addWeeks(selectedDate, 1));
+  };
+
+  // Handle date picker
+  const handleDatePickerChange = (date: Date) => {
+    setSelectedDate(date);
+  };
+
+  // Animated styles
+  const fadeStyle = useAnimatedStyle(() => ({
+    opacity: fadeValue.value,
+    transform: [{ translateY: slideValue.value }],
+  }));
+
+  const getOverallAdherence = useCallback(() => {
+    if (!dayAggregate) return 0;
+    return dayAggregate.adherencePercent;
+  }, [dayAggregate]);
+
+  const overallAdherence = getOverallAdherence();
+  const hasDoses = dayAggregate && dayAggregate.totalDoses > 0;
 
   return (
-    <View className="flex-1 bg-surface-50">
-      <AppHeader title="History" subtitle="Insights" />
+    <View style={styles.container}>
+      <Screen scroll includeTopInset={false} padX={0} padY={0} padBottomExtra={100}>
+        {/* Week Strip */}
+        <WeekStrip
+          selectedDate={selectedDate}
+          onDateSelect={handleDateSelect}
+          weekData={weekData}
+          onPreviousWeek={handlePreviousWeek}
+          onNextWeek={handleNextWeek}
+        />
 
-      <Screen scroll includeTopInset={false} padX={16} padY={16} padBottomExtra={100}>
-        {/* Calendar Card */}
-        <View className="bg-white rounded-3xl border border-surface-100 overflow-hidden">
-          <View className="px-2 pt-2 pb-1">
-            <Calendar
-              current={selectedDate}
-              onDayPress={handleDayPress}
-              onMonthChange={loadMonthData}
-              markedDates={markedDates}
-              theme={CALENDAR_THEME}
-              enableSwipeMonths
-            />
+        <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          {/* Date Header with Picker */}
+          <View style={styles.dateHeader}>
+            <Pressable
+              onPress={() => setShowDatePicker(true)}
+              style={styles.dateButton}
+              hitSlop={8}
+              accessibilityRole="button"
+              accessibilityLabel={`Select date, currently ${format(selectedDate, 'MMMM d, yyyy')}`}
+            >
+              <Typography variant="h2" style={styles.dateText}>
+                {format(selectedDate, 'EEEE, MMMM d')}
+              </Typography>
+              <Icon name="calendar" fallback="calendar-outline" size="sm" color={colors.primary[500]} />
+            </Pressable>
           </View>
 
-          {/* Legend */}
-          <View className="flex-row justify-center gap-6 py-3 border-t border-surface-100">
-            <View className="flex-row items-center">
-              <View className="w-2.5 h-2.5 rounded-full bg-success-500 mr-2" />
-              <Typography variant="small" className="text-surface-600">
-                All taken
+          {/* Stats Cards */}
+          <AnimatedView entering={FadeInDown.delay(100).springify()} style={styles.statsRow}>
+            <Card style={styles.statsCard} elevation="none">
+              <Typography variant="small" style={styles.statsLabel}>
+                Adherence
               </Typography>
-            </View>
-            <View className="flex-row items-center">
-              <View className="w-2.5 h-2.5 rounded-full bg-warning-500 mr-2" />
-              <Typography variant="small" className="text-surface-600">
-                Partial
-              </Typography>
-            </View>
-            <View className="flex-row items-center">
-              <View className="w-2.5 h-2.5 rounded-full bg-danger-500 mr-2" />
-              <Typography variant="small" className="text-surface-600">
-                Missed
-              </Typography>
-            </View>
-          </View>
-        </View>
+              <View style={styles.statsValueContainer}>
+                <Typography variant="display" style={styles.statsValue}>
+                  {overallAdherence}%
+                </Typography>
+                <Icon
+                  name="chart.line.uptrend.xyaxis"
+                  fallback="trending-up"
+                  size="md"
+                  color={overallAdherence >= 80 ? colors.success[500] : overallAdherence >= 50 ? colors.warning[500] : colors.error[500]}
+                />
+              </View>
+            </Card>
 
-        {/* Day Details */}
-        <View className="mt-6">
-          <Typography variant="h2" className="text-surface-900 mb-1">
-            {format(parseISO(selectedDate), 'MMMM d, yyyy')}
-          </Typography>
+            <Card style={styles.statsCard} elevation="none">
+              <Typography variant="small" style={styles.statsLabel}>
+                Current Streak
+              </Typography>
+              <View style={styles.statsValueContainer}>
+                <Typography variant="display" style={styles.statsValue}>
+                  {currentStreak}
+                </Typography>
+                <Icon name="flame.fill" fallback="flame" size="md" color={colors.warning[500]} />
+              </View>
+            </Card>
 
-          {dayAggregate && dayAggregate.totalDoses > 0 ? (
-            <>
-              {/* Adherence */}
-              <View className="flex-row items-center mb-4">
-                <View className="flex-row items-center bg-success-50 px-3 py-1.5 rounded-xl">
-                  <Ionicons name="checkmark-circle" size={16} color="#22C55E" />
-                  <Typography variant="small" className="text-success-700 ml-1 font-semibold">
-                    {dayAggregate.adherencePercent}%
+            <Card style={styles.statsCard} elevation="none">
+              <Typography variant="small" style={styles.statsLabel}>
+                Best Streak
+              </Typography>
+              <View style={styles.statsValueContainer}>
+                <Typography variant="display" style={styles.statsValue}>
+                  {bestStreak}
+                </Typography>
+                <Icon name="star.fill" fallback="star" size="md" color={colors.warning[500]} />
+              </View>
+            </Card>
+          </AnimatedView>
+
+          {/* Weekly Adherence Chart */}
+          <AnimatedView entering={FadeInDown.delay(200).springify()} style={styles.chartSection}>
+            <Typography variant="h3" style={styles.chartTitle}>
+              This Week
+            </Typography>
+            <Card elevation="sm" style={styles.chartCard}>
+              <AdherenceChart data={weeklyData} height={100} />
+            </Card>
+          </AnimatedView>
+
+          {/* Day Log */}
+          <AnimatedView style={[styles.logSection, fadeStyle]}>
+            <Typography variant="h3" style={styles.logTitle}>
+              {isToday(selectedDate) ? 'Today' : 'Day Log'}
+            </Typography>
+
+            {hasDoses && dayLogs.length > 0 ? (
+              <Card elevation="sm" style={styles.logCard}>
+                {dayLogs.map((log, index) => (
+                  <DoseHistoryItem
+                    key={log.id}
+                    doseLog={log}
+                    isLast={index === dayLogs.length - 1}
+                  />
+                ))}
+              </Card>
+            ) : hasDoses && dayLogs.length === 0 ? (
+              <Card elevation="sm" style={styles.emptyCard}>
+                <View style={styles.emptyContent}>
+                  <View style={styles.emptyIcon}>
+                    <Icon name="clock.badge.questionmark" fallback="help-circle" size="xl" color={colors.surface[300]} />
+                  </View>
+                  <Typography variant="body" style={styles.emptyText}>
+                    No dose logs yet
+                  </Typography>
+                  <Typography variant="small" style={styles.emptySubtext}>
+                    Doses will appear here when scheduled
                   </Typography>
                 </View>
-                <Typography variant="small" className="text-surface-500 ml-2">
-                  {dayAggregate.takenCount}/{dayAggregate.takenCount + dayAggregate.missedCount} doses taken
-                </Typography>
-              </View>
-
-              <View className="bg-white rounded-3xl border border-surface-100 overflow-hidden">
-                {dayLogs.map((log, index) => (
-                  <View
-                    key={log.id}
-                    className={`flex-row items-center justify-between p-4 ${
-                      index < dayLogs.length - 1 ? 'border-b border-surface-100' : ''
-                    }`}
-                  >
-                    <View className="flex-row items-center flex-1">
-                      <View
-                        className="w-10 h-10 rounded-2xl items-center justify-center mr-3"
-                        style={{ backgroundColor: log.medication?.color || '#06B6D4' }}
-                      >
-                        <Ionicons name="medkit" size={18} color="#fff" />
-                      </View>
-                      <View className="flex-1">
-                        <Typography variant="body" className="text-surface-900 font-semibold">
-                          {log.medication?.name || 'Unknown medication'}
-                        </Typography>
-                        <Typography variant="small" className="text-surface-500">
-                          Scheduled at {log.scheduledTime}
-                        </Typography>
-                      </View>
-                    </View>
-                    <StatusIndicator status={log.status} showLabel />
+              </Card>
+            ) : (
+              <Card elevation="sm" style={styles.emptyCard}>
+                <View style={styles.emptyContent}>
+                  <View style={styles.emptyIcon}>
+                    <Icon name="calendar.badge.plus" fallback="calendar" size="xl" color={colors.surface[300]} />
                   </View>
-                ))}
-              </View>
-            </>
-          ) : (
-            <View className="items-center py-10">
-              <View className="w-16 h-16 rounded-3xl bg-surface-100 items-center justify-center mb-4">
-                <Ionicons name="calendar-outline" size={30} color="#737373" />
-              </View>
-              <Typography variant="body" className="text-surface-500 text-center">
-                No doses scheduled for this day
-              </Typography>
-            </View>
-          )}
-        </View>
+                  <Typography variant="body" style={styles.emptyText}>
+                    No medications scheduled
+                  </Typography>
+                  <Typography variant="small" style={styles.emptySubtext}>
+                    This day has no scheduled doses
+                  </Typography>
+                </View>
+              </Card>
+            )}
+          </AnimatedView>
+        </ScrollView>
+
+        {/* Date Picker Modal */}
+        <DatePickerModal
+          visible={showDatePicker}
+          date={selectedDate}
+          onDateChange={handleDatePickerChange}
+          onClose={() => setShowDatePicker(false)}
+          maximumDate={new Date()}
+          title="Go to Date"
+        />
       </Screen>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.surface[50],
+  },
+  scrollContent: {
+    flex: 1,
+    paddingHorizontal: spacing.md,
+  },
+  dateHeader: {
+    paddingVertical: spacing.lg,
+    paddingHorizontal: spacing.md,
+  },
+  dateButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  dateText: {
+    color: colors.surface[900],
+    fontWeight: '600',
+  },
+  statsRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  statsCard: {
+    flex: 1,
+    padding: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.surface[200],
+  },
+  statsLabel: {
+    color: colors.surface[500],
+    marginBottom: spacing.sm,
+  },
+  statsValueContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  statsValue: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: colors.surface[900],
+    lineHeight: 28,
+  },
+  chartSection: {
+    marginBottom: spacing.lg,
+  },
+  chartTitle: {
+    color: colors.surface[900],
+    fontWeight: '600',
+    marginBottom: spacing.sm,
+  },
+  chartCard: {
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.surface[200],
+  },
+  logSection: {
+    marginBottom: spacing.xl,
+  },
+  logTitle: {
+    color: colors.surface[900],
+    fontWeight: '600',
+    marginBottom: spacing.sm,
+  },
+  logCard: {
+    borderWidth: 1,
+    borderColor: colors.surface[200],
+  },
+  emptyCard: {
+    padding: spacing['2xl'],
+    borderWidth: 1,
+    borderColor: colors.surface[200],
+  },
+  emptyContent: {
+    alignItems: 'center',
+  },
+  emptyIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: radii.xl,
+    backgroundColor: colors.surface[100],
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.md,
+  },
+  emptyText: {
+    color: colors.surface[900],
+    fontWeight: '500',
+    marginBottom: spacing.xs,
+  },
+  emptySubtext: {
+    color: colors.surface[500],
+  },
+});

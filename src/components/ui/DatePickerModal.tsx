@@ -62,7 +62,7 @@ export function DatePickerModal({
   if (!visible) return null;
 
   return (
-    <View style={StyleSheet.absoluteFill} style={styles.overlay}>
+    <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
       <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
       <View style={styles.content}>
         {/* Header */}
@@ -100,15 +100,15 @@ export function DatePickerModal({
             <Button
               variant="secondary"
               size="md"
-              label="Today"
+              title="Today"
               onPress={handleToday}
               style={styles.actionButton}
-              left={<Icon name="calendar" fallback="calendar-outline" size="sm" color={colors.surface[700]} />}
+              leftIcon={<Icon name="calendar" fallback="calendar-outline" size="sm" color={colors.surface[700]} />}
             />
             <Button
               variant="primary"
               size="md"
-              label="Done"
+              title="Done"
               onPress={handleConfirm}
               style={styles.actionButton}
             />

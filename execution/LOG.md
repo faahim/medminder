@@ -2,6 +2,31 @@
 
 ## 2026-01-30
 
+### [02:00] ✅ M1-007 History Screen Redesign - COMPLETED (PM Recovery)
+**Executor**: Subagent medminder-M1-007, completed by PM watchdog recovery
+
+**Summary**: Redesigned History screen with week strip, stats cards, adherence chart, and detailed day log. Sub-agent completed the code but stalled before updating tracking files. PM watchdog recovered by updating all tracking files and committing.
+
+**Changes**:
+- `src/components/ui/WeekStrip.tsx` - Horizontal week calendar with swipe, completion dots, week navigation
+- `src/components/ui/AdherenceChart.tsx` - Simple bar chart for weekly adherence (teal/amber/red coloring)
+- `src/components/ui/DatePickerModal.tsx` - Date picker modal using @react-native-community/datetimepicker
+- `src/components/medication/DoseHistoryItem.tsx` - Redesigned dose log item with status badges and timestamps
+- `src/services/doseLog.service.ts` - Added getCurrentStreak() and getBestStreak() methods
+- `app/(tabs)/history.tsx` - Complete redesign with:
+  - WeekStrip for date navigation
+  - Stats cards (Adherence %, Current Streak, Best Streak)
+  - Weekly adherence chart
+  - Detailed day log with DoseHistoryItem components
+  - Date picker modal for jumping to dates
+  - Empty states for no medications or no dose logs
+  - Smooth transitions with Reanimated
+
+**Verification**:
+- `npx expo export --platform ios` - passed
+
+---
+
 ### [00:40] ✅ M1-004 Core UI Components Rebuild - COMPLETED
 **Executor**: Subagent medminder-M1-004
 
