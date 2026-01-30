@@ -1,35 +1,23 @@
 {
-  "version": "2.0",
-  "lastUpdated": "2026-01-30T18:05:22.068Z",
-  "summary": {
-    "total": 26,
-    "pending": 0,
-    "claimed": 0,
-    "inProgress": 0,
-    "completed": 26,
-    "failed": 0,
-    "blocked": 0
-  },
-  "phases": {
-    "phase-0": {
+  "project": "Medminder",
+  "updated": "2026-01-30T18:04:26.652Z",
+  "phases": [
+    {
+      "id": "phase-0",
       "name": "Foundation (Pre-existing)",
-      "total": 0,
-      "completed": 0,
       "status": "completed"
     },
-    "phase-1": {
+    {
+      "id": "phase-1",
       "name": "UI/UX Overhaul",
-      "total": 15,
-      "completed": 15,
       "status": "completed"
     },
-    "phase-2": {
+    {
+      "id": "phase-2",
       "name": "Notifications & Reminders",
-      "total": 11,
-      "completed": 11,
       "status": "completed"
     }
-  },
+  ],
   "tasks": [
     {
       "id": "M1-001",
@@ -450,6 +438,5 @@
       "specPath": "tasks/phase-2/M2-011.md",
       "completedAt": "2026-01-30T10:15:00Z"
     }
-  ],
-  "generatedFrom": "tasks/MANIFEST.json"
+  ]
 }
