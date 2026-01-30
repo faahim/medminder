@@ -8,7 +8,7 @@
 |-------|----------|--------|
 | Phase 0: Foundation | ██████████ 100% | ✅ Complete (pre-existing) |
 | Phase 1: UI/UX Overhaul | ██████████ 100% (15/15) | ✅ Complete |
-| Phase 2: Notifications | ███░░░░░░ 18% (2/11) | 🟡 In Progress |
+| Phase 2: Notifications | ███░░░░░░ 18% (2/11, 1 in-progress) | 🟡 In Progress |
 
 ---
 
@@ -24,15 +24,13 @@
 
 ### 🟡 In Progress
 
-*No tasks in progress*
+| ID | Task | Priority | Estimate |
+|----|------|----------|----------|
+| M2-003 | Interactive Notification Actions | P0 | 40 min |
 
 ---
 
 ### 🟢 Ready (Queue)
-
-| ID | Task | Priority | Estimate |
-|----|------|----------|----------|
-| M2-003 | Interactive Notification Actions | P0 | 40 min |
 | M2-007 | Permission Onboarding Flow | P1 | 30 min |
 | M2-008 | Notification Content Polish | P1 | 20 min |
 
