@@ -314,13 +314,13 @@
       "id": "M2-004",
       "title": "Background Rescheduling Task",
       "phase": 2,
-      "status": "pending",
+      "status": "claimed",
       "priority": "P1",
       "estimate": 30,
-      "dependencies": [
-        "M2-001"
-      ],
-      "blocks": []
+      "dependencies": [],
+      "blocks": [],
+      "claimedBy": "WATCHDOG-M2-004-2026-01-30T08:40:00Z",
+      "claimedAt": "2026-01-30T08:40:00Z"
     },
     {
       "id": "M2-005",
