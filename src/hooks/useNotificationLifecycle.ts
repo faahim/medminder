@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { Subscription } from 'expo-notifications';
+import * as Haptics from 'expo-haptics';
 import { MedicationService } from '../services/medication.service';
 import { NotificationService } from '../services/notification.service';
 import { DoseLogService } from '../services/doseLog.service';
@@ -155,16 +156,37 @@ export function useNotificationLifecycle(isDbReady: boolean) {
             scheduledTime,
             'taken'
           );
+          // Haptic feedback for successful action
+          try {
+            await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          } catch (e) {
+            // Haptics not supported, ignore
+          }
           console.log('[NotificationLifecycle] Dose logged as taken');
           break;
 
         case 'SNOOZE':
+        case 'SNOOZE_15':
+        case 'SNOOZE_30':
+        case 'SNOOZE_60': {
           const medication = await MedicationService.getById(medicationId);
           if (medication) {
-            await NotificationService.scheduleSnooze(medication, scheduledTime, 15);
-            console.log('[NotificationLifecycle] Snooze scheduled for 15 minutes');
+            let snoozeMinutes = 15; // default
+            if (action === 'SNOOZE_30') snoozeMinutes = 30;
+            else if (action === 'SNOOZE_60') snoozeMinutes = 60;
+
+            await NotificationService.scheduleSnooze(medication, scheduledTime, snoozeMinutes);
+
+            // Haptic feedback for warning action
+            try {
+              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+            } catch (e) {
+              // Haptics not supported, ignore
+            }
+            console.log(`[NotificationLifecycle] Snooze scheduled for ${snoozeMinutes} minutes`);
           }
           break;
+        }
 
         case 'SKIP':
           await DoseLogService.logDose(
@@ -173,11 +195,18 @@ export function useNotificationLifecycle(isDbReady: boolean) {
             scheduledTime,
             'skipped'
           );
+          // Haptic feedback for error/destructive action
+          try {
+            await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+          } catch (e) {
+            // Haptics not supported, ignore
+          }
           console.log('[NotificationLifecycle] Dose logged as skipped');
           break;
 
         default:
           // User tapped the notification (no action button)
+          // Navigate to medication detail where they can choose full options
           console.log('[NotificationLifecycle] Notification tapped without action');
           break;
       }

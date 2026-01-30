@@ -183,6 +183,7 @@ export const NotificationService = {
           scheduledTime: originalTime,
           type: 'medication-snooze',
         },
+        categoryIdentifier: 'medication-snooze',
         sound: 'default',
       },
       trigger: {
@@ -192,11 +193,14 @@ export const NotificationService = {
     });
   },
 
-  // Set up notification action categories
+  // Set up notification action categories with multiple snooze options
   async setupNotificationCategories(): Promise<void> {
     const notif = await getNotifications();
     if (!notif) return;
 
+    // iOS allows up to 4 actions per category
+    // We include: TAKE, SNOOZE_15, SNOOZE_30, SNOOZE_60
+    // User can tap notification body for more options (including custom snooze, skip with reason)
     await notif.setNotificationCategoryAsync('medication', [
       {
         identifier: 'TAKE',
@@ -206,8 +210,40 @@ export const NotificationService = {
         },
       },
       {
-        identifier: 'SNOOZE',
-        buttonTitle: '⏰ Snooze 15min',
+        identifier: 'SNOOZE_15',
+        buttonTitle: '⏰ 15m',
+        options: {
+          opensAppToForeground: false,
+        },
+      },
+      {
+        identifier: 'SNOOZE_30',
+        buttonTitle: '⏰ 30m',
+        options: {
+          opensAppToForeground: false,
+        },
+      },
+      {
+        identifier: 'SNOOZE_60',
+        buttonTitle: '⏰ 1h',
+        options: {
+          opensAppToForeground: false,
+        },
+      },
+    ]);
+
+    // Separate category for snoozed notifications (includes skip option)
+    await notif.setNotificationCategoryAsync('medication-snooze', [
+      {
+        identifier: 'TAKE',
+        buttonTitle: '✓ Take Now',
+        options: {
+          opensAppToForeground: false,
+        },
+      },
+      {
+        identifier: 'SNOOZE_15',
+        buttonTitle: '⏰ 15m',
         options: {
           opensAppToForeground: false,
         },
