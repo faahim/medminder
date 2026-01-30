@@ -1,23 +1,33 @@
-import { View, RefreshControl, Pressable } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { TAB_BAR_BASE_HEIGHT } from '../../src/constants/layout';
 import { useCallback, useState } from 'react';
+import { Pressable, RefreshControl, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import { format } from 'date-fns';
+import { LinearGradient } from 'expo-linear-gradient';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import * as Haptics from 'expo-haptics';
+
+import { TAB_BAR_BASE_HEIGHT } from '../../src/constants/layout';
 import { useTodaysDoses } from '../../src/hooks/useTodaysDoses';
+
+import { Screen } from '../../src/components/layout/Screen';
+import { EmptyState } from '../../src/components/ui/EmptyState';
 import { Typography } from '../../src/components/ui/Typography';
+import { Card } from '../../src/components/ui/Card';
+import { Icon } from '../../src/components/ui/Icon';
+
 import { DoseCard } from '../../src/components/medication/DoseCard';
 import { AsNeededCard } from '../../src/components/medication/AsNeededCard';
-import { EmptyState } from '../../src/components/ui/EmptyState';
-import { format } from 'date-fns';
-import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
-import { AppHeader } from '../../src/components/layout/AppHeader';
-import { Screen } from '../../src/components/layout/Screen';
+
+import { colors, radii, shadows, spacing } from '../../src/design';
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { doses, isLoading, refresh, groupedDoses, logDose, asNeededMeds, logAsNeededDose } = useTodaysDoses();
   const [refreshing, setRefreshing] = useState(false);
+
+  const fabScale = useSharedValue(1);
+  const fabAnimStyle = useAnimatedStyle(() => ({ transform: [{ scale: fabScale.value }] }));
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -49,20 +59,35 @@ export default function HomeScreen() {
   const hasAsNeededMeds = asNeededMeds && asNeededMeds.length > 0;
   const isEmpty = !hasScheduledDoses && !hasAsNeededMeds && !isLoading;
 
-  const renderTimeSection = (title: string, sectionDoses: typeof doses, icon: string) => {
+  const renderTimeSection = (
+    title: string,
+    sectionDoses: typeof doses,
+    icon: Parameters<typeof Icon>[0]['name']
+  ) => {
     if (sectionDoses.length === 0) return null;
 
     return (
-      <View className="mb-6">
-        <View className="flex-row items-center mb-3">
-          <View className="w-8 h-8 rounded-xl bg-primary-100 items-center justify-center mr-2">
-            <Ionicons name={icon as any} size={16} color="#06B6D4" />
+      <View style={{ gap: spacing.sm }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 2 }}>
+          <View
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: radii.md,
+              backgroundColor: colors.primary[100],
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: spacing.sm,
+            }}
+          >
+            <Icon name={icon} fallback="time-outline" size={18} color={colors.primary[600]} />
           </View>
-          <Typography variant="label" className="text-surface-500 uppercase tracking-wider">
+          <Typography variant="label" style={{ color: colors.surface[500], textTransform: 'uppercase', letterSpacing: 1.2 }}>
             {title}
           </Typography>
-          <View className="flex-1 h-px bg-surface-200 ml-3" />
+          <View style={{ flex: 1, height: 1, backgroundColor: colors.surface[200], marginLeft: spacing.md }} />
         </View>
+
         {sectionDoses.map((dose) => (
           <DoseCard
             key={`${dose.medication.id}-${dose.scheduledTime}`}
@@ -77,69 +102,155 @@ export default function HomeScreen() {
 
   return (
     <View className="flex-1 bg-surface-50">
-      <AppHeader
-        title={dateStr}
-        subtitle={dayName}
-        variant="gradient"
-        right={
-          hasScheduledDoses ? (
-            <View className="items-center">
-              <View className="w-16 h-16 rounded-full bg-white/20 items-center justify-center">
-                <View className="w-12 h-12 rounded-full bg-white items-center justify-center">
-                  <Typography variant="h3" className="text-primary-700 font-bold">
-                    {progressPercent}%
-                  </Typography>
-                </View>
-              </View>
-              <Typography variant="small" className="text-primary-100 mt-1">
-                {completed}/{totalScheduled}
-              </Typography>
-            </View>
-          ) : null
-        }
-        bottomSlot={
-          hasScheduledDoses ? (
-            <View className="flex-row">
-              <View className="flex-1 bg-white/10 rounded-2xl p-3.5 mr-2">
-                <View className="flex-row items-center">
-                  <View className="w-6 h-6 rounded-full bg-success-400/30 items-center justify-center mr-2">
-                    <Ionicons name="checkmark" size={14} color="#4ADE80" />
-                  </View>
-                  <Typography variant="small" className="text-white/85">
-                    Taken
-                  </Typography>
-                </View>
-                <Typography variant="h3" className="text-white font-bold mt-1">
-                  {doses.filter((d) => d.status === 'taken').length}
-                </Typography>
-              </View>
-              <View className="flex-1 bg-white/10 rounded-2xl p-3.5 ml-2">
-                <View className="flex-row items-center">
-                  <View className="w-6 h-6 rounded-full bg-warning-400/30 items-center justify-center mr-2">
-                    <Ionicons name="time-outline" size={14} color="#FBBF24" />
-                  </View>
-                  <Typography variant="small" className="text-white/85">
-                    Remaining
-                  </Typography>
-                </View>
-                <Typography variant="h3" className="text-white font-bold mt-1">
-                  {doses.filter((d) => d.status === 'pending').length}
-                </Typography>
-              </View>
-            </View>
-          ) : null
-        }
-      />
-
       <Screen
         scroll
-        includeTopInset={false}
         padX={16}
         padY={16}
-        padBottomExtra={100}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#06B6D4" />}
-        contentContainerStyle={{ flexGrow: 1 }}
+        padBottomExtra={120}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary[500]} />}
+        contentContainerStyle={{ flexGrow: 1, gap: spacing.lg }}
       >
+        {/* Premium hero */}
+        <View
+          style={{
+            borderRadius: radii.xl,
+            overflow: 'hidden',
+            borderCurve: 'continuous' as any,
+            boxShadow: shadows.md as any,
+          }}
+        >
+          <LinearGradient
+            colors={[colors.primary[600], colors.primary[500]]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{ padding: spacing.lg }}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: spacing.md }}>
+              <View style={{ flex: 1 }}>
+                <Typography variant="small" style={{ color: 'rgba(255,255,255,0.78)', marginBottom: 6 }}>
+                  {dayName}
+                </Typography>
+                <Typography
+                  variant="h1"
+                  style={{ color: colors.white, fontWeight: '700', letterSpacing: -0.3, marginBottom: 10 }}
+                >
+                  {dateStr}
+                </Typography>
+
+                {hasScheduledDoses ? (
+                  <View style={{ gap: 10 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <Typography variant="small" style={{ color: 'rgba(255,255,255,0.82)' }}>
+                        {completed} of {totalScheduled} complete
+                      </Typography>
+                      <Typography variant="small" style={{ color: 'rgba(255,255,255,0.92)', fontWeight: '700' }}>
+                        {progressPercent}%
+                      </Typography>
+                    </View>
+
+                    <View
+                      style={{
+                        height: 10,
+                        borderRadius: radii.full,
+                        backgroundColor: 'rgba(255,255,255,0.24)',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: `${progressPercent}%`,
+                          height: '100%',
+                          borderRadius: radii.full,
+                          backgroundColor: 'rgba(255,255,255,0.92)',
+                        }}
+                      />
+                    </View>
+                  </View>
+                ) : (
+                  <Typography variant="body" style={{ color: 'rgba(255,255,255,0.82)', maxWidth: 260 }}>
+                    Add a medication to start tracking your day.
+                  </Typography>
+                )}
+              </View>
+
+              {hasScheduledDoses ? (
+                <View
+                  style={{
+                    width: 76,
+                    height: 76,
+                    borderRadius: 38,
+                    backgroundColor: 'rgba(255,255,255,0.18)',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderWidth: 1,
+                    borderColor: 'rgba(255,255,255,0.22)',
+                  }}
+                >
+                  <View
+                    style={{
+                      width: 54,
+                      height: 54,
+                      borderRadius: 27,
+                      backgroundColor: colors.white,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography variant="h3" style={{ color: colors.primary[700], fontWeight: '800' }}>
+                      {progressPercent}%
+                    </Typography>
+                  </View>
+                </View>
+              ) : null}
+            </View>
+
+            {hasScheduledDoses ? (
+              <View style={{ flexDirection: 'row', gap: spacing.sm, marginTop: spacing.lg }}>
+                <View
+                  style={{
+                    flex: 1,
+                    padding: spacing.md,
+                    borderRadius: radii.lg,
+                    backgroundColor: 'rgba(255,255,255,0.12)',
+                    borderWidth: 1,
+                    borderColor: 'rgba(255,255,255,0.16)',
+                  }}
+                >
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+                    <Icon name="checkmark.circle.fill" fallback="checkmark-circle" size={16} color={'rgba(255,255,255,0.92)'} />
+                    <Typography variant="small" style={{ color: 'rgba(255,255,255,0.82)' }}>
+                      Taken
+                    </Typography>
+                  </View>
+                  <Typography variant="h3" style={{ color: colors.white, fontWeight: '800', marginTop: 6 }}>
+                    {doses.filter((d) => d.status === 'taken').length}
+                  </Typography>
+                </View>
+
+                <View
+                  style={{
+                    flex: 1,
+                    padding: spacing.md,
+                    borderRadius: radii.lg,
+                    backgroundColor: 'rgba(255,255,255,0.12)',
+                    borderWidth: 1,
+                    borderColor: 'rgba(255,255,255,0.16)',
+                  }}
+                >
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+                    <Icon name="clock.fill" fallback="time-outline" size={16} color={'rgba(255,255,255,0.92)'} />
+                    <Typography variant="small" style={{ color: 'rgba(255,255,255,0.82)' }}>
+                      Remaining
+                    </Typography>
+                  </View>
+                  <Typography variant="h3" style={{ color: colors.white, fontWeight: '800', marginTop: 6 }}>
+                    {doses.filter((d) => d.status === 'pending').length}
+                  </Typography>
+                </View>
+              </View>
+            ) : null}
+          </LinearGradient>
+        </View>
 
         {isEmpty ? (
           <EmptyState
@@ -152,60 +263,125 @@ export default function HomeScreen() {
         ) : (
           <>
             {hasScheduledDoses ? (
-              <>
-                {renderTimeSection('Morning', groupedDoses.morning, 'sunny-outline')}
-                {renderTimeSection('Afternoon', groupedDoses.afternoon, 'partly-sunny-outline')}
-                {renderTimeSection('Evening', groupedDoses.evening, 'cloudy-night-outline')}
-                {renderTimeSection('Night', groupedDoses.night, 'moon-outline')}
-              </>
+              <View style={{ gap: spacing.lg }}>
+                {renderTimeSection('Morning', groupedDoses.morning, 'sun.max.fill')}
+                {renderTimeSection('Afternoon', groupedDoses.afternoon, 'sun.and.horizon.fill')}
+                {renderTimeSection('Evening', groupedDoses.evening, 'moon.stars.fill')}
+                {renderTimeSection('Night', groupedDoses.night, 'moon.zzz.fill')}
+              </View>
             ) : null}
 
             {hasAsNeededMeds ? (
-              <View className="mb-6">
-                <View className="flex-row items-center mb-3">
-                  <View className="w-8 h-8 rounded-xl bg-accent-100 items-center justify-center mr-2">
-                    <Ionicons name="flash-outline" size={16} color="#F97316" />
+              <View style={{ gap: spacing.sm }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 2 }}>
+                  <View
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: radii.md,
+                      backgroundColor: colors.warning[100],
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginRight: spacing.sm,
+                    }}
+                  >
+                    <Icon name="bolt.fill" fallback="flash-outline" size={18} color={colors.warning[600]} />
                   </View>
-                  <Typography variant="label" className="text-surface-500 uppercase tracking-wider">
-                    As Needed
+                  <Typography variant="label" style={{ color: colors.surface[500], textTransform: 'uppercase', letterSpacing: 1.2 }}>
+                    As needed
                   </Typography>
-                  <View className="flex-1 h-px bg-surface-200 ml-3" />
+                  <View style={{ flex: 1, height: 1, backgroundColor: colors.surface[200], marginLeft: spacing.md }} />
                 </View>
 
-                {asNeededMeds.map((med) => (
-                  <AsNeededCard key={med.id} medication={med} onLogDose={logAsNeededDose} />
-                ))}
+                <View style={{ gap: spacing.sm }}>
+                  {asNeededMeds.map((med) => (
+                    <AsNeededCard key={med.id} medication={med} onLogDose={logAsNeededDose} />
+                  ))}
+                </View>
               </View>
             ) : null}
 
             {hasScheduledDoses && completed === totalScheduled ? (
-              <View className="bg-success-50 rounded-3xl p-6 items-center">
-                <View className="w-16 h-16 rounded-full bg-success-100 items-center justify-center mb-3">
-                  <Ionicons name="checkmark-done" size={32} color="#22C55E" />
+              <Card
+                elevation="sm"
+                bordered={false}
+                style={{
+                  backgroundColor: colors.success[50],
+                  padding: spacing.xl,
+                  alignItems: 'center',
+                }}
+              >
+                <View
+                  style={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: 32,
+                    backgroundColor: colors.success[100],
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: spacing.sm,
+                  }}
+                >
+                  <Icon name="checkmark.seal.fill" fallback="checkmark-done" size={30} color={colors.success[600]} />
                 </View>
-                <Typography variant="h3" className="text-success-700 font-semibold">
-                  All done for today!
+                <Typography variant="h3" style={{ color: colors.success[700], fontWeight: '700' }}>
+                  All done for today
                 </Typography>
-                <Typography variant="small" className="text-success-600/80 text-center mt-1">
-                  You’ve taken all your scheduled medications
+                <Typography variant="body" style={{ color: colors.success[600], opacity: 0.85, textAlign: 'center', marginTop: 6 }}>
+                  You’ve completed all scheduled medications.
                 </Typography>
-              </View>
+              </Card>
             ) : null}
           </>
         )}
       </Screen>
 
-      {/* Floating Action Button (hide when empty to avoid duplicate CTAs) */}
       {!isEmpty && (
-        <Pressable
-          onPress={() => router.push('/medication/add')}
-          className="absolute right-6"
-          style={{ bottom: TAB_BAR_BASE_HEIGHT + insets.bottom + 16, shadowColor: '#06B6D4', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.25, shadowRadius: 12, elevation: 10 }}
+        <Animated.View
+          style={[
+            {
+              position: 'absolute',
+              right: 24,
+              bottom: TAB_BAR_BASE_HEIGHT + insets.bottom + 16,
+            },
+            fabAnimStyle,
+          ]}
         >
-          <LinearGradient colors={['#06B6D4', '#0891B2']} className="w-14 h-14 rounded-full items-center justify-center">
-            <Ionicons name="add" size={28} color="#fff" />
-          </LinearGradient>
-        </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Add medication"
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              router.push('/medication/add');
+            }}
+            onPressIn={() => {
+              fabScale.value = withTiming(0.96, { duration: 140 });
+            }}
+            onPressOut={() => {
+              fabScale.value = withTiming(1, { duration: 140 });
+            }}
+            style={{
+              borderRadius: 28,
+              overflow: 'hidden',
+              boxShadow: shadows.lg as any,
+            }}
+          >
+            <LinearGradient
+              colors={[colors.primary[500], colors.primary[600]]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={{
+                width: 56,
+                height: 56,
+                borderRadius: 28,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Icon name="plus" fallback="add" size={26} color={colors.white} weight="bold" />
+            </LinearGradient>
+          </Pressable>
+        </Animated.View>
       )}
     </View>
   );

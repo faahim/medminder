@@ -1,13 +1,13 @@
 # 📋 Medminder - Task Board
 
-**Last Updated**: 2026-01-30T00:46:29Z
+**Last Updated**: 2026-01-30T00:49:11Z
 
 ## Overview
 
 | Phase | Progress | Status |
 |-------|----------|--------|
 | Phase 0: Foundation | ██████████ 100% | ✅ Complete (pre-existing) |
-| Phase 1: UI/UX Overhaul | ███░░░░░░░░ 27% (4/15) | 🟡 In Progress |
+| Phase 1: UI/UX Overhaul | ████░░░░░░░ 33% (5/15) | 🟡 In Progress |
 | Phase 2: Notifications | ░░░░░░░░░░ 0% | 🔲 Not Started |
 
 ---
@@ -33,7 +33,6 @@
 
 | ID | Task | Priority | Estimate |
 |----|------|----------|----------|
-| M1-005 | Today Screen Redesign | P0 | 90 min |
 | M1-006 | Medications Screen Redesign | P0 | 75 min |
 | M1-007 | History Screen Redesign | P0 | 75 min |
 | M1-008 | Settings Screen Redesign | P0 | 60 min |
@@ -62,6 +61,7 @@
 | M1-002 | Install & Configure New Dependencies | 2026-01-29T22:34:00Z |
 | M1-003 | Native Tabs Migration | 2026-01-29T22:38:58Z |
 | M1-004 | Core UI Components Rebuild | 2026-01-30T00:40:28Z |
+| M1-005 | Today Screen Redesign | 2026-01-30T00:49:11Z |
 
 ---
 
@@ -72,7 +72,7 @@ M1-001 Design System Foundation ✅
   ├─→ M1-002 Install Dependencies ✅
   │     └─→ M1-003 Native Tabs ✅
   └─→ M1-004 Core UI Components ✅
-        ├─→ M1-005 Today Screen ─────┐
+        ├─→ M1-005 Today Screen ✅───┐
         ├─→ M1-006 Medications ──────┼─→ M1-010 Detail/Edit
         ├─→ M1-007 History ──────────┤      └─→ M1-011 Prescription Import
         ├─→ M1-008 Settings ─────────┤

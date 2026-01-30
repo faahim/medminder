@@ -1,10 +1,17 @@
-import { View, Pressable, ActivityIndicator } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { useState } from 'react';
-import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import Animated, { interpolate, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+
+import type { Medication } from '../../types';
+import { colors, radii, spacing } from '../../design';
+
+import { Card } from '../ui/Card';
 import { Typography } from '../ui/Typography';
+// Button replaced by inline pill action
+import { Badge } from '../ui/Badge';
+import { Icon } from '../ui/Icon';
 import { MealTimingBadge } from './MealTimingBadge';
-import { Medication } from '../../types';
 
 interface AsNeededCardProps {
   medication: Medication;
@@ -16,94 +23,109 @@ export function AsNeededCard({ medication, onLogDose, todayCount = 0 }: AsNeeded
   const [isLogging, setIsLogging] = useState(false);
   const [localCount, setLocalCount] = useState(todayCount);
 
+  const pressed = useSharedValue(0);
+  const pressStyle = useAnimatedStyle(() => {
+    const scale = interpolate(pressed.value, [0, 1], [1, 0.98]);
+    return { transform: [{ scale }] };
+  });
+
   const handleLogDose = async () => {
     setIsLogging(true);
     try {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       await onLogDose(medication.id);
-      setLocalCount(prev => prev + 1);
+      setLocalCount((prev) => prev + 1);
     } finally {
       setIsLogging(false);
     }
   };
 
   return (
-    <View
-      className="bg-white rounded-2xl border border-accent-200 mb-3 overflow-hidden"
+    <Card
+      elevation="sm"
       style={{
-        shadowColor: '#F97316',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.06,
-        shadowRadius: 8,
-        elevation: 2,
+        borderColor: colors.warning[100],
+        borderWidth: 1,
       }}
     >
-      <View className="p-4">
-        <View className="flex-row items-center">
-          {/* Icon Badge */}
+      <View style={{ padding: spacing.md, gap: spacing.md }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <View
-            className="w-14 h-14 rounded-xl items-center justify-center mr-4"
-            style={{ backgroundColor: medication.color + '15' }}
+            style={{
+              width: 56,
+              height: 56,
+              borderRadius: radii.md,
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: spacing.md,
+              backgroundColor: `${medication.color}14`,
+            }}
           >
-            <Ionicons name="flash" size={24} color={medication.color} />
+            <Icon name="bolt.fill" fallback="flash" size={24} color={medication.color} weight="semibold" />
           </View>
 
-          {/* Medication Info */}
-          <View className="flex-1">
-            <View className="flex-row items-center mb-0.5">
-              <Typography variant="h3" className="text-surface-900 font-semibold">
+          <View style={{ flex: 1, gap: 6 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, flexWrap: 'wrap' }}>
+              <Typography variant="h3" style={{ color: colors.surface[900], fontWeight: '700' }}>
                 {medication.name}
               </Typography>
-              <View className="ml-2 px-2 py-0.5 bg-accent-100 rounded-full">
-                <Typography variant="small" className="text-accent-600 font-medium">
-                  PRN
-                </Typography>
-              </View>
+              <Badge label="PRN" variant="warning" />
             </View>
-            <Typography variant="small" className="text-surface-500 mb-1">
+            <Typography variant="small" style={{ color: colors.surface[500] }}>
               {medication.dosage} {medication.dosageUnit}
             </Typography>
-            <View className="flex-row items-center">
+
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, flexWrap: 'wrap' }}>
               <MealTimingBadge timing={medication.mealTiming} />
-              {localCount > 0 && (
-                <View className="ml-2 flex-row items-center">
-                  <Ionicons name="checkmark-circle" size={14} color="#22C55E" />
-                  <Typography variant="small" className="text-success-600 ml-1">
-                    {localCount}x today
-                  </Typography>
-                </View>
-              )}
+              {localCount > 0 ? (
+                <Badge
+                  label={`${localCount}× today`}
+                  variant="success"
+                  left={<Icon name="checkmark.circle.fill" fallback="checkmark-circle" size={14} color={colors.success[600]} />}
+                />
+              ) : null}
             </View>
           </View>
 
-          {/* Log Button */}
-          <Pressable
-            onPress={handleLogDose}
-            disabled={isLogging}
-            className="bg-accent-500 active:bg-accent-600 px-4 py-3 rounded-xl"
-          >
-            {isLogging ? (
-              <ActivityIndicator color="#fff" size="small" />
-            ) : (
-              <View className="flex-row items-center">
-                <Ionicons name="add-circle" size={18} color="#fff" />
-                <Typography variant="button" className="text-white ml-1.5 font-semibold">
-                  Log
-                </Typography>
-              </View>
-            )}
-          </Pressable>
+          <Animated.View style={pressStyle}>
+            <Pressable
+              onPress={handleLogDose}
+              disabled={isLogging}
+              onPressIn={() => {
+                pressed.value = withSpring(1, { damping: 18, stiffness: 240 });
+              }}
+              onPressOut={() => {
+                pressed.value = withSpring(0, { damping: 18, stiffness: 240 });
+              }}
+              style={{
+                minHeight: 44,
+                paddingHorizontal: 14,
+                borderRadius: radii.full,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+                backgroundColor: colors.primary[600],
+              }}
+              accessibilityRole="button"
+              accessibilityLabel={`Log PRN dose for ${medication.name}`}
+            >
+              <Icon name="plus" fallback="add" size={16} color={colors.white} weight="bold" />
+              <Typography variant="button" style={{ color: colors.white, fontWeight: '800' }}>
+                {isLogging ? 'Logging…' : 'Log'}
+              </Typography>
+            </Pressable>
+          </Animated.View>
         </View>
 
-        {/* Instructions (if any) */}
-        {medication.instructions && (
-          <View className="mt-3 pt-3 border-t border-surface-100">
-            <Typography variant="small" className="text-surface-500 italic">
+        {medication.instructions ? (
+          <View style={{ paddingTop: spacing.sm, borderTopWidth: 1, borderTopColor: colors.surface[100] }}>
+            <Typography variant="small" style={{ color: colors.surface[500] }}>
               {medication.instructions}
             </Typography>
           </View>
-        )}
+        ) : null}
       </View>
-    </View>
+    </Card>
   );
 }

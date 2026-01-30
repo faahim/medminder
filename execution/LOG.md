@@ -23,6 +23,23 @@
 
 ---
 
+### [00:49] ✅ M1-005 Today Screen Redesign - COMPLETED
+**Executor**: Subagent medminder-M1-005
+
+**Summary**: Redesigned Today screen with a premium hero (date + progress), updated timeline headers, refreshed DoseCard/AsNeededCard visuals using new primitives/tokens, and polished empty/all-done states with SF Symbols via `Icon`.
+
+**Changes**:
+- `app/(tabs)/index.tsx` - new hero + progress indicator, tokenized section headers, premium FAB (shadow + scale + haptic)
+- `src/components/medication/DoseCard.tsx` - rebuilt with `Card`/`Button`/`Icon` + improved status styling
+- `src/components/medication/AsNeededCard.tsx` - rebuilt with `Card`/`Button`/`Badge`/`Icon`
+- `src/components/medication/MealTimingBadge.tsx` - migrated to tokenized `Badge` + `Icon`
+
+**Verification**:
+- `npx tsc --noEmit`
+- `npx expo export --platform ios`
+
+---
+
 ## 2026-01-29
 
 ### [22:26] ✅ M1-001 Design System Foundation - COMPLETED

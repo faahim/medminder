@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, View, ViewStyle } from 'react-native';
 import type { ReactElement } from 'react';
-import type { RefreshControlProps } from 'react-native';
+import type { RefreshControlProps, ScrollViewProps } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export function Screen({
@@ -17,6 +17,7 @@ export function Screen({
   padBottomExtra = 0,
   includeTopInset = true,
   includeBottomInset = true,
+  contentInsetAdjustmentBehavior = 'never',
 }: {
   children: ReactNode;
   scroll?: boolean;
@@ -25,6 +26,7 @@ export function Screen({
   className?: string;
   contentContainerStyle?: ViewStyle;
   refreshControl?: ReactElement<RefreshControlProps>;
+  contentInsetAdjustmentBehavior?: ScrollViewProps['contentInsetAdjustmentBehavior'];
   padX?: number;
   padY?: number;
   padBottomExtra?: number;
@@ -49,7 +51,7 @@ export function Screen({
       <Container className={`flex-1 ${backgroundClassName} ${className}`} {...containerProps}>
         <ScrollView
           keyboardShouldPersistTaps="handled"
-          contentInsetAdjustmentBehavior="never"
+          contentInsetAdjustmentBehavior={contentInsetAdjustmentBehavior}
           refreshControl={refreshControl}
           contentContainerStyle={{
             paddingTop,
