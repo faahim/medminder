@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { Pressable, View, ActivityIndicator, ViewStyle, StyleProp } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
 import { colors, radii, shadows, spacing, typography, touchTargets, animation } from '../../design/tokens';
 import { Typography } from './Typography';
+import { triggerHaptic } from '../../utils/haptics';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success';
 export type ButtonSize = 'sm' | 'md' | 'lg' | 'xl';
@@ -119,7 +119,7 @@ export function Button({
 
   const handlePress = () => {
     if (!disabled && !loading) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      triggerHaptic('light');
       onPress();
     }
   };

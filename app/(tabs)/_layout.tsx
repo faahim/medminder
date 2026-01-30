@@ -4,7 +4,6 @@ import { Feather } from '@expo/vector-icons';
 import { Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TAB_BAR_BASE_HEIGHT, TAB_BAR_TOP_PADDING } from '../../src/constants/layout';
-import { triggerHaptic } from '../../src/utils/haptics';
 
 function AndroidTabIcon({
   name,
@@ -64,10 +63,6 @@ function AndroidTabLayout() {
   const insets = useSafeAreaInsets();
   const height = TAB_BAR_BASE_HEIGHT + insets.bottom;
 
-  const handleTabPress = () => {
-    triggerHaptic('selection');
-  };
-
   return (
     <Tabs
       screenOptions={{
@@ -103,7 +98,6 @@ function AndroidTabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <AndroidTabIcon name="calendar" focused={focused} color={color} />
           ),
-          tabBarPress: handleTabPress,
         }}
       />
       <Tabs.Screen
@@ -113,7 +107,6 @@ function AndroidTabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <AndroidTabIcon name="activity" focused={focused} color={color} />
           ),
-          tabBarPress: handleTabPress,
         }}
       />
       <Tabs.Screen
@@ -123,7 +116,6 @@ function AndroidTabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <AndroidTabIcon name="bar-chart-2" focused={focused} color={color} />
           ),
-          tabBarPress: handleTabPress,
         }}
       />
       <Tabs.Screen
@@ -133,7 +125,6 @@ function AndroidTabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <AndroidTabIcon name="settings" focused={focused} color={color} />
           ),
-          tabBarPress: handleTabPress,
         }}
       />
     </Tabs>

@@ -67,11 +67,12 @@ export function DoseCard({ dose, onStatusChange, onLogDose }: DoseCardProps) {
   const handleTake = async () => {
     setIsLogging(true);
     try {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      triggerHaptic('medium');
       if (onLogDose) {
         await onLogDose(dose.medication.id, dose.scheduledDate, dose.scheduledTime, 'taken');
       }
       onStatusChange('taken');
+      triggerHaptic('success');
     } finally {
       setIsLogging(false);
       setShowActions(false);
@@ -81,7 +82,7 @@ export function DoseCard({ dose, onStatusChange, onLogDose }: DoseCardProps) {
   const handleSkip = async () => {
     setIsLogging(true);
     try {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      triggerHaptic('light');
       if (onLogDose) {
         await onLogDose(dose.medication.id, dose.scheduledDate, dose.scheduledTime, 'skipped');
       }
