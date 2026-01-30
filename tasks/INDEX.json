@@ -1,12 +1,12 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-01-30T09:10:00Z",
+  "lastUpdated": "2026-01-30T09:20:00Z",
   "summary": {
     "total": 26,
     "pending": 1,
-    "claimed": 1,
+    "claimed": 0,
     "inProgress": 0,
-    "completed": 22,
+    "completed": 23,
     "failed": 0,
     "blocked": 0
   },
@@ -28,9 +28,9 @@
     "phase-2": {
       "name": "Notifications & Reminders",
       "total": 11,
-      "completed": 7,
+      "completed": 8,
       "status": "inProgress",
-      "lastUpdated": "2026-01-30T09:10:00Z"
+      "lastUpdated": "2026-01-30T09:20:00Z"
     }
   },
   "tasks": [
@@ -278,7 +278,8 @@
       "blocks": [
         "M2-002",
         "M2-003"
-      ]
+      ],
+      "completedAt": "2026-01-30T07:30:00Z"
     },
     {
       "id": "M2-002",
@@ -347,21 +348,20 @@
       "id": "M2-007",
       "title": "Permission Onboarding Flow",
       "phase": 2,
-      "status": "claimed",
+      "status": "completed",
       "priority": "P1",
       "estimate": 30,
       "dependencies": [
         "M2-001"
       ],
       "blocks": [],
-      "claimedBy": "WATCHDOG-M2-007-2026-01-30T09:10:00Z",
-      "claimedAt": "2026-01-30T09:10:00Z"
+      "completedAt": "2026-01-30T09:20:00Z"
     },
     {
       "id": "M2-008",
       "title": "Notification Content Polish",
       "phase": 2,
-      "status": "pending",
+      "status": "ready",
       "priority": "P1",
       "estimate": 20,
       "dependencies": [

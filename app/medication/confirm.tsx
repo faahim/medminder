@@ -7,12 +7,15 @@ import * as Haptics from 'expo-haptics';
 
 import { useMedicationForm } from '../../src/contexts/MedicationFormContext';
 import { MedicationService } from '../../src/services/medication.service';
+import { NotificationService } from '../../src/services/notification.service';
+import { SettingsService } from '../../src/services/settings.service';
 import { Screen } from '../../src/components/layout/Screen';
 import { Typography } from '../../src/components/ui/Typography';
 import { Button } from '../../src/components/ui/Button';
 import { ProgressBar } from '../../src/components/ui/ProgressBar';
 import { MealTimingBadge } from '../../src/components/medication/MealTimingBadge';
 import { Icon } from '../../src/components/ui/Icon';
+import { PermissionRequestModal } from '../../src/components/modals/PermissionRequestModal';
 import { Medication } from '../../src/types';
 
 export default function AddMedicationStep5() {
@@ -20,6 +23,9 @@ export default function AddMedicationStep5() {
   const { formData, resetForm, isEditing, editingId } = useMedicationForm();
   const [isSaving, setIsSaving] = useState(false);
   const [dependencyMed, setDependencyMed] = useState<Medication | null>(null);
+  const [showPermissionModal, setShowPermissionModal] = useState(false);
+  const [shouldShowOnboarding, setShouldShowOnboarding] = useState(false);
+  const [permissionStatus, setPermissionStatus] = useState<'not-determined' | 'granted' | 'denied'>('not-determined');
 
   useEffect(() => {
     if (formData.dependsOnMedicationId) {
@@ -29,6 +35,43 @@ export default function AddMedicationStep5() {
       });
     }
   }, [formData.dependsOnMedicationId]);
+
+  // Check if we should show onboarding on mount
+  useEffect(() => {
+    checkPermissionOnboarding();
+  }, []);
+
+  const checkPermissionOnboarding = async () => {
+    // Don't show onboarding if editing or no schedule
+    if (isEditing || formData.scheduleType === 'as-needed') {
+      return;
+    }
+
+    try {
+      // Check current permission status
+      const status = await NotificationService.getPermissionStatus();
+      setPermissionStatus(status);
+
+      // Don't show if already granted
+      if (status === 'granted') {
+        return;
+      }
+
+      // Check if this is the first scheduled medication
+      const allMeds = await MedicationService.getAll();
+      const existingScheduledMeds = allMeds.filter(m => m.scheduleType !== 'as-needed' && m.isActive);
+
+      // Show onboarding if:
+      // 1. Permission not granted
+      // 2. No existing scheduled medications (or this is the first one)
+      // 3. Not editing an existing medication
+      if (!isEditing && existingScheduledMeds.length === 0 && status !== 'granted') {
+        setShouldShowOnboarding(true);
+      }
+    } catch (error) {
+      console.error('[Confirm] Error checking permission onboarding:', error);
+    }
+  };
 
   const formatSchedule = () => {
     if (formData.scheduleType === 'as-needed') return 'As needed (PRN)';
@@ -42,6 +85,49 @@ export default function AddMedicationStep5() {
     return 'Custom schedule';
   };
 
+  const handlePermissionRequest = async () => {
+    try {
+      const status = await NotificationService.requestPermissionAndSync();
+      setPermissionStatus(status);
+      return status;
+    } catch (error) {
+      console.error('[Confirm] Error requesting permission:', error);
+      return 'denied';
+    }
+  };
+
+  const handlePermissionGranted = async () => {
+    // Update settings to mark onboarding as shown
+    await SettingsService.update({
+      notificationOnboardingShown: true,
+      notificationOnboardingLastShown: new Date().toISOString(),
+    });
+    setShowPermissionModal(false);
+    resetForm();
+    router.replace('/(tabs)/medications');
+  };
+
+  const handlePermissionDenied = async () => {
+    // Update settings to mark onboarding as shown (user chose not now or denied)
+    await SettingsService.update({
+      notificationOnboardingShown: true,
+      notificationOnboardingLastShown: new Date().toISOString(),
+    });
+    setShowPermissionModal(false);
+    resetForm();
+    router.replace('/(tabs)/medications');
+  };
+
+  const handlePermissionDismiss = async () => {
+    // User chose "Not Now" - mark as shown so we don't annoy them again soon
+    await SettingsService.update({
+      notificationOnboardingLastShown: new Date().toISOString(),
+    });
+    setShowPermissionModal(false);
+    resetForm();
+    router.replace('/(tabs)/medications');
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
     try {
@@ -51,6 +137,14 @@ export default function AddMedicationStep5() {
         await MedicationService.create(formData);
       }
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
+      // Check if we should show permission onboarding after saving
+      if (shouldShowOnboarding && permissionStatus !== 'granted') {
+        setShowPermissionModal(true);
+        setIsSaving(false);
+        return;
+      }
+
       resetForm();
       router.replace('/(tabs)/medications');
     } catch (error) {
@@ -182,6 +276,15 @@ export default function AddMedicationStep5() {
           />
         </View>
       </View>
+
+      {/* Permission Onboarding Modal */}
+      <PermissionRequestModal
+        visible={showPermissionModal}
+        onRequestPermission={handlePermissionRequest}
+        onDismiss={handlePermissionDismiss}
+        onPermissionGranted={handlePermissionGranted}
+        onPermissionDenied={handlePermissionDenied}
+      />
     </View>
   );
 }

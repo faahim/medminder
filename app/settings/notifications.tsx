@@ -1,16 +1,21 @@
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, Platform, Linking, Alert } from 'react-native';
 import { useEffect, useState } from 'react';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { router } from 'expo-router';
+import * as Haptics from 'expo-haptics';
+import * as Notifications from 'expo-notifications';
 
 import { Screen } from '../../src/components/layout/Screen';
 import { Typography } from '../../src/components/ui/Typography';
 import { Select } from '../../src/components/ui/Select';
 import { Button } from '../../src/components/ui/Button';
+import { Icon } from '../../src/components/ui/Icon';
 import { SettingSection, SettingRow, SettingRowWithSwitch } from '../../src/components/settings';
 import { Settings, SettingsService } from '../../src/services/settings.service';
-import { colors, spacing } from '../../src/design/tokens';
+import { NotificationService } from '../../src/services/notification.service';
+import { colors, radii, spacing } from '../../src/design/tokens';
 import { triggerHaptic } from '../../src/utils/haptics';
+import { NotificationPermissionStatus } from '../../src/types';
 
 // Notification timing options
 const REMINDER_TIMING_OPTIONS = [
@@ -46,17 +51,32 @@ const AnimatedView = Animated.View;
 
 export default function NotificationSettingsScreen() {
   const [settings, setSettings] = useState<Settings | null>(null);
+  const [isRequestingPermission, setIsRequestingPermission] = useState(false);
+  const [permissionStatus, setPermissionStatus] = useState<NotificationPermissionStatus>('not-determined');
 
-  // Load settings on mount
+  // Load settings and sync permission on mount
   useEffect(() => {
     loadSettings();
+    syncPermissionStatus();
   }, []);
+
+  const syncPermissionStatus = async () => {
+    try {
+      const status = await NotificationService.getPermissionStatus();
+      setPermissionStatus(status);
+      // Also sync to settings
+      await NotificationService.syncPermissionStatus();
+    } catch {
+      // Ignore errors
+    }
+  };
 
   const loadSettings = async () => {
     try {
       const s = await SettingsService.get();
       // Light-only app: keep persisted values, but normalize darkMode to 'light'
       setSettings({ ...s, darkMode: 'light' });
+      setPermissionStatus(s.notificationsPermission || 'not-determined');
     } catch {
       setSettings({
         id: 1,
@@ -69,6 +89,9 @@ export default function NotificationSettingsScreen() {
         fontSize: 'normal',
         reminderAdvanceMinutes: 0,
         notificationsEnabled: true,
+        notificationsPermission: 'not-determined',
+        notificationOnboardingShown: false,
+        notificationOnboardingLastShown: null,
       });
     }
   };
@@ -132,6 +155,86 @@ export default function NotificationSettingsScreen() {
     updateSetting('notificationSound', style);
   };
 
+  const handleRequestPermission = async () => {
+    setIsRequestingPermission(true);
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      const status = await NotificationService.requestPermissionAndSync();
+      setPermissionStatus(status);
+
+      if (status === 'granted') {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        // Ensure notifications are enabled in settings if permission is granted
+        if (!settings.notificationsEnabled) {
+          await updateSetting('notificationsEnabled', true);
+        }
+      } else {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
+    } catch (error) {
+      console.error('[NotificationSettings] Failed to request permission:', error);
+    } finally {
+      setIsRequestingPermission(false);
+    }
+  };
+
+  const handleOpenSettings = async () => {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+      if (Platform.OS === 'ios') {
+        await Linking.openSettings();
+      } else {
+        // For Android, try to open the app's notification settings
+        const pkg = 'com.medminder.app'; // Update with actual package name
+        await Linking.openSettings();
+      }
+    } catch (error) {
+      console.error('[NotificationSettings] Failed to open settings:', error);
+      Alert.alert(
+        'Unable to Open Settings',
+        'Please go to Settings > Notifications and enable notifications for Medminder.',
+        [{ text: 'OK' }]
+      );
+    }
+  };
+
+  const getPermissionStatusInfo = () => {
+    switch (permissionStatus) {
+      case 'granted':
+        return {
+          text: 'Permission granted',
+          subtext: 'You will receive medication reminders',
+          icon: 'checkmark.circle.fill',
+          iconBg: colors.success[50],
+          iconColor: colors.success[600],
+          showRequestButton: false,
+          showSettingsButton: false,
+        };
+      case 'denied':
+        return {
+          text: 'Permission denied',
+          subtext: 'You won\'t receive medication reminders',
+          icon: 'xmark.circle.fill',
+          iconBg: colors.error[50],
+          iconColor: colors.error[600],
+          showRequestButton: true,
+          showSettingsButton: true,
+        };
+      case 'not-determined':
+      default:
+        return {
+          text: 'Permission not set',
+          subtext: 'Enable notifications to receive reminders',
+          icon: 'questionmark.circle.fill',
+          iconBg: colors.warning[50],
+          iconColor: colors.warning[600],
+          showRequestButton: true,
+          showSettingsButton: false,
+        };
+    }
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: colors.surface[50] }}>
       <ScrollView
@@ -171,6 +274,79 @@ export default function NotificationSettingsScreen() {
         </AnimatedView>
 
         <View style={{ paddingHorizontal: spacing.md }}>
+          {/* PERMISSION STATUS Warning */}
+          {permissionStatus !== 'granted' && (
+            <AnimatedView entering={FadeInDown.delay(50).springify()}>
+              <View
+                style={{
+                  backgroundColor: permissionStatus === 'denied' ? colors.error[50] : colors.warning[50],
+                  borderRadius: radii.md,
+                  padding: spacing.md,
+                  marginBottom: spacing.md,
+                  borderWidth: 1,
+                  borderColor: permissionStatus === 'denied' ? colors.error[100] : colors.warning[100],
+                }}
+              >
+                <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm }}>
+                  <Icon
+                    name={getPermissionStatusInfo().icon}
+                    fallback={getPermissionStatusInfo().icon === 'checkmark.circle.fill' ? 'check-circle' : 'alert-circle'}
+                    size={24}
+                    color={getPermissionStatusInfo().iconColor}
+                  />
+                  <View style={{ flex: 1 }}>
+                    <Typography
+                      variant="label"
+                      style={{
+                        color: permissionStatus === 'denied' ? colors.error[800] : colors.warning[800],
+                        fontWeight: '600',
+                        marginBottom: 2,
+                      }}
+                    >
+                      {getPermissionStatusInfo().text}
+                    </Typography>
+                    <Typography
+                      variant="body"
+                      style={{
+                        color: permissionStatus === 'denied' ? colors.error[600] : colors.warning[700],
+                        fontSize: 14,
+                        lineHeight: 20,
+                      }}
+                    >
+                      {getPermissionStatusInfo().subtext}
+                    </Typography>
+
+                    {/* Action buttons */}
+                    <View style={{ flexDirection: 'row', gap: spacing.sm, marginTop: spacing.sm }}>
+                      {getPermissionStatusInfo().showRequestButton && (
+                        <Button
+                          variant="primary"
+                          size="small"
+                          onPress={handleRequestPermission}
+                          loading={isRequestingPermission}
+                          style={{ flex: 1 }}
+                        >
+                          {permissionStatus === 'denied' ? 'Request Again' : 'Enable'}
+                        </Button>
+                      )}
+                      {getPermissionStatusInfo().showSettingsButton && (
+                        <Button
+                          variant="ghost"
+                          size="small"
+                          onPress={handleOpenSettings}
+                          disabled={isRequestingPermission}
+                          style={{ flex: 1 }}
+                        >
+                          Open Settings
+                        </Button>
+                      )}
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </AnimatedView>
+          )}
+
           {/* MASTER TOGGLE Section */}
           <AnimatedView entering={FadeInDown.delay(100).springify()}>
             <SettingSection title="">

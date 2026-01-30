@@ -1,6 +1,6 @@
 # 📋 Medminder - Task Board
 
-**Last Updated**: 2026-01-30T09:10:00Z
+**Last Updated**: 2026-01-30T09:20:00Z
 
 ## Overview
 
@@ -8,7 +8,7 @@
 |-------|----------|--------|
 | Phase 0: Foundation | ██████████ 100% | ✅ Complete (pre-existing) |
 | Phase 1: UI/UX Overhaul | ██████████ 100% (15/15) | ✅ Complete |
-| Phase 2: Notifications | █████████░░ 64% (7/11) | 🟡 In Progress |
+| Phase 2: Notifications | ████████░░░ 73% (8/11) | 🟡 In Progress |
 
 ---
 
@@ -26,14 +26,13 @@
 
 | ID | Task | Priority | Started At |
 |----|------|----------|------------|
-| M2-007 | Permission Onboarding Flow | P1 | 2026-01-30T09:10:00Z |
+| *None* | | |
 
 ---
 
 ### 🟢 Ready (Queue)
 | ID | Task | Priority | Estimate |
 |----|------|----------|----------|
-| M2-007 | Permission Onboarding Flow | P1 | 30 min |
 | M2-008 | Notification Content Polish | P1 | 20 min |
 | M2-010 | Refill Reminders | P1 | 35 min |
 
@@ -58,6 +57,7 @@
 | M2-009 | Today View Notification Sync | 2026-01-30T08:15:00Z |
 | M2-005 | Missed Dose Detection & Follow-up | 2026-01-30T08:39:00Z |
 | M2-006 | Per-Medication Notification Settings | 2026-01-30T09:10:00Z |
+| M2-007 | Permission Onboarding Flow | 2026-01-30T09:20:00Z |
 
 ---
 
@@ -96,11 +96,11 @@ Phase 1 Complete ✅
         ├─→ M2-002 Notification Settings ✅
         │     └─→ M2-005 Missed Dose Detection ✅
         ├─→ M2-003 Interactive Actions ✅
-        │     ├─→ M2-006 Per-Med Settings 🟢
+        │     ├─→ M2-006 Per-Med Settings ✅
         │     └─→ M2-009 Today View Sync ✅
         │           └─→ M2-010 Refill Reminders 🟢
         ├─→ M2-004 Background Task ✅
-        ├─→ M2-007 Permission Onboarding 🟢
+        ├─→ M2-007 Permission Onboarding ✅
         ├─→ M2-008 Content Polish 🟢
         └─→ M2-011 QA Pass ⏳ (after all)
 ```
@@ -131,14 +131,14 @@ M1-001 Design System Foundation ✅
 | Task Group | Est. Total | Notes |
 |------------|------------|-------|
 | Lifecycle (M2-001) | 30 min | ✅ Complete |
-| Settings & Onboarding (M2-002, M2-007) | 75 min | ~1.25 hrs |
+| Settings & Onboarding (M2-002, M2-007) | 75 min | ✅ Complete |
 | Actions & Sync (M2-003, M2-009) | 70 min | ✅ Complete |
 | Missed Dose (M2-005) | 50 min | ✅ Complete |
 | Background (M2-004) | 30 min | ✅ Complete |
 | Content & Polish (M2-008) | 20 min | |
-| Advanced (M2-006, M2-010) | 75 min | ~1.25 hrs |
+| Advanced (M2-006, M2-010) | 75 min | M2-006 ✅, M2-010 pending |
 | QA (M2-011) | 45 min | |
-| **Total** | ~395 min (~6.5 hrs) | 55% complete |
+| **Total** | ~395 min (~6.5 hrs) | 73% complete |
 
 ### Phase 1 (Complete)
 | Task Group | Est. Total | Notes |

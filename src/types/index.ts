@@ -59,6 +59,8 @@ export interface Settings {
   reminderAdvanceMinutes: number;  // How early to remind (default: 0)
   notificationsEnabled: boolean;   // Master toggle for notifications (default: true)
   notificationsPermission: NotificationPermissionStatus; // Permission status: 'not-determined' | 'granted' | 'denied'
+  notificationOnboardingShown: boolean; // Whether permission onboarding modal has been shown
+  notificationOnboardingLastShown: string | null; // ISO timestamp of last onboarding show
 }
 
 // ============ DERIVED TYPES ============

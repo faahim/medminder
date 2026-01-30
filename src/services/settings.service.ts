@@ -14,6 +14,8 @@ const DEFAULT_SETTINGS: Omit<Settings, 'id'> = {
   reminderAdvanceMinutes: 0,
   notificationsEnabled: true,
   notificationsPermission: 'not-determined',
+  notificationOnboardingShown: false,
+  notificationOnboardingLastShown: null,
 };
 
 export const SettingsService = {

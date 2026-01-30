@@ -1,6 +1,6 @@
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { Platform } from 'react-native';
-import { Medication, MealTiming } from '../types';
+import { Medication, MealTiming, NotificationPermissionStatus } from '../types';
 import { format, addMinutes } from 'date-fns';
 import { DoseLogService } from './doseLog.service';
 import { SettingsService } from './settings.service';
@@ -37,11 +37,30 @@ const getNotificationId = (medicationId: string, time: string): string => {
 // Get meal timing text for notification
 const getMealTimingText = (timing: MealTiming): string => {
   switch (timing) {
-    case 'before': return '(take before meal)';
-    case 'after': return '(take after meal)';
-    case 'with': return '(take with food)';
+    case 'before': return '• Before meal';
+    case 'after': return '• After meal';
+    case 'with': return '• With food';
     default: return '';
   }
+};
+
+// Get meal timing icon
+const getMealTimingIcon = (timing: MealTiming): string => {
+  switch (timing) {
+    case 'before': return '🥗';
+    case 'after': return '🍽️';
+    case 'with': return '🍲';
+    default: return '';
+  }
+};
+
+// Format time for display (12-hour format)
+const formatTimeDisplay = (time: string): string => {
+  const [hour, minute] = time.split(':').map(Number);
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  const displayHour = hour % 12 || 12;
+  const displayMinute = minute.toString().padStart(2, '0');
+  return `${displayHour}:${displayMinute} ${ampm}`;
 };
 
 export const NotificationService = {
@@ -116,11 +135,14 @@ export const NotificationService = {
       await notif.cancelScheduledNotificationAsync(notificationId).catch(() => {});
 
       // Schedule new notification
+      const mealIcon = getMealTimingIcon(medication.mealTiming);
+      const displayTime = formatTimeDisplay(time);
+
       await notif.scheduleNotificationAsync({
         identifier: notificationId,
         content: {
-          title: '💊 Time for your medication',
-          body: `${medication.name} ${medication.dosage} ${mealText}`.trim(),
+          title: `${mealIcon}💊 Time for your medication`,
+          body: `${medication.name} — ${medication.dosage} ${medication.dosageUnit}\n${mealText ? mealText + '\n' : ''}🕐 ${displayTime}`,
           data: {
             medicationId: medication.id,
             medicationName: medication.name,
@@ -159,11 +181,14 @@ export const NotificationService = {
           advanceHour += 24;
         }
 
+        const mealIcon = getMealTimingIcon(medication.mealTiming);
+        const displayTime = formatTimeDisplay(time);
+
         await notif.scheduleNotificationAsync({
           identifier: advanceId,
           content: {
-            title: '⏰ Upcoming medication reminder',
-            body: `${medication.name} ${medication.dosage} coming up in ${advanceMinutes} minute${advanceMinutes > 1 ? 's' : ''} ${mealText}`.trim(),
+            title: `⏰ Upcoming: ${medication.name}`,
+            body: `${medication.dosage} ${medication.dosageUnit} in ${advanceMinutes} min\n${mealText ? mealText + '\n' : ''}🕐 ${displayTime}${mealIcon ? ' ' + mealIcon : ''}`,
             data: {
               medicationId: medication.id,
               medicationName: medication.name,
@@ -235,12 +260,14 @@ export const NotificationService = {
 
     const snoozeId = `snooze-${medication.id}-${Date.now()}`;
     const snoozeDate = addMinutes(new Date(), snoozeMinutes);
+    const displayTime = formatTimeDisplay(originalTime);
+    const mealIcon = getMealTimingIcon(medication.mealTiming);
 
     await notif.scheduleNotificationAsync({
       identifier: snoozeId,
       content: {
-        title: '💊 Reminder (snoozed)',
-        body: `${medication.name} ${medication.dosage} - originally scheduled for ${originalTime}`,
+        title: `⏰💊 Reminder: ${medication.name}`,
+        body: `${medication.dosage} ${medication.dosageUnit}${mealIcon ? ' ' + mealIcon : ''}\nOriginally scheduled for ${displayTime}`,
         data: {
           medicationId: medication.id,
           medicationName: medication.name,
@@ -422,14 +449,14 @@ export const NotificationService = {
       const gracePeriodMinutes = settings.gracePeriodMinutes || 30;
       const followUpId = `missed-${medication.id}-${originalTime}`;
       const followUpDate = addMinutes(new Date(), gracePeriodMinutes);
-
-      const mealText = getMealTimingText(medication.mealTiming);
+      const displayTime = formatTimeDisplay(originalTime);
+      const mealIcon = getMealTimingIcon(medication.mealTiming);
 
       await notif.scheduleNotificationAsync({
         identifier: followUpId,
         content: {
-          title: '⚠️ Missed dose',
-          body: `You missed ${medication.name} ${medication.dosage} ${mealText}`.trim(),
+          title: `⚠️ Missed: ${medication.name}`,
+          body: `${medication.dosage} ${medication.dosageUnit}${mealIcon ? ' ' + mealIcon : ''}\n🕐 ${displayTime}\n\nTap to take now or skip.`,
           data: {
             medicationId: medication.id,
             medicationName: medication.name,
@@ -485,6 +512,48 @@ export const NotificationService = {
 
     return missedCount;
   },
+
+  // Get current permission status from the system
+  async getPermissionStatus(): Promise<NotificationPermissionStatus> {
+    const notif = await getNotifications();
+    if (!notif) {
+      return 'denied';
+    }
+
+    const { status } = await notif.getPermissionsAsync();
+    return status as NotificationPermissionStatus;
+  },
+
+  // Request permission and sync with settings
+  async requestPermissionAndSync(): Promise<NotificationPermissionStatus> {
+    const notif = await getNotifications();
+    if (!notif) {
+      return 'denied';
+    }
+
+    const { status } = await notif.requestPermissionsAsync();
+    const permissionStatus = status as NotificationPermissionStatus;
+
+    // Sync with settings
+    await SettingsService.update({ notificationsPermission: permissionStatus });
+
+    // Also update the master notifications enabled setting based on permission
+    if (permissionStatus === 'granted') {
+      const settings = await SettingsService.get();
+      if (settings.notificationsEnabled === false) {
+        // User granted permission but had disabled notifications in settings
+        // Keep their setting preference but update permission state
+      }
+    }
+
+    return permissionStatus;
+  },
+
+  // Sync system permission status with settings
+  async syncPermissionStatus(): Promise<void> {
+    const systemStatus = await this.getPermissionStatus();
+    await SettingsService.update({ notificationsPermission: systemStatus });
+  },
 };
 
 // Export individual functions for convenience
@@ -505,4 +574,7 @@ export const {
   cancelMissedDoseFollowUp,
   isMissedDoseFollowUpScheduled,
   checkAndUpdateMissedDoses,
+  getPermissionStatus,
+  requestPermissionAndSync,
+  syncPermissionStatus,
 } = NotificationService;
