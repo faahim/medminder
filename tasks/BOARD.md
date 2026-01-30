@@ -1,13 +1,13 @@
 # 📋 Medminder - Task Board
 
-**Last Updated**: 2026-01-30T03:45:00Z
+**Last Updated**: 2026-01-30T04:15:00Z
 
 ## Overview
 
 | Phase | Progress | Status |
 |-------|----------|--------|
 | Phase 0: Foundation | ██████████ 100% | ✅ Complete (pre-existing) |
-| Phase 1: UI/UX Overhaul | ███████░░░░ 60% (9/15) | 🟡 In Progress |
+| Phase 1: UI/UX Overhaul | ██████████░░ 67% (10/15) | 🟡 In Progress |
 | Phase 2: Notifications | ░░░░░░░░░░ 0% | 🔲 Not Started |
 
 ---
@@ -24,9 +24,7 @@
 
 ### 🟡 In Progress
 
-| ID | Task | Priority | Claimed At |
-|----|------|----------|------------|
-| M1-010 | Medication Detail & Edit Screens | P0 | 04:00 |
+*No tasks in progress*
 
 ---
 
@@ -34,6 +32,7 @@
 
 | ID | Task | Priority | Estimate |
 |----|------|----------|----------|
+| M1-011 | Prescription Import Flow Redesign | P1 | 45 min |
 | M1-012 | Animations & Micro-interactions | P0 | 60 min |
 | M1-014 | Empty States & Error States | P1 | 40 min |
 
@@ -43,7 +42,6 @@
 
 | ID | Task | Priority | Waiting On |
 |----|------|----------|------------|
-| M1-011 | Prescription Import Flow Redesign | P1 | M1-010 |
 | M1-013 | Haptics Integration | P1 | M1-012 |
 | M1-015 | QA & Polish Pass | P0 | M1-010-014 |
 
@@ -62,6 +60,7 @@
 | M1-007 | History Screen Redesign | 2026-01-30T01:45:00Z |
 | M1-008 | Settings Screen Redesign | 2026-01-30T02:15:00Z |
 | M1-009 | Add Medication Wizard Redesign | 2026-01-30T03:45:00Z |
+| M1-010 | Medication Detail & Edit Screens | 2026-01-30T04:15:00Z |
 
 ---
 
@@ -73,14 +72,14 @@ M1-001 Design System Foundation ✅
   │     └─→ M1-003 Native Tabs ✅
   └─→ M1-004 Core UI Components ✅
         ├─→ M1-005 Today Screen ✅───┐
-        ├─→ M1-006 Medications ✅───┼─→ M1-010 Detail/Edit
-        ├─→ M1-007 History ──────────┤      └─→ M1-011 Prescription Import
+        ├─→ M1-006 Medications ✅───┼─→ M1-010 Detail/Edit ✅
+        ├─→ M1-007 History ──────────┤      └─→ M1-011 Prescription Import 🟢
         ├─→ M1-008 Settings ✅────────┤
         ├─→ M1-009 Add Wizard ───────┤
-        └─→ M1-014 Empty States      │
-                                     └─→ M1-012 Animations
-                                           └─→ M1-013 Haptics
-                                                 └─→ M1-015 QA Pass
+        └─→ M1-014 Empty States ─────┘
+                                           └─→ M1-012 Animations 🟢
+                                                 └─→ M1-013 Haptics
+                                                       └─→ M1-015 QA Pass
 ```
 
 ---
@@ -92,9 +91,9 @@ M1-001 Design System Foundation ✅
 | Foundation (M1-001, 002) | 65 min | ✅ done |
 | Navigation (M1-003) | 40 min | ✅ done |
 | Components (M1-004) | 60 min | ✅ done |
-| Screens (M1-005-011) | 495 min (~8 hrs) | Can parallelize some |
+| Screens (M1-005-011) | 555 min (~9 hrs) | M1-011 remaining |
 | Polish (M1-012-015) | 190 min (~3 hrs) | Final touches |
-| **Total** | ~850 min (~14 hrs) | |
+| **Total** | ~910 min (~15 hrs) | |
 
 ---
 

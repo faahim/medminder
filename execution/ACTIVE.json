@@ -1,11 +1,4 @@
 {
-  "lastUpdated": "2026-01-30T04:00:00Z",
-  "claims": [
-    {
-      "taskId": "M1-010",
-      "label": "medminder-M1-010",
-      "claimedAt": "2026-01-30T04:00:00Z",
-      "status": "in_progress"
-    }
-  ]
+  "lastUpdated": "2026-01-30T04:15:00Z",
+  "claims": []
 }

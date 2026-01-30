@@ -2,6 +2,41 @@
 
 ## 2026-01-30
 
+### [04:15] ✅ M1-010 Medication Detail & Edit Screens - COMPLETED (PM Recovery)
+**Executor**: Subagent medminder-M1-010, completed by PM watchdog recovery
+
+**Summary**: Redesigned medication detail screen with hero section, schedule display, duration info, instructions, statistics, and recent history. Redesigned edit screen with comprehensive form for updating all medication properties. Sub-agent completed all code work but stalled before updating tracking files. PM watchdog recovered by updating tracking files and verifying build.
+
+**Changes**:
+- `src/components/medication/MedicationStats.tsx` - New statistics component showing status badge, doses taken, adherence rate with progress bar, and last taken info
+- `app/medication/[id].tsx` - Complete redesign with:
+  - Hero section with medication icon, name, dosage, and meal timing badge
+  - Schedule section showing times based on schedule type
+  - Duration section with start/end dates and status
+  - Instructions section when available
+  - Statistics section using MedicationStats component
+  - Recent history list with status indicators
+  - Quick action buttons: Edit, Pause/Resume, Delete
+  - Loading state and proper error handling
+  - Delete confirmation dialog
+  - Haptic feedback on actions
+- `app/medication/edit/[id].tsx` - Complete redesign with:
+  - Pre-filled form with existing medication data
+  - Basic information section (name, dosage, instructions)
+  - Meal timing selector
+  - Schedule configuration based on schedule type
+  - Duration section with date pickers
+  - Color picker for medication icon
+  - Save Changes button in footer
+  - Validation and error handling
+
+**Verification**:
+- `npx expo export --platform ios` - passed
+
+**Commit**: `09369c9`
+
+---
+
 ### [03:45] ✅ M1-009 Add Medication Wizard Redesign - COMPLETED (PM Recovery)
 **Executor**: Subagent medminder-M1-009, completed by PM watchdog recovery
 

@@ -1,12 +1,12 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-01-30T04:00:00Z",
+  "lastUpdated": "2026-01-30T04:15:00Z",
   "summary": {
     "total": 15,
-    "pending": 4,
-    "claimed": 1,
+    "pending": 3,
+    "claimed": 0,
     "inProgress": 0,
-    "completed": 9,
+    "completed": 10,
     "failed": 0,
     "blocked": 0
   },
@@ -21,7 +21,7 @@
     "phase-1": {
       "name": "UI/UX Overhaul",
       "total": 15,
-      "completed": 9,
+      "completed": 10,
       "status": "in_progress"
     },
     "phase-2": {
@@ -171,7 +171,7 @@
       "id": "M1-010",
       "title": "Medication Detail & Edit Screens",
       "phase": 1,
-      "status": "claimed",
+      "status": "completed",
       "priority": "P0",
       "estimate": 60,
       "dependencies": [
@@ -186,7 +186,7 @@
       "id": "M1-011",
       "title": "Prescription Import Flow Redesign",
       "phase": 1,
-      "status": "pending",
+      "status": "ready",
       "priority": "P1",
       "estimate": 45,
       "dependencies": [
@@ -200,7 +200,7 @@
       "id": "M1-012",
       "title": "Animations & Micro-interactions",
       "phase": 1,
-      "status": "pending",
+      "status": "ready",
       "priority": "P0",
       "estimate": 60,
       "dependencies": [
@@ -231,7 +231,7 @@
       "id": "M1-014",
       "title": "Empty States & Error States",
       "phase": 1,
-      "status": "pending",
+      "status": "ready",
       "priority": "P1",
       "estimate": 40,
       "dependencies": [
