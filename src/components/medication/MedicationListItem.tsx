@@ -5,7 +5,7 @@ import { Icon } from '../ui/Icon';
 import { Badge } from '../ui/Badge';
 import { Typography } from '../ui/Typography';
 import { MealTimingBadge } from './MealTimingBadge';
-import { colors, radii, shadowsNative, spacing } from '../../design/tokens';
+import { colors } from '../../design/tokens';
 import { Medication } from '../../types';
 import { getDependencyStatus } from '../../utils/schedule';
 
@@ -40,35 +40,25 @@ export function MedicationListItem({ medication, allMedications = [], onPress }:
       accessibilityHint="Tap to view details"
     >
       <Card elevation="sm" bordered>
-        <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+        <View className="flex-row items-start">
           {/* Icon container with color */}
           <View
-            style={{
-              width: 56,
-              height: 56,
-              borderRadius: radii.md,
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginRight: spacing.md,
-              backgroundColor: medication.color + '15',
-              borderWidth: 1,
-              borderColor: medication.color + '20',
-            }}
+            className="w-14 h-14 rounded-xl items-center justify-center mr-3.5"
+            style={{ backgroundColor: medication.color + '15' }}
           >
             <Icon
               name={isAsNeeded ? 'bolt.fill' : 'pills.fill'}
               fallback={isAsNeeded ? 'flash' : 'medkit'}
               size="lg"
               color={medication.color}
-              weight="semibold"
             />
           </View>
 
           {/* Content */}
-          <View style={{ flex: 1 }}>
+          <View className="flex-1">
             {/* Header row */}
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing.xs }}>
-              <Typography variant="h3" style={{ color: colors.surface[900], fontWeight: '600', flex: 1 }}>
+            <View className="flex-row items-center justify-between mb-1">
+              <Typography variant="h3" className="text-surface-900 font-semibold flex-1">
                 {medication.name}
               </Typography>
 
@@ -78,18 +68,18 @@ export function MedicationListItem({ medication, allMedications = [], onPress }:
                   size="sm"
                   variant="warning"
                   label="PRN"
-                  style={{ marginLeft: spacing.sm }}
+                  className="ml-2"
                 />
               )}
             </View>
 
             {/* Dosage and schedule */}
-            <Typography variant="small" style={{ color: colors.surface[500], marginBottom: spacing.sm }}>
+            <Typography variant="small" className="text-surface-500 mb-2">
               {medication.dosage} {medication.dosageUnit} · {scheduleLabel}
             </Typography>
 
             {/* Badges row */}
-            <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: spacing.xs }}>
+            <View className="flex-row items-center flex-wrap gap-1.5">
               <MealTimingBadge timing={medication.mealTiming} size="sm" />
 
               {/* Duration badge if has end date */}
@@ -126,63 +116,10 @@ export function MedicationListItem({ medication, allMedications = [], onPress }:
                 />
               )}
             </View>
-
-            {/* Dependency status banner */}
-            {dependencyStatus.isWaiting && (
-              <View
-                style={{
-                  marginTop: spacing.sm,
-                  paddingTop: spacing.sm,
-                  borderTopWidth: 1,
-                  borderTopColor: colors.surface[100],
-                }}
-              >
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    backgroundColor: colors.primary[50],
-                    borderRadius: radii.md,
-                    paddingHorizontal: spacing.sm,
-                    paddingVertical: spacing.xs,
-                    gap: spacing.sm,
-                  }}
-                >
-                  <View
-                    style={{
-                      width: 32,
-                      height: 32,
-                      borderRadius: radii.sm,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      backgroundColor: colors.primary[100],
-                    }}
-                  >
-                    <Icon
-                      name="clock.fill"
-                      fallback="time-outline"
-                      size={14}
-                      color={colors.primary[600]}
-                    />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Typography variant="small" style={{ color: colors.primary[700], fontWeight: '600' }}>
-                      Waiting to start
-                    </Typography>
-                    <Typography variant="small" style={{ color: colors.primary[600], fontSize: 11 }}>
-                      {dependencyStatus.daysUntilStart
-                        ? `Starts in ${dependencyStatus.daysUntilStart} day${dependencyStatus.daysUntilStart > 1 ? 's' : ''} after ${dependencyStatus.dependencyName}`
-                        : `Starts after ${dependencyStatus.dependencyName} completes`
-                      }
-                    </Typography>
-                  </View>
-                </View>
-              </View>
-            )}
           </View>
 
           {/* Chevron */}
-          <View style={{ marginLeft: spacing.sm, paddingTop: 2 }}>
+          <View className="ml-3 pt-1">
             <Icon
               name="chevron.right"
               fallback="chevron-forward"

@@ -4,46 +4,55 @@ import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useMedications } from '../../src/hooks/useMedications';
-import { Icon } from '../../src/components/ui/Icon';
-import { Input } from '../../src/components/ui/Input';
-import { Pill } from '../../src/components/ui/Pill';
-import { Typography } from '../../src/components/ui/Typography';
-import { EmptyState } from '../../src/components/ui/EmptyState';
+import { MedicationListItem } from '../../src/components/medication/MedicationListItem';
 import { AppHeader } from '../../src/components/layout/AppHeader';
-import { colors, radii } from '../../src/design/tokens';
+import { SearchInput } from '../../src/components/ui/SearchInput';
+import { Pill } from '../../src/components/ui/Pill';
+import { Card } from '../../src/components/ui/Card';
+import { Icon } from '../../src/components/ui/Icon';
+import { Typography } from '../../src/components/ui/Typography';
+import { Badge } from '../../src/components/ui/Badge';
+import { colors, spacing } from '../../src/design/tokens';
+
+type TabType = 'active' | 'archived';
 
 export default function MedicationsScreen() {
   const insets = useSafeAreaInsets();
-  const [showArchived, setShowArchived] = useState(false);
+  const [tab, setTab] = useState<TabType>('active');
   const [searchQuery, setSearchQuery] = useState('');
   const { medications, archivedMedications } = useMedications();
 
-  const displayList = showArchived ? archivedMedications : medications;
-  const activeCount = medications.length;
-  const archivedCount = archivedMedications.length;
-
-  // Filter by search query
-  const filteredList = displayList.filter((med) =>
+  // Filter medications based on search query
+  const activeFiltered = medications.filter(med =>
     med.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     med.dosage.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const archivedFiltered = archivedMedications.filter(med =>
+    med.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    med.dosage.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const displayList = tab === 'active' ? activeFiltered : archivedFiltered;
+  const activeCount = medications.length;
+  const archivedCount = archivedMedications.length;
+  const hasSearchQuery = searchQuery.trim().length > 0;
+
   return (
-    <View className="flex-1 bg-surface-50" style={{ backgroundColor: colors.surface[50] }}>
+    <View className="flex-1 bg-surface-50">
       <AppHeader
         title="Medications"
         subtitle="Manage"
         variant="plain"
         right={
-          <>
+          <View className="flex-row items-center gap-2">
             <Pressable
               onPress={() => router.push('/prescription/import')}
-              className="w-12 h-12 rounded-2xl items-center justify-center"
-              style={{ backgroundColor: colors.surface[100] }}
+              className="w-11 h-11 rounded-xl bg-surface-100 items-center justify-center border border-surface-200"
               accessibilityLabel="Import prescription"
             >
               <Icon
-                name="camera"
+                name="camera.fill"
                 fallback="camera"
                 size="md"
                 color={colors.primary[500]}
@@ -51,131 +60,187 @@ export default function MedicationsScreen() {
             </Pressable>
             <Pressable
               onPress={() => router.push('/medication/add')}
-              className="w-12 h-12 rounded-2xl items-center justify-center"
+              className="w-11 h-11 rounded-xl bg-primary-500 items-center justify-center"
               style={{
-                backgroundColor: colors.primary[500],
                 shadowColor: colors.primary[500],
-                shadowOffset: { width: 0, height: 6 },
-                shadowOpacity: 0.22,
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.25,
                 shadowRadius: 12,
-                elevation: 6,
+                elevation: 4,
               }}
               accessibilityLabel="Add medication"
             >
-              <Icon name="plus" fallback="add" size="lg" color={colors.white} />
+              <Icon
+                name="plus"
+                fallback="add"
+                size="md"
+                color={colors.white}
+              />
             </Pressable>
-          </>
-        }
-        bottomSlot={
-          <View className="gap-3">
-            {/* Search Input */}
-            <Input
-              placeholder="Search medications..."
-              size="md"
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-            />
-
-            {/* Toggle Pills */}
-            <View className="flex-row gap-2">
-              <Pill
-                label={`Active (${activeCount})`}
-                selected={!showArchived}
-                onPress={() => setShowArchived(false)}
-                left={
-                  <Icon
-                    name="pills.fill"
-                    fallback="medkit"
-                    size="sm"
-                    color={!showArchived ? colors.white : colors.surface[700]}
-                  />
-                }
-              />
-              <Pill
-                label={`Archived (${archivedCount})`}
-                selected={showArchived}
-                onPress={() => setShowArchived(true)}
-                left={
-                  <Icon
-                    name="archivebox"
-                    fallback="archive"
-                    size="sm"
-                    color={showArchived ? colors.white : colors.surface[700]}
-                  />
-                }
-              />
-            </View>
           </View>
         }
       />
 
       <FlatList
-        data={filteredList}
+        data={displayList}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{
-          paddingHorizontal: 16,
-          paddingTop: 16,
-          paddingBottom: insets.bottom + 96,
+          paddingHorizontal: spacing.md,
+          paddingTop: spacing.md,
+          paddingBottom: insets.bottom + 100,
         }}
+        ListHeaderComponent={
+          <>
+            {/* Tab Pills */}
+            <View className="flex-row gap-2 mb-4">
+              <Pill
+                label="Active"
+                size="md"
+                variant={tab === 'active' ? 'primary' : 'secondary'}
+                selected={tab === 'active'}
+                left={
+                  <Icon
+                    name="pills.fill"
+                    fallback="medkit"
+                    size={14}
+                    color={tab === 'active' ? colors.white : colors.surface[700]}
+                  />
+                }
+                right={
+                  <Badge
+                    size="sm"
+                    variant={tab === 'active' ? 'default' : 'default'}
+                    label={activeCount.toString()}
+                    className={tab === 'active' ? '' : ''}
+                    style={{
+                      backgroundColor: tab === 'active' ? 'rgba(255,255,255,0.25)' : colors.surface[200],
+                      borderWidth: 0,
+                    }}
+                  />
+                }
+                onPress={() => setTab('active')}
+              />
+              <Pill
+                label="Archived"
+                size="md"
+                variant={tab === 'archived' ? 'primary' : 'secondary'}
+                selected={tab === 'archived'}
+                left={
+                  <Icon
+                    name="archivebox.fill"
+                    fallback="archive"
+                    size={14}
+                    color={tab === 'archived' ? colors.white : colors.surface[700]}
+                  />
+                }
+                right={
+                  archivedCount > 0 ? (
+                    <Badge
+                      size="sm"
+                      variant="default"
+                      label={archivedCount.toString()}
+                      style={{
+                        backgroundColor: tab === 'archived' ? 'rgba(255,255,255,0.25)' : colors.surface[200],
+                        borderWidth: 0,
+                      }}
+                    />
+                  ) : undefined
+                }
+                onPress={() => setTab('archived')}
+              />
+            </View>
+
+            {/* Search Input */}
+            <View className="mb-4">
+              <SearchInput
+                placeholder={tab === 'active' ? 'Search medications...' : 'Search archived...'}
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+              />
+            </View>
+          </>
+        }
         renderItem={({ item }) => (
           <View className="mb-3">
-            <View
+            <MedicationListItem
+              medication={item}
+              allMedications={medications}
               onPress={() => router.push(`/medication/${item.id}`)}
-              accessibilityRole="button"
-            >
-              {/* Import MedicationListItem component here - using inline for now */}
-              <View
-                className="rounded-2xl p-4 border"
-                style={{
-                  backgroundColor: colors.white,
-                  borderColor: colors.surface[200],
-                  borderRadius: radii.lg,
-                  borderCurve: 'continuous',
-                  boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
-                }}
-              >
-                <View className="flex-row items-start">
-                  <View
-                    className="w-14 h-14 rounded-xl items-center justify-center mr-3.5"
-                    style={{ backgroundColor: item.color + '15' }}
-                  >
-                    <Icon
-                      name={item.scheduleType === 'as-needed' ? 'bolt.fill' : 'pills.fill'}
-                      fallback={item.scheduleType === 'as-needed' ? 'flash' : 'medkit'}
-                      size="lg"
-                      color={item.color}
-                    />
-                  </View>
-                  <View className="flex-1">
-                    <Typography variant="h3" className="text-surface-900 font-semibold">
-                      {item.name}
-                    </Typography>
-                    <Typography variant="small" className="text-surface-500 mb-1.5">
-                      {item.dosage} {item.dosageUnit}
-                    </Typography>
-                  </View>
-                  <Icon
-                    name="chevron.right"
-                    fallback="chevron-forward"
-                    size="md"
-                    color={colors.surface[400]}
-                  />
-                </View>
-              </View>
-            </View>
+            />
           </View>
         )}
         ListEmptyComponent={
-          <EmptyState
-            icon={showArchived ? 'archivebox' : 'pills'}
-            title={searchQuery ? 'No results found' : (showArchived ? 'No archived medications' : 'No medications yet')}
-            subtitle={searchQuery
-              ? 'Try a different search term'
-              : (showArchived ? 'Archived medications will appear here' : 'Add your first medication to get started')
-            }
-            actionLabel={showArchived ? undefined : 'Add Medication'}
-            actionHref={showArchived ? undefined : '/medication/add'}
-          />
+          <View className="flex-1 items-center justify-center py-12">
+            {/* Empty state illustration */}
+            <Card bordered={false} elevation="none" className="mb-6">
+              <View
+                className="w-24 h-24 rounded-2xl items-center justify-center"
+                style={{ backgroundColor: tab === 'active' ? colors.primary[50] : colors.surface[100] }}
+              >
+                {hasSearchQuery ? (
+                  <Icon
+                    name="magnifyingglass"
+                    fallback="search-outline"
+                    size="xl"
+                    color={tab === 'active' ? colors.primary[400] : colors.surface[300]}
+                  />
+                ) : tab === 'active' ? (
+                  <Icon
+                    name="pills.fill"
+                    fallback="medkit"
+                    size="xl"
+                    color={colors.primary[400]}
+                  />
+                ) : (
+                  <Icon
+                    name="archivebox.fill"
+                    fallback="archive"
+                    size="xl"
+                    color={colors.surface[300]}
+                  />
+                )}
+              </View>
+            </Card>
+
+            {/* Empty state text */}
+            <Typography variant="h2" className="text-surface-900 text-center mb-2">
+              {hasSearchQuery
+                ? 'No medications found'
+                : tab === 'active'
+                  ? 'No medications yet'
+                  : 'No archived medications'
+              }
+            </Typography>
+
+            <Typography variant="body" className="text-surface-500 text-center mb-6 max-w-xs">
+              {hasSearchQuery
+                ? 'Try adjusting your search terms'
+                : tab === 'active'
+                  ? 'Add your first medication to get started'
+                  : 'Archived medications will appear here'
+              }
+            </Typography>
+
+            {/* Action button for active tab without search */}
+            {tab === 'active' && !hasSearchQuery && (
+              <Pressable
+                onPress={() => router.push('/medication/add')}
+                className="px-6 py-3 bg-primary-500 rounded-xl flex-row items-center justify-center"
+                style={{
+                  shadowColor: colors.primary[500],
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 12,
+                  elevation: 4,
+                }}
+              >
+                <Icon name="plus" fallback="add" size="md" color={colors.white} />
+                <Typography variant="button" className="text-white ml-2 font-semibold">
+                  Add Medication
+                </Typography>
+              </Pressable>
+            )}
+          </View>
         }
       />
     </View>

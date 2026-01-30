@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-01-23T12:00:00Z",
+  "lastUpdated": "2026-01-30T01:00:00Z",
   "claims": [
     {
       "taskId": "M1-005",
@@ -11,9 +11,15 @@
     {
       "taskId": "M1-006",
       "label": "medminder-M1-006",
-      "claimedAt": "2025-01-23T12:00:00Z",
+      "claimedAt": "2026-01-30T00:50:00Z",
       "status": "completed",
-      "completedAt": "2025-01-23T12:00:00Z"
+      "completedAt": "2026-01-30T01:03:00Z"
+    },
+    {
+      "taskId": "M1-007",
+      "label": "medminder-M1-007",
+      "claimedAt": "2026-01-30T01:00:00Z",
+      "status": "in_progress"
     }
   ]
 }
