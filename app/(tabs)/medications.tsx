@@ -2,8 +2,10 @@ import { View, FlatList, Pressable } from 'react-native';
 import { useState } from 'react';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 
 import { useMedications } from '../../src/hooks/useMedications';
+import { useStaggeredAnimation } from '../../src/hooks/useStaggeredAnimation';
 import { MedicationListItem } from '../../src/components/medication/MedicationListItem';
 import { AppHeader } from '../../src/components/layout/AppHeader';
 import { SearchInput } from '../../src/components/ui/SearchInput';
@@ -40,46 +42,48 @@ export default function MedicationsScreen() {
 
   return (
     <View className="flex-1 bg-surface-50">
-      <AppHeader
-        title="Medications"
-        subtitle="Manage"
-        variant="plain"
-        right={
-          <View className="flex-row items-center gap-2">
-            <Pressable
-              onPress={() => router.push('/prescription/import')}
-              className="w-11 h-11 rounded-xl bg-surface-100 items-center justify-center border border-surface-200"
-              accessibilityLabel="Import prescription"
-            >
-              <Icon
-                name="camera.fill"
-                fallback="camera"
-                size="md"
-                color={colors.primary[500]}
-              />
-            </Pressable>
-            <Pressable
-              onPress={() => router.push('/medication/add')}
-              className="w-11 h-11 rounded-xl bg-primary-500 items-center justify-center"
-              style={{
-                shadowColor: colors.primary[500],
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.25,
-                shadowRadius: 12,
-                elevation: 4,
-              }}
-              accessibilityLabel="Add medication"
-            >
-              <Icon
-                name="plus"
-                fallback="add"
-                size="md"
-                color={colors.white}
-              />
-            </Pressable>
-          </View>
-        }
-      />
+      <Animated.View entering={FadeIn.duration(250)}>
+        <AppHeader
+          title="Medications"
+          subtitle="Manage"
+          variant="plain"
+          right={
+            <View className="flex-row items-center gap-2">
+              <Pressable
+                onPress={() => router.push('/prescription/import')}
+                className="w-11 h-11 rounded-xl bg-surface-100 items-center justify-center border border-surface-200"
+                accessibilityLabel="Import prescription"
+              >
+                <Icon
+                  name="camera.fill"
+                  fallback="camera"
+                  size="md"
+                  color={colors.primary[500]}
+                />
+              </Pressable>
+              <Pressable
+                onPress={() => router.push('/medication/add')}
+                className="w-11 h-11 rounded-xl bg-primary-500 items-center justify-center"
+                style={{
+                  shadowColor: colors.primary[500],
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 12,
+                  elevation: 4,
+                }}
+                accessibilityLabel="Add medication"
+              >
+                <Icon
+                  name="plus"
+                  fallback="add"
+                  size="md"
+                  color={colors.white}
+                />
+              </Pressable>
+            </View>
+          }
+        />
+      </Animated.View>
 
       <FlatList
         data={displayList}
@@ -92,7 +96,7 @@ export default function MedicationsScreen() {
         ListHeaderComponent={
           <>
             {/* Tab Pills */}
-            <View className="flex-row gap-2 mb-4">
+            <Animated.View entering={FadeInDown.delay(100).springify()} className="flex-row gap-2 mb-4">
               <Pill
                 label="Active"
                 size="md"
@@ -148,29 +152,33 @@ export default function MedicationsScreen() {
                 }
                 onPress={() => setTab('archived')}
               />
-            </View>
+            </Animated.View>
 
             {/* Search Input */}
-            <View className="mb-4">
+            <Animated.View entering={FadeInDown.delay(150).springify()} className="mb-4">
               <SearchInput
                 placeholder={tab === 'active' ? 'Search medications...' : 'Search archived...'}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
               />
-            </View>
+            </Animated.View>
           </>
         }
-        renderItem={({ item }) => (
-          <View className="mb-3">
+        renderItem={({ item, index }) => (
+          <Animated.View
+            className="mb-3"
+            entering={useStaggeredAnimation(index, 50, 'up')}
+            layout={{ type: 'spring', damping: 15, stiffness: 200 }}
+          >
             <MedicationListItem
               medication={item}
               allMedications={medications}
               onPress={() => router.push(`/medication/${item.id}`)}
             />
-          </View>
+          </Animated.View>
         )}
         ListEmptyComponent={
-          <View className="flex-1 items-center justify-center py-12">
+          <Animated.View entering={FadeInDown.delay(200).springify()} className="flex-1 items-center justify-center py-12">
             {/* Empty state illustration */}
             <Card bordered={false} elevation="none" className="mb-6">
               <View
@@ -240,7 +248,7 @@ export default function MedicationsScreen() {
                 </Typography>
               </Pressable>
             )}
-          </View>
+          </Animated.View>
         }
       />
     </View>

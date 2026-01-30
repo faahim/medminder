@@ -3,10 +3,10 @@
   "lastUpdated": "2026-01-30T04:15:00Z",
   "summary": {
     "total": 15,
-    "pending": 3,
+    "pending": 2,
     "claimed": 0,
-    "inProgress": 1,
-    "completed": 10,
+    "inProgress": 0,
+    "completed": 11,
     "failed": 0,
     "blocked": 0
   },
@@ -21,7 +21,7 @@
     "phase-1": {
       "name": "UI/UX Overhaul",
       "total": 15,
-      "completed": 10,
+      "completed": 11,
       "status": "in_progress",
       "lastUpdated": "2026-01-30T04:30:00Z"
     },
@@ -201,7 +201,7 @@
       "id": "M1-012",
       "title": "Animations & Micro-interactions",
       "phase": 1,
-      "status": "in_progress",
+      "status": "completed",
       "priority": "P0",
       "estimate": 60,
       "dependencies": [

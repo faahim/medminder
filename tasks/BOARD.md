@@ -1,13 +1,13 @@
 # 📋 Medminder - Task Board
 
-**Last Updated**: 2026-01-30T04:15:00Z
+**Last Updated**: 2026-01-30T04:30:00Z
 
 ## Overview
 
 | Phase | Progress | Status |
 |-------|----------|--------|
 | Phase 0: Foundation | ██████████ 100% | ✅ Complete (pre-existing) |
-| Phase 1: UI/UX Overhaul | ██████████░░ 67% (10/15) | 🟡 In Progress |
+| Phase 1: UI/UX Overhaul | ██████████░░ 73% (11/15) | 🟡 In Progress |
 | Phase 2: Notifications | ░░░░░░░░░░ 0% | 🔲 Not Started |
 
 ---
@@ -33,7 +33,7 @@
 | ID | Task | Priority | Estimate |
 |----|------|----------|----------|
 | M1-011 | Prescription Import Flow Redesign | P1 | 45 min |
-| M1-012 | Animations & Micro-interactions | P0 | 60 min |
+| M1-013 | Haptics Integration | P1 | 30 min |
 | M1-014 | Empty States & Error States | P1 | 40 min |
 
 ---
@@ -42,7 +42,7 @@
 
 | ID | Task | Priority | Waiting On |
 |----|------|----------|------------|
-| M1-013 | Haptics Integration | P1 | M1-012 |
+| M1-015 | QA & Polish Pass | P0 | M1-010-014 |
 | M1-015 | QA & Polish Pass | P0 | M1-010-014 |
 
 ---
@@ -61,6 +61,7 @@
 | M1-008 | Settings Screen Redesign | 2026-01-30T02:15:00Z |
 | M1-009 | Add Medication Wizard Redesign | 2026-01-30T03:45:00Z |
 | M1-010 | Medication Detail & Edit Screens | 2026-01-30T04:15:00Z |
+| M1-012 | Animations & Micro-interactions | 2026-01-30T04:30:00Z |
 
 ---
 

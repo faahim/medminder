@@ -6,6 +6,8 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
   FadeInDown,
+  FadeIn,
+  LayoutAnimationConfig,
 } from 'react-native-reanimated';
 
 import { DoseLogService } from '../../src/services/doseLog.service';
@@ -21,8 +23,9 @@ import { DatePickerModal } from '../../src/components/ui/DatePickerModal';
 import { Screen } from '../../src/components/layout/Screen';
 import { colors, spacing, radii, animation } from '../../src/design/tokens';
 
-// Animated View wrapper
+// Animated View wrapper with layout animation
 const AnimatedView = Animated.View;
+const AnimatedList = LayoutAnimationConfig.springify();
 
 export default function HistoryScreen() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -175,7 +178,7 @@ export default function HistoryScreen() {
 
         <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
           {/* Date Header with Picker */}
-          <View style={styles.dateHeader}>
+          <AnimatedView entering={FadeIn.delay(100).springify()} style={styles.dateHeader}>
             <Pressable
               onPress={() => setShowDatePicker(true)}
               style={styles.dateButton}
@@ -188,108 +191,115 @@ export default function HistoryScreen() {
               </Typography>
               <Icon name="calendar" fallback="calendar-outline" size="sm" color={colors.primary[500]} />
             </Pressable>
-          </View>
+          </AnimatedView>
 
           {/* Stats Cards */}
-          <AnimatedView entering={FadeInDown.delay(100).springify()} style={styles.statsRow}>
-            <Card style={styles.statsCard} elevation="none">
-              <Typography variant="small" style={styles.statsLabel}>
-                Adherence
-              </Typography>
-              <View style={styles.statsValueContainer}>
-                <Typography variant="display" style={styles.statsValue}>
-                  {overallAdherence}%
+          <AnimatedList>
+            <AnimatedView entering={FadeInDown.delay(150).springify()} style={styles.statsRow}>
+              <Card style={styles.statsCard} elevation="none">
+                <Typography variant="small" style={styles.statsLabel}>
+                  Adherence
                 </Typography>
-                <Icon
-                  name="chart.line.uptrend.xyaxis"
-                  fallback="trending-up"
-                  size="md"
-                  color={overallAdherence >= 80 ? colors.success[500] : overallAdherence >= 50 ? colors.warning[500] : colors.error[500]}
-                />
-              </View>
-            </Card>
-
-            <Card style={styles.statsCard} elevation="none">
-              <Typography variant="small" style={styles.statsLabel}>
-                Current Streak
-              </Typography>
-              <View style={styles.statsValueContainer}>
-                <Typography variant="display" style={styles.statsValue}>
-                  {currentStreak}
-                </Typography>
-                <Icon name="flame.fill" fallback="flame" size="md" color={colors.warning[500]} />
-              </View>
-            </Card>
-
-            <Card style={styles.statsCard} elevation="none">
-              <Typography variant="small" style={styles.statsLabel}>
-                Best Streak
-              </Typography>
-              <View style={styles.statsValueContainer}>
-                <Typography variant="display" style={styles.statsValue}>
-                  {bestStreak}
-                </Typography>
-                <Icon name="star.fill" fallback="star" size="md" color={colors.warning[500]} />
-              </View>
-            </Card>
-          </AnimatedView>
-
-          {/* Weekly Adherence Chart */}
-          <AnimatedView entering={FadeInDown.delay(200).springify()} style={styles.chartSection}>
-            <Typography variant="h3" style={styles.chartTitle}>
-              This Week
-            </Typography>
-            <Card elevation="sm" style={styles.chartCard}>
-              <AdherenceChart data={weeklyData} height={100} />
-            </Card>
-          </AnimatedView>
-
-          {/* Day Log */}
-          <AnimatedView style={[styles.logSection, fadeStyle]}>
-            <Typography variant="h3" style={styles.logTitle}>
-              {isToday(selectedDate) ? 'Today' : 'Day Log'}
-            </Typography>
-
-            {hasDoses && dayLogs.length > 0 ? (
-              <Card elevation="sm" style={styles.logCard}>
-                {dayLogs.map((log, index) => (
-                  <DoseHistoryItem
-                    key={log.id}
-                    doseLog={log}
-                    isLast={index === dayLogs.length - 1}
+                <View style={styles.statsValueContainer}>
+                  <Typography variant="display" style={styles.statsValue}>
+                    {overallAdherence}%
+                  </Typography>
+                  <Icon
+                    name="chart.line.uptrend.xyaxis"
+                    fallback="trending-up"
+                    size="md"
+                    color={overallAdherence >= 80 ? colors.success[500] : overallAdherence >= 50 ? colors.warning[500] : colors.error[500]}
                   />
-                ))}
-              </Card>
-            ) : hasDoses && dayLogs.length === 0 ? (
-              <Card elevation="sm" style={styles.emptyCard}>
-                <View style={styles.emptyContent}>
-                  <View style={styles.emptyIcon}>
-                    <Icon name="clock.badge.questionmark" fallback="help-circle" size="xl" color={colors.surface[300]} />
-                  </View>
-                  <Typography variant="body" style={styles.emptyText}>
-                    No dose logs yet
-                  </Typography>
-                  <Typography variant="small" style={styles.emptySubtext}>
-                    Doses will appear here when scheduled
-                  </Typography>
                 </View>
               </Card>
-            ) : (
-              <Card elevation="sm" style={styles.emptyCard}>
-                <View style={styles.emptyContent}>
-                  <View style={styles.emptyIcon}>
-                    <Icon name="calendar.badge.plus" fallback="calendar" size="xl" color={colors.surface[300]} />
-                  </View>
-                  <Typography variant="body" style={styles.emptyText}>
-                    No medications scheduled
+
+              <Card style={styles.statsCard} elevation="none">
+                <Typography variant="small" style={styles.statsLabel}>
+                  Current Streak
+                </Typography>
+                <View style={styles.statsValueContainer}>
+                  <Typography variant="display" style={styles.statsValue}>
+                    {currentStreak}
                   </Typography>
-                  <Typography variant="small" style={styles.emptySubtext}>
-                    This day has no scheduled doses
-                  </Typography>
+                  <Icon name="flame.fill" fallback="flame" size="md" color={colors.warning[500]} />
                 </View>
               </Card>
-            )}
-          </AnimatedView>
+
+              <Card style={styles.statsCard} elevation="none">
+                <Typography variant="small" style={styles.statsLabel}>
+                  Best Streak
+                </Typography>
+                <View style={styles.statsValueContainer}>
+                  <Typography variant="display" style={styles.statsValue}>
+                    {bestStreak}
+                  </Typography>
+                  <Icon name="star.fill" fallback="star" size="md" color={colors.warning[500]} />
+                </View>
+              </Card>
+            </AnimatedView>
+
+            {/* Weekly Adherence Chart */}
+            <AnimatedView entering={FadeInDown.delay(200).springify()} style={styles.chartSection}>
+              <Typography variant="h3" style={styles.chartTitle}>
+                This Week
+              </Typography>
+              <Card elevation="sm" style={styles.chartCard}>
+                <AdherenceChart data={weeklyData} height={100} />
+              </Card>
+            </AnimatedView>
+
+            {/* Day Log */}
+            <AnimatedView style={[styles.logSection, fadeStyle]}>
+              <Typography variant="h3" style={styles.logTitle}>
+                {isToday(selectedDate) ? 'Today' : 'Day Log'}
+              </Typography>
+
+              {hasDoses && dayLogs.length > 0 ? (
+                <Card elevation="sm" style={styles.logCard}>
+                  {dayLogs.map((log, index) => (
+                    <Animated.View
+                      key={log.id}
+                      entering={FadeIn.delay(index * 50).springify()}
+                      layout={{ type: 'spring', damping: 15, stiffness: 200 }}
+                    >
+                      <DoseHistoryItem
+                        doseLog={log}
+                        isLast={index === dayLogs.length - 1}
+                      />
+                    </Animated.View>
+                  ))}
+                </Card>
+              ) : hasDoses && dayLogs.length === 0 ? (
+                <Card elevation="sm" style={styles.emptyCard}>
+                  <View style={styles.emptyContent}>
+                    <View style={styles.emptyIcon}>
+                      <Icon name="clock.badge.questionmark" fallback="help-circle" size="xl" color={colors.surface[300]} />
+                    </View>
+                    <Typography variant="body" style={styles.emptyText}>
+                      No dose logs yet
+                    </Typography>
+                    <Typography variant="small" style={styles.emptySubtext}>
+                      Doses will appear here when scheduled
+                    </Typography>
+                  </View>
+                </Card>
+              ) : (
+                <Card elevation="sm" style={styles.emptyCard}>
+                  <View style={styles.emptyContent}>
+                    <View style={styles.emptyIcon}>
+                      <Icon name="calendar.badge.plus" fallback="calendar" size="xl" color={colors.surface[300]} />
+                    </View>
+                    <Typography variant="body" style={styles.emptyText}>
+                      No medications scheduled
+                    </Typography>
+                    <Typography variant="small" style={styles.emptySubtext}>
+                      This day has no scheduled doses
+                    </Typography>
+                  </View>
+                </Card>
+              )}
+            </AnimatedView>
+          </AnimatedList>
         </ScrollView>
 
         {/* Date Picker Modal */}

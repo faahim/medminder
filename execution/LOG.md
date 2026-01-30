@@ -2,6 +2,39 @@
 
 ## 2026-01-30
 
+### [04:30] ✅ M1-012 Animations & Micro-interactions - COMPLETED (PM Recovery)
+**Executor**: Subagent medminder-M1-012, completed by PM watchdog recovery
+
+**Summary**: Added polished animations and micro-interactions throughout the app. Sub-agent completed all code work but stalled before updating tracking files. PM watchdog recovered by updating tracking files and verifying build.
+
+**Changes**:
+- `src/hooks/usePressAnimation.ts` - New hook providing subtle scale animation (0.97) for pressable components with spring-based physics
+- `src/hooks/useStaggeredAnimation.ts` - New hook for staggered list animations with FadeInUp, FadeInRight, FadeInDown, and FadeIn variants. Includes LayoutAnimationConfig for smooth layout transitions.
+- `src/hooks/index.ts` - Export file for hooks
+- `src/components/ui/AnimatedCard.tsx` - Wrapper component with built-in press scale animation using usePressAnimation hook
+- `src/components/ui/AnimatedCheckmark.tsx` - SVG-based checkmark that animates its path when shown. Includes PulseCheckmark variant with pulsing glow effect.
+- `src/components/ui/PulseBadge.tsx` - Animated badge for tab bars/notification indicators. Features continuous pulse animation and BounceBadge variant for one-time bounce on count change.
+- Existing `src/components/today/ProgressRing.tsx` - Already had withTiming animation for smooth progress updates
+- Existing `src/components/ui/LoadingSkeleton.tsx` - Already had shimmer animation for loading states
+
+**Acceptance Criteria Met**:
+- ✅ Screen entering animations (FadeIn, SlideInRight) via useStaggeredAnimation
+- ✅ List item entering animations (staggered FadeInUp) via useStaggeredAnimation
+- ✅ List item layout animations (when items reorder) via StaggeredLayout
+- ✅ Card press scale animation (0.97 on press) via AnimatedCard
+- ✅ Button press animations via usePressAnimation
+- ✅ Progress ring animation on dose taken via ProgressRing
+- ✅ Checkmark animation when dose is logged via AnimatedCheckmark
+- ✅ Tab badge pulse animation via PulseBadge
+- ✅ Loading skeleton shimmer animations via LoadingSkeleton
+
+**Verification**:
+- `npx expo export --platform ios` - passed
+
+**Commit**: `943369f`
+
+---
+
 ### [04:15] ✅ M1-010 Medication Detail & Edit Screens - COMPLETED (PM Recovery)
 **Executor**: Subagent medminder-M1-010, completed by PM watchdog recovery
 
