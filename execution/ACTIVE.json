@@ -1,13 +1,4 @@
 {
-  "lastUpdated": "2026-01-30T07:30:00Z",
-  "claims": [
-    {
-      "taskId": "M2-002",
-      "taskTitle": "Notification Settings Screen",
-      "claimedBy": "medminder-M2-002",
-      "claimedAt": "2026-01-30T07:30:00Z",
-      "sessionKey": "agent:main:subagent:b0c6f980-5538-461c-a292-2c54547eac78",
-      "runId": "de2ad28e-2cc0-4d82-b79c-3cda7bf58fe2"
-    }
-  ]
+  "lastUpdated": "2026-01-30T07:31:00Z",
+  "claims": []
 }

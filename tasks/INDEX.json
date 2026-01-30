@@ -1,11 +1,11 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-01-30T07:30:00Z",
+  "lastUpdated": "2026-01-30T07:31:00Z",
   "summary": {
     "total": 26,
-    "pending": 9,
-    "claimed": 1,
-    "inProgress": 1,
+    "pending": 10,
+    "claimed": 0,
+    "inProgress": 0,
     "completed": 16,
     "failed": 0,
     "blocked": 0
@@ -284,7 +284,7 @@
       "id": "M2-002",
       "title": "Notification Settings Screen",
       "phase": 2,
-      "status": "inProgress",
+      "status": "pending",
       "priority": "P0",
       "estimate": 45,
       "dependencies": [
@@ -292,9 +292,7 @@
       ],
       "blocks": [
         "M2-005"
-      ],
-      "claimedBy": "medminder-M2-002",
-      "claimedAt": "2026-01-30T07:30:00Z"
+      ]
     },
     {
       "id": "M2-003",
