@@ -33,6 +33,8 @@
 | ID | Task | Priority | Estimate |
 |----|------|----------|----------|
 | M1-009 | Add Medication Wizard Redesign | P0 | 90 min |
+| M1-010 | Medication Detail & Edit Screens | P0 | 60 min |
+| M1-012 | Animations & Micro-interactions | P0 | 60 min |
 | M1-014 | Empty States & Error States | P1 | 40 min |
 
 ---
@@ -41,11 +43,9 @@
 
 | ID | Task | Priority | Waiting On |
 |----|------|----------|------------|
-| M1-010 | Medication Detail & Edit Screens | P0 | M1-005, M1-006 |
 | M1-011 | Prescription Import Flow Redesign | P1 | M1-010 |
-| M1-012 | Animations & Micro-interactions | P0 | M1-005-008 |
 | M1-013 | Haptics Integration | P1 | M1-012 |
-| M1-015 | QA & Polish Pass | P0 | All above |
+| M1-015 | QA & Polish Pass | P0 | M1-010-014 |
 
 ---
 
@@ -60,7 +60,7 @@
 | M1-005 | Today Screen Redesign | 2026-01-30T00:49:11Z |
 | M1-006 | Medications Screen Redesign | 2026-01-30T01:03:00Z |
 | M1-007 | History Screen Redesign | 2026-01-30T01:45:00Z |
-| M1-008 | Settings Screen Redesign | 2026-01-30T02:20:00Z |
+| M1-008 | Settings Screen Redesign | 2026-01-30T02:15:00Z |
 
 ---
 
