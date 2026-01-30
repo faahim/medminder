@@ -3,8 +3,8 @@
   "lastUpdated": "2026-01-30T09:10:00Z",
   "summary": {
     "total": 26,
-    "pending": 2,
-    "claimed": 0,
+    "pending": 1,
+    "claimed": 1,
     "inProgress": 0,
     "completed": 22,
     "failed": 0,
@@ -347,13 +347,15 @@
       "id": "M2-007",
       "title": "Permission Onboarding Flow",
       "phase": 2,
-      "status": "pending",
+      "status": "claimed",
       "priority": "P1",
       "estimate": 30,
       "dependencies": [
         "M2-001"
       ],
-      "blocks": []
+      "blocks": [],
+      "claimedBy": "WATCHDOG-M2-007-2026-01-30T09:10:00Z",
+      "claimedAt": "2026-01-30T09:10:00Z"
     },
     {
       "id": "M2-008",

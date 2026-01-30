@@ -1,4 +1,10 @@
 {
   "lastUpdated": "2026-01-30T09:10:00Z",
-  "claims": []
+  "claims": [
+    {
+      "taskId": "M2-007",
+      "sessionId": "WATCHDOG-M2-007-2026-01-30T09:10:00Z",
+      "claimedAt": "2026-01-30T09:10:00Z"
+    }
+  ]
 }

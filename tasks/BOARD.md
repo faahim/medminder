@@ -26,7 +26,7 @@
 
 | ID | Task | Priority | Started At |
 |----|------|----------|------------|
-| *No tasks in progress* | | | |
+| M2-007 | Permission Onboarding Flow | P1 | 2026-01-30T09:10:00Z |
 
 ---
 

@@ -107,10 +107,6 @@ export default function MedicationDetailScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     router.push(`/medication/notifications/${id}`);
   };
-        },
-      ]
-    );
-  };
 
   if (isLoading || !medication) {
     return (
