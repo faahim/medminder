@@ -1,4 +1,10 @@
 {
-  "lastUpdated": "2026-01-30T09:47:00Z",
-  "claims": []
+  "lastUpdated": "2026-01-30T10:00:00Z",
+  "claims": [
+    {
+      "taskId": "M2-011",
+      "claimedAt": "2026-01-30T10:00:00Z",
+      "claimedBy": "medminder-phase2-watchdog"
+    }
+  ]
 }

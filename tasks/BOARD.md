@@ -1,6 +1,6 @@
 # 📋 Medminder - Task Board
 
-**Last Updated**: 2026-01-30T09:26:00Z
+**Last Updated**: 2026-01-30T10:00:00Z
 
 ## Overview
 
@@ -8,7 +8,7 @@
 |-------|----------|--------|
 | Phase 0: Foundation | ██████████ 100% | ✅ Complete (pre-existing) |
 | Phase 1: UI/UX Overhaul | ██████████ 100% (15/15) | ✅ Complete |
-| Phase 2: Notifications | ████████░░ 82% (9/11) | 🟡 In Progress |
+| Phase 2: Notifications | █████████░ 91% (10/11) | 🟡 In Progress |
 
 ---
 
@@ -33,15 +33,13 @@
 ### 🟢 Ready (Queue)
 | ID | Task | Priority | Estimate |
 |----|------|----------|----------|
-| M2-010 | Refill Reminders | P1 | 35 min |
+| M2-011 | Notifications QA & Polish | P0 | 45 min |
 
 ---
 
 ### ⏳ Pending (Has Dependencies)
 
-| ID | Task | Priority | Waiting On |
-|----|------|----------|------------|
-| M2-011 | Notifications QA & Polish | P0 | All Phase 2 tasks |
+*No pending tasks*
 
 ---
 
@@ -58,6 +56,7 @@
 | M2-006 | Per-Medication Notification Settings | 2026-01-30T09:10:00Z |
 | M2-007 | Permission Onboarding Flow | 2026-01-30T09:20:00Z |
 | M2-008 | Notification Content Polish | 2026-01-30T09:26:00Z |
+| M2-010 | Refill Reminders | 2026-01-30T09:47:00Z |
 
 ---
 
