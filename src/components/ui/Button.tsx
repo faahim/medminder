@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Pressable, View, ActivityIndicator, ViewStyle, StyleProp } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { colors, radii, shadows, spacing, typography, touchTargets, animation } from '../../design/tokens';
 import { Typography } from './Typography';
@@ -131,10 +131,20 @@ export function Button({
     <AnimatedPressable
       onPress={handlePress}
       onPressIn={() => {
-        scale.value = withTiming(0.98, { duration: animation.fast });
+        'worklet';
+        scale.value = withSpring(0.97, {
+          damping: 12,
+          stiffness: 400,
+          mass: 0.5,
+        });
       }}
       onPressOut={() => {
-        scale.value = withTiming(1, { duration: animation.fast });
+        'worklet';
+        scale.value = withSpring(1, {
+          damping: 12,
+          stiffness: 400,
+          mass: 0.5,
+        });
       }}
       disabled={disabled || loading}
       accessibilityLabel={accessibilityLabel || title}

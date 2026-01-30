@@ -5,7 +5,7 @@
     "total": 15,
     "pending": 3,
     "claimed": 0,
-    "inProgress": 0,
+    "inProgress": 1,
     "completed": 10,
     "failed": 0,
     "blocked": 0
@@ -22,7 +22,8 @@
       "name": "UI/UX Overhaul",
       "total": 15,
       "completed": 10,
-      "status": "in_progress"
+      "status": "in_progress",
+      "lastUpdated": "2026-01-30T04:30:00Z"
     },
     "phase-2": {
       "name": "Notifications & Reminders",
@@ -200,7 +201,7 @@
       "id": "M1-012",
       "title": "Animations & Micro-interactions",
       "phase": 1,
-      "status": "ready",
+      "status": "in_progress",
       "priority": "P0",
       "estimate": 60,
       "dependencies": [
