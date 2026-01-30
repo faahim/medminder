@@ -1,11 +1,18 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { View, Alert } from 'react-native';
+import { View } from 'react-native';
+import { colors, spacing } from '../../design/tokens';
 import { Typography } from './Typography';
-import { Button } from './Button';
+import { ErrorState } from './ErrorState';
 
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
+  /** Custom error title */
+  errorTitle?: string;
+  /** Custom error message */
+  errorMessage?: string;
+  /** Callback when an error is caught */
+  onError?: (error: Error, errorInfo: ErrorInfo) => void;
 }
 
 interface State {
@@ -25,10 +32,18 @@ export class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
-    // TODO: Send to error reporting service
+    // Call custom error handler if provided
+    if (this.props.onError) {
+      this.props.onError(error, errorInfo);
+    }
+    // TODO: Send to error reporting service (e.g., Sentry, Crashlytics)
   }
 
   handleRetry = () => {
+    this.setState({ hasError: false, error: null });
+  };
+
+  handleDismiss = () => {
     this.setState({ hasError: false, error: null });
   };
 
@@ -39,25 +54,20 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <View className="flex-1 items-center justify-center p-8 bg-surface-50">
-          <Typography variant="h2" className="text-surface-900 text-center mb-2">
-            Something went wrong
-          </Typography>
-          <Typography variant="body" className="text-surface-500 text-center mb-6">
-            We're sorry, an unexpected error occurred. Please try again.
-          </Typography>
-          <Button 
-            title="Try Again" 
-            onPress={this.handleRetry}
-            size="lg"
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: colors.surface[50],
+          }}
+        >
+          <ErrorState
+            title={this.props.errorTitle || 'Something went wrong'}
+            message={this.props.errorMessage || 'We\'re sorry, an unexpected error occurred. Please try again.'}
+            error={this.state.error ?? undefined}
+            onRetry={this.handleRetry}
+            onDismiss={this.handleDismiss}
+            showDetails={__DEV__}
           />
-          {__DEV__ && this.state.error && (
-            <View className="mt-4 p-4 bg-danger-50 rounded-lg">
-              <Typography variant="small" className="text-danger-600 font-mono">
-                {this.state.error.message}
-              </Typography>
-            </View>
-          )}
         </View>
       );
     }

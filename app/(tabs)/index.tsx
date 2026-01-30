@@ -16,6 +16,7 @@ import { EmptyState } from '../../src/components/ui/EmptyState';
 import { Typography } from '../../src/components/ui/Typography';
 import { Card } from '../../src/components/ui/Card';
 import { Icon } from '../../src/components/ui/Icon';
+import { LoadingState } from '../../src/components/ui/LoadingState';
 
 import { DoseCard } from '../../src/components/medication/DoseCard';
 import { AsNeededCard } from '../../src/components/medication/AsNeededCard';
@@ -111,6 +112,17 @@ export default function HomeScreen() {
 
   let asNeededDelay = 600;
   const asNeededSectionIndex = Object.values(groupedDoses).filter((d) => d.length > 0).length;
+
+  // Loading state
+  if (isLoading && !hasScheduledDoses && !hasAsNeededMeds) {
+    return (
+      <View className="flex-1 bg-surface-50">
+        <Screen scroll padX={16} padY={16} padBottomExtra={120}>
+          <LoadingState message="Loading your medications..." sfSymbol="pills" fallbackIcon="medkit-outline" />
+        </Screen>
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-surface-50">
@@ -269,11 +281,13 @@ export default function HomeScreen() {
         {isEmpty ? (
           <Animated.View entering={FadeInUp.delay(400).springify()}>
             <EmptyState
-              icon="medkit-outline"
+              sfSymbol="pills"
+              fallbackIcon="medkit-outline"
               title="No medications yet"
               subtitle="Add your first medication to start tracking your doses"
               actionLabel="Add Medication"
               actionHref="/medication/add"
+              variant="primary"
             />
           </Animated.View>
         ) : (
@@ -326,37 +340,15 @@ export default function HomeScreen() {
               </Animated.View>
             ) : null}
 
-            {hasScheduledDoses && completed === totalScheduled ? (
+            {hasScheduledDoses && completed === totalScheduled && progressPercent === 100 ? (
               <Animated.View entering={FadeInUp.delay(500).springify()}>
-                <Card
-                  elevation="sm"
-                  bordered={false}
-                  style={{
-                    backgroundColor: colors.success[50],
-                    padding: spacing.xl,
-                    alignItems: 'center',
-                  }}
-                >
-                  <View
-                    style={{
-                      width: 64,
-                      height: 64,
-                      borderRadius: 32,
-                      backgroundColor: colors.success[100],
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginBottom: spacing.sm,
-                    }}
-                  >
-                    <Icon name="checkmark.seal.fill" fallback="checkmark-done" size={30} color={colors.success[600]} />
-                  </View>
-                  <Typography variant="h3" style={{ color: colors.success[700], fontWeight: '700' }}>
-                    All done for today
-                  </Typography>
-                  <Typography variant="body" style={{ color: colors.success[600], opacity: 0.85, textAlign: 'center', marginTop: 6 }}>
-                    You've completed all scheduled medications.
-                  </Typography>
-                </Card>
+                <EmptyState
+                  sfSymbol="checkmark.seal.fill"
+                  fallbackIcon="checkmark-circle"
+                  title="All done for today!"
+                  subtitle="Great job staying on track. Come back tomorrow!"
+                  variant="success"
+                />
               </Animated.View>
             ) : null}
           </>

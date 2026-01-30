@@ -10,9 +10,8 @@ import { MedicationListItem } from '../../src/components/medication/MedicationLi
 import { AppHeader } from '../../src/components/layout/AppHeader';
 import { SearchInput } from '../../src/components/ui/SearchInput';
 import { Pill } from '../../src/components/ui/Pill';
-import { Card } from '../../src/components/ui/Card';
+import { EmptyState } from '../../src/components/ui/EmptyState';
 import { Icon } from '../../src/components/ui/Icon';
-import { Typography } from '../../src/components/ui/Typography';
 import { Badge } from '../../src/components/ui/Badge';
 import { colors, spacing } from '../../src/design/tokens';
 
@@ -39,6 +38,50 @@ export default function MedicationsScreen() {
   const activeCount = medications.length;
   const archivedCount = archivedMedications.length;
   const hasSearchQuery = searchQuery.trim().length > 0;
+
+  const renderEmptyState = () => {
+    if (hasSearchQuery) {
+      return (
+        <Animated.View entering={FadeInDown.delay(200).springify()} style={{ flex: 1, justifyContent: 'center' }}>
+          <EmptyState
+            sfSymbol="magnifyingglass"
+            fallbackIcon="search-outline"
+            title="No results found"
+            subtitle="Try adjusting your search terms"
+            variant="surface"
+          />
+        </Animated.View>
+      );
+    }
+
+    if (tab === 'active') {
+      return (
+        <Animated.View entering={FadeInDown.delay(200).springify()} style={{ flex: 1, justifyContent: 'center' }}>
+          <EmptyState
+            sfSymbol="pills"
+            fallbackIcon="medkit-outline"
+            title="No medications yet"
+            subtitle="Add your first medication to get started tracking your health"
+            actionLabel="Add Medication"
+            actionHref="/medication/add"
+            variant="primary"
+          />
+        </Animated.View>
+      );
+    }
+
+    return (
+      <Animated.View entering={FadeInDown.delay(200).springify()} style={{ flex: 1, justifyContent: 'center' }}>
+        <EmptyState
+          sfSymbol="archivebox"
+          fallbackIcon="archive"
+          title="No archived medications"
+          subtitle="Archived medications will appear here"
+          variant="surface"
+        />
+      </Animated.View>
+    );
+  };
 
   return (
     <View className="flex-1 bg-surface-50">
@@ -177,79 +220,7 @@ export default function MedicationsScreen() {
             />
           </Animated.View>
         )}
-        ListEmptyComponent={
-          <Animated.View entering={FadeInDown.delay(200).springify()} className="flex-1 items-center justify-center py-12">
-            {/* Empty state illustration */}
-            <Card bordered={false} elevation="none" className="mb-6">
-              <View
-                className="w-24 h-24 rounded-2xl items-center justify-center"
-                style={{ backgroundColor: tab === 'active' ? colors.primary[50] : colors.surface[100] }}
-              >
-                {hasSearchQuery ? (
-                  <Icon
-                    name="magnifyingglass"
-                    fallback="search-outline"
-                    size="xl"
-                    color={tab === 'active' ? colors.primary[400] : colors.surface[300]}
-                  />
-                ) : tab === 'active' ? (
-                  <Icon
-                    name="pills.fill"
-                    fallback="medkit"
-                    size="xl"
-                    color={colors.primary[400]}
-                  />
-                ) : (
-                  <Icon
-                    name="archivebox.fill"
-                    fallback="archive"
-                    size="xl"
-                    color={colors.surface[300]}
-                  />
-                )}
-              </View>
-            </Card>
-
-            {/* Empty state text */}
-            <Typography variant="h2" className="text-surface-900 text-center mb-2">
-              {hasSearchQuery
-                ? 'No medications found'
-                : tab === 'active'
-                  ? 'No medications yet'
-                  : 'No archived medications'
-              }
-            </Typography>
-
-            <Typography variant="body" className="text-surface-500 text-center mb-6 max-w-xs">
-              {hasSearchQuery
-                ? 'Try adjusting your search terms'
-                : tab === 'active'
-                  ? 'Add your first medication to get started'
-                  : 'Archived medications will appear here'
-              }
-            </Typography>
-
-            {/* Action button for active tab without search */}
-            {tab === 'active' && !hasSearchQuery && (
-              <Pressable
-                onPress={() => router.push('/medication/add')}
-                className="px-6 py-3 bg-primary-500 rounded-xl flex-row items-center justify-center"
-                style={{
-                  shadowColor: colors.primary[500],
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: 0.2,
-                  shadowRadius: 12,
-                  elevation: 4,
-                }}
-              >
-                <Icon name="plus" fallback="add" size="md" color={colors.white} />
-                <Typography variant="button" className="text-white ml-2 font-semibold">
-                  Add Medication
-                </Typography>
-              </Pressable>
-            )}
-          </Animated.View>
-        }
+        ListEmptyComponent={renderEmptyState()}
       />
     </View>
   );
