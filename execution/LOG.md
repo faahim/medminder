@@ -40,6 +40,39 @@
 
 ---
 
+## 2025-01-23
+
+### [12:00] ✅ M1-006 Medications Screen Redesign - COMPLETED
+**Executor**: Subagent medminder-M1-006
+
+**Summary**: Redesigned Medications list screen to be premium, searchable, and consistent with new UI primitives. Created new SearchInput component and updated MedicationListItem to use Card/Icon/Badge/Pill primitives.
+
+**Changes**:
+- `src/components/ui/SearchInput.tsx` (new) - Custom search input with icon, clear button, and focus states
+- `src/components/medication/MedicationListItem.tsx` - Redesigned with Card, Icon, Badge, and MealTimingBadge primitives
+- `app/(tabs)/medications.tsx` - Premium layout with tab pills (Active/Archived), search UX, and empty states
+
+**UI Primitives Used**:
+- `Card` - For medication items with elevation and borders
+- `Icon` - SF Symbols with Ionicons fallback
+- `Badge` - For PRN, duration, and status indicators
+- `Pill` - For tab switcher (Active/Archived)
+- `Typography` - For consistent text hierarchy
+- `SearchInput` - New custom component
+
+**Features**:
+- In-screen search input with real-time filtering (cross-platform safe)
+- Tab pills for filtering between Active and Archived medications
+- Premium medication list items showing name, dosage, schedule, meal timing, duration, and dependency status
+- Empty state for search results, active list, and archived list
+- Add Medication CTA on empty state
+- SF Symbols via Icon wrapper
+
+**Verification**:
+- `npx expo export --platform ios` - passed
+
+---
+
 ## 2026-01-29
 
 ### [22:26] ✅ M1-001 Design System Foundation - COMPLETED
