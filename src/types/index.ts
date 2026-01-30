@@ -49,6 +49,7 @@ export interface Settings {
   darkMode: 'system' | 'light' | 'dark';
   fontSize: 'normal' | 'large' | 'xlarge';
   reminderAdvanceMinutes: number;  // How early to remind (default: 0)
+  notificationsEnabled: boolean;   // Master toggle for notifications (default: true)
 }
 
 // ============ DERIVED TYPES ============

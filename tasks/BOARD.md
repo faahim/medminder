@@ -1,6 +1,6 @@
 # 📋 Medminder - Task Board
 
-**Last Updated**: 2026-01-30T07:30:00Z
+**Last Updated**: 2026-01-30T07:45:00Z
 
 ## Overview
 
@@ -8,7 +8,7 @@
 |-------|----------|--------|
 | Phase 0: Foundation | ██████████ 100% | ✅ Complete (pre-existing) |
 | Phase 1: UI/UX Overhaul | ██████████ 100% (15/15) | ✅ Complete |
-| Phase 2: Notifications | ██░░░░░░░ 9% (1/11) | 🟡 In Progress |
+| Phase 2: Notifications | ███░░░░░░ 18% (2/11) | 🟡 In Progress |
 
 ---
 
@@ -32,7 +32,6 @@
 
 | ID | Task | Priority | Estimate |
 |----|------|----------|----------|
-| M2-002 | Notification Settings Screen | P0 | 45 min |
 | M2-003 | Interactive Notification Actions | P0 | 40 min |
 | M2-007 | Permission Onboarding Flow | P1 | 30 min |
 | M2-008 | Notification Content Polish | P1 | 20 min |
@@ -57,6 +56,7 @@
 | ID | Task | Completed At |
 |----|------|--------------|
 | M2-001 | App Lifecycle & Notification Setup | 2026-01-30T07:30:00Z |
+| M2-002 | Notification Settings Screen | 2026-01-30T07:45:00Z |
 
 ---
 
@@ -92,8 +92,8 @@
 ```
 Phase 1 Complete ✅
   └─→ M2-001 App Lifecycle Setup ✅
-        ├─→ M2-002 Notification Settings 🟢
-        │     └─→ M2-005 Missed Dose Detection ⏳
+        ├─→ M2-002 Notification Settings ✅
+        │     └─→ M2-005 Missed Dose Detection 🟢
         ├─→ M2-003 Interactive Actions 🟢
         │     ├─→ M2-006 Per-Med Settings ⏳
         │     └─→ M2-009 Today View Sync 🟢

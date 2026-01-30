@@ -2,6 +2,47 @@
 
 ## 2026-01-30
 
+### [07:45] ✅ M2-002 Notification Settings Screen - COMPLETED
+**Executor**: Subagent medminder-M2-002
+
+**Summary**: Notification Settings screen was already fully implemented. Fixed syntax errors (Animated.View vs AnimatedView alias mismatch) and verified the build passes.
+
+**Changes**:
+- `app/settings/notifications.tsx` - Fixed JSX syntax errors:
+  - Changed `<Animated.View>` to `<AnimatedView>` for consistency (AnimatedView alias defined at top)
+  - Applied to both main render and loading state
+
+**Screen Features** (already implemented):
+- Master toggle for notifications on/off
+- Reminder timing options (At time, 15/30/60/120 min before)
+- Sound selection (Default, Gentle, Urgent, Silent)
+- Reminder style (Gentle/Firm - mapped to sound)
+- Haptic feedback toggle
+- Settings persist to AsyncStorage via SettingsService
+- Conditional rendering of sections when notifications are disabled
+- Info card explaining notifications feature
+
+**Integration**:
+- Screen accessible from main Settings screen via "Notification Settings" menu item
+- Uses existing design system (Tailwind CSS, Icon component with SF Symbols)
+- Follows pattern of other settings screens for consistency
+
+**Acceptance Criteria Met**:
+- ✅ Notification Settings screen created at `app/settings/notifications.tsx`
+- ✅ All settings options implemented with proper UI controls
+- ✅ Settings persist to AsyncStorage (via SettingsService)
+- ✅ Screen is accessible from the main Settings screen (menu item present)
+- ✅ Follows the app's design language (consistent with other screens)
+- ✅ All icons use SF Symbols via Icon component with fallbacks
+- ✅ `npx expo export --platform ios` - passed
+
+**Verification**:
+- `npx expo export --platform ios` - passed
+
+**Commit**: (pending)
+
+---
+
 ### [07:30] ✅ M2-001 App Lifecycle & Notification Setup - COMPLETED
 **Executor**: Subagent medminder-M2-001
 

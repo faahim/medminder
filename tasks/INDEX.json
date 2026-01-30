@@ -3,10 +3,10 @@
   "lastUpdated": "2026-01-30T07:31:00Z",
   "summary": {
     "total": 26,
-    "pending": 10,
+    "pending": 9,
     "claimed": 0,
     "inProgress": 0,
-    "completed": 16,
+    "completed": 17,
     "failed": 0,
     "blocked": 0
   },
@@ -28,9 +28,9 @@
     "phase-2": {
       "name": "Notifications & Reminders",
       "total": 11,
-      "completed": 1,
+      "completed": 2,
       "status": "inProgress",
-      "lastUpdated": "2026-01-30T07:30:00Z"
+      "lastUpdated": "2026-01-30T07:45:00Z"
     }
   },
   "tasks": [
@@ -284,12 +284,13 @@
       "id": "M2-002",
       "title": "Notification Settings Screen",
       "phase": 2,
-      "status": "pending",
+      "status": "completed",
       "priority": "P0",
       "estimate": 45,
       "dependencies": [
         "M2-001"
       ],
+      "completedAt": "2026-01-30T07:45:00Z",
       "blocks": [
         "M2-005"
       ]

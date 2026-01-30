@@ -2,6 +2,7 @@ import { View, ScrollView, Alert, Pressable } from 'react-native';
 import { useEffect, useState } from 'react';
 import Constants from 'expo-constants';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
+import { router } from 'expo-router';
 
 import { Screen } from '../../src/components/layout/Screen';
 import { Typography } from '../../src/components/ui/Typography';
@@ -241,13 +242,13 @@ export default function SettingsScreen() {
                 iconFallback="notifications"
                 iconBg={colors.primary[50]}
                 iconColor={colors.primary[700]}
-                title="Reminders"
-                subtitle="Get notified at scheduled times"
+                title="Notification Settings"
+                subtitle="Customize reminders and alerts"
                 showChevron
                 pressable
                 onPress={() => {
                   triggerHaptic('light');
-                  Alert.alert('Reminders', 'Notification permissions are managed in system settings.');
+                  router.push('/settings/notifications');
                 }}
               />
 

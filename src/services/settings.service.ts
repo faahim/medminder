@@ -11,6 +11,7 @@ const DEFAULT_SETTINGS: Omit<Settings, 'id'> = {
   darkMode: 'light',
   fontSize: 'normal',
   reminderAdvanceMinutes: 0,
+  notificationsEnabled: true,
 };
 
 export const SettingsService = {
