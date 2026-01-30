@@ -10,3 +10,4 @@ export { DoseHistoryItem } from './DoseHistoryItem';
 export { WizardScreen, type WizardScreenProps } from './WizardScreen';
 export { MedicationPreviewCard, type MedicationPreviewCardProps } from './MedicationPreviewCard';
 export { WizardSuccessAnimation } from './WizardSuccessAnimation';
+export { MedicationStats } from './MedicationStats';
