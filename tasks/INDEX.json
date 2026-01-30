@@ -1,12 +1,12 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-01-30T08:40:00Z",
+  "lastUpdated": "2026-01-30T08:45:00Z",
   "summary": {
     "total": 26,
     "pending": 2,
-    "claimed": 0,
+    "claimed": -1,
     "inProgress": 0,
-    "completed": 20,
+    "completed": 21,
     "failed": 0,
     "blocked": 0
   },
@@ -28,7 +28,7 @@
     "phase-2": {
       "name": "Notifications & Reminders",
       "total": 11,
-      "completed": 5,
+      "completed": 6,
       "status": "inProgress",
       "lastUpdated": "2026-01-30T08:40:00Z"
     }
@@ -314,13 +314,12 @@
       "id": "M2-004",
       "title": "Background Rescheduling Task",
       "phase": 2,
-      "status": "claimed",
+      "status": "completed",
       "priority": "P1",
       "estimate": 30,
       "dependencies": [],
       "blocks": [],
-      "claimedBy": "WATCHDOG-M2-004-2026-01-30T08:40:00Z",
-      "claimedAt": "2026-01-30T08:40:00Z"
+      "completedAt": "2026-01-30T08:45:00Z"
     },
     {
       "id": "M2-005",

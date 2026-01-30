@@ -1,6 +1,6 @@
 # 📋 Medminder - Task Board
 
-**Last Updated**: 2026-01-30T08:15:00Z
+**Last Updated**: 2026-01-30T08:45:00Z
 
 ## Overview
 
@@ -8,7 +8,7 @@
 |-------|----------|--------|
 | Phase 0: Foundation | ██████████ 100% | ✅ Complete (pre-existing) |
 | Phase 1: UI/UX Overhaul | ██████████ 100% (15/15) | ✅ Complete |
-| Phase 2: Notifications | █████░░░░░ 45% (5/11) | 🟡 In Progress |
+| Phase 2: Notifications | ████████░░░ 55% (6/11) | 🟡 In Progress |
 
 ---
 
@@ -26,7 +26,7 @@
 
 | ID | Task | Priority | Started At |
 |----|------|----------|------------|
-| M2-004 | Background Rescheduling Task | P1 | 2026-01-30T08:40:00Z |
+| *No tasks in progress* | | | |
 
 ---
 
@@ -55,6 +55,7 @@
 | M2-001 | App Lifecycle & Notification Setup | 2026-01-30T07:30:00Z |
 | M2-002 | Notification Settings Screen | 2026-01-30T07:45:00Z |
 | M2-003 | Interactive Notification Actions | 2026-01-30T08:15:00Z |
+| M2-004 | Background Rescheduling Task | 2026-01-30T08:45:00Z |
 | M2-009 | Today View Notification Sync | 2026-01-30T08:15:00Z |
 | M2-005 | Missed Dose Detection & Follow-up | 2026-01-30T08:39:00Z |
 
@@ -93,12 +94,12 @@
 Phase 1 Complete ✅
   └─→ M2-001 App Lifecycle Setup ✅
         ├─→ M2-002 Notification Settings ✅
-        │     └─→ M2-005 Missed Dose Detection 🟢
+        │     └─→ M2-005 Missed Dose Detection ✅
         ├─→ M2-003 Interactive Actions ✅
         │     ├─→ M2-006 Per-Med Settings 🟢
         │     └─→ M2-009 Today View Sync ✅
         │           └─→ M2-010 Refill Reminders 🟢
-        ├─→ M2-004 Background Task 🟢
+        ├─→ M2-004 Background Task ✅
         ├─→ M2-007 Permission Onboarding 🟢
         ├─→ M2-008 Content Polish 🟢
         └─→ M2-011 QA Pass ⏳ (after all)
@@ -133,11 +134,11 @@ M1-001 Design System Foundation ✅
 | Settings & Onboarding (M2-002, M2-007) | 75 min | ~1.25 hrs |
 | Actions & Sync (M2-003, M2-009) | 70 min | ✅ Complete |
 | Missed Dose (M2-005) | 50 min | ✅ Complete |
-| Background (M2-004) | 30 min | |
+| Background (M2-004) | 30 min | ✅ Complete |
 | Content & Polish (M2-008) | 20 min | |
 | Advanced (M2-006, M2-010) | 75 min | ~1.25 hrs |
 | QA (M2-011) | 45 min | |
-| **Total** | ~395 min (~6.5 hrs) | 45% complete |
+| **Total** | ~395 min (~6.5 hrs) | 55% complete |
 
 ### Phase 1 (Complete)
 | Task Group | Est. Total | Notes |

@@ -6,6 +6,7 @@ import * as Haptics from 'expo-haptics';
 import { MedicationService } from '../services/medication.service';
 import { NotificationService } from '../services/notification.service';
 import { DoseLogService } from '../services/doseLog.service';
+import { BackgroundTaskService } from '../services/backgroundTask.service';
 
 // Check if running in Expo Go (notifications not supported in SDK 53+)
 const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
@@ -54,6 +55,12 @@ export function useNotificationLifecycle(isDbReady: boolean) {
 
         // Update badge count
         await NotificationService.updatePendingBadgeCount();
+
+        // Register and start background task for periodic notification checks
+        if (BackgroundTaskService.isAvailable()) {
+          await BackgroundTaskService.registerTask();
+          await BackgroundTaskService.startPeriodicCheck();
+        }
 
         // Store initial timezone
         lastTimezone.current = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -115,19 +122,26 @@ export function useNotificationLifecycle(isDbReady: boolean) {
   const handleAppStateChange = async (nextAppState: AppStateStatus) => {
     if (isExpoGo) return;
 
-    // Check for timezone change when app comes to foreground
+    // When app comes to foreground, ensure notifications are up to date
     if (nextAppState === 'active') {
       const currentTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-      // Reschedule if timezone changed
+      // Always reschedule notifications on foreground to ensure sync
+      // This catches cases where notifications were cancelled by the system
+      console.log('[NotificationLifecycle] Rescheduling notifications on foreground');
+      const medications = await MedicationService.getAll();
+      await NotificationService.rescheduleAllNotifications(medications);
+
+      // Update timezone if changed
       if (lastTimezone.current && lastTimezone.current !== currentTimezone) {
         console.log(
           `[NotificationLifecycle] Timezone changed from ${lastTimezone.current} to ${currentTimezone}`
         );
-        const medications = await MedicationService.getAll();
-        await NotificationService.rescheduleAllNotifications(medications);
         lastTimezone.current = currentTimezone;
       }
+
+      // Clean up expired notifications
+      await NotificationService.cleanupExpiredNotifications(medications);
 
       // Check for and update missed doses
       await NotificationService.checkAndUpdateMissedDoses();
@@ -135,7 +149,7 @@ export function useNotificationLifecycle(isDbReady: boolean) {
       // Update badge count on foreground
       await NotificationService.updatePendingBadgeCount();
 
-      console.log('[NotificationLifecycle] App came to foreground');
+      console.log('[NotificationLifecycle] App came to foreground, notifications rescheduled');
     }
   };
 

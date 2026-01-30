@@ -2,6 +2,62 @@
 
 ## Completed Tasks
 
+### M2-004: Background Rescheduling Task
+**Status**: ✅ COMPLETED
+**Date**: 2026-01-30
+
+**Changes Made:**
+
+#### 1. New Dependencies (`package.json`)
+- Added `expo-task-manager` ^14.0.9 - for registering and managing background tasks
+- Added `expo-background-fetch` ^14.0.9 - for periodic background execution
+
+#### 2. New File: Background Task Service (`src/services/backgroundTask.service.ts`)
+- Created comprehensive background task management service
+- Exports:
+  - `BACKGROUND_NOTIFICATION_TASK` constant - task identifier
+  - `BackgroundTaskService` object with methods:
+    - `isAvailable()` - checks if background tasks are supported (not available in Expo Go)
+    - `registerTask()` - registers the background task with Expo TaskManager
+    - `startPeriodicCheck()` - starts periodic background checks every 15 minutes (iOS minimum)
+    - `unregisterTask()` - stops background checks
+    - `getStatus()` - gets current background fetch status
+    - `testTask()` - forces immediate task execution for testing
+- Background task handler:
+  - Retrieves all active medications
+  - Checks if notifications are scheduled for each dose time
+  - Re-schedules any missing notifications
+  - Cleans up expired notifications
+  - Returns appropriate BackgroundFetchResult
+- Lightweight design to minimize battery impact
+- iOS background mode support (fetch) in app.json
+
+#### 3. App Configuration (`app.json`)
+- Added `UIBackgroundModes: ["fetch"]` to iOS config
+- Enables background fetch for periodic notification checks
+
+#### 4. Notification Lifecycle Hook (`src/hooks/useNotificationLifecycle.ts`)
+- Integrated BackgroundTaskService
+- On app initialization:
+  - Registers background task
+  - Starts periodic check
+- Background tasks run automatically in the background (iOS: every ~15 min, Android: more flexible)
+
+**Acceptance Criteria Met:**
+1. ✅ Background task is registered with Expo TaskManager (via `BackgroundTaskService.registerTask()`)
+2. ✅ Notifications are automatically re-scheduled when app foregrounds (via existing `handleAppStateChange`)
+3. ✅ Periodic background check ensures notifications don't get stale (15-minute minimum interval)
+4. ✅ Background task is properly configured in app.json with `UIBackgroundModes`
+
+**Notes:**
+- Background execution is limited on iOS by the OS - the task runs when the system allows it
+- The background task complements foreground rescheduling to ensure notifications stay fresh
+- Background tasks don't work in Expo Go - requires dev client or production build
+
+**Build Status:** ✅ PASSED - `npx expo export --platform ios` completed successfully
+
+---
+
 ### M2-005: Missed Dose Detection & Follow-up
 **Status**: ✅ COMPLETED
 **Date**: 2026-01-30
