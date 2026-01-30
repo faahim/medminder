@@ -1,6 +1,6 @@
 # 📋 Medminder - Task Board
 
-**Last Updated**: 2026-01-30T07:15:00Z
+**Last Updated**: 2026-01-30T07:30:00Z
 
 ## Overview
 
@@ -8,7 +8,7 @@
 |-------|----------|--------|
 | Phase 0: Foundation | ██████████ 100% | ✅ Complete (pre-existing) |
 | Phase 1: UI/UX Overhaul | ██████████ 100% (15/15) | ✅ Complete |
-| Phase 2: Notifications | ░░░░░░░░░░ 0% (0/11) | 🟡 In Progress |
+| Phase 2: Notifications | ██░░░░░░░ 9% (1/11) | 🟡 In Progress |
 
 ---
 
@@ -32,7 +32,10 @@
 
 | ID | Task | Priority | Estimate |
 |----|------|----------|----------|
-| M2-001 | App Lifecycle & Notification Setup | P0 | 30 min |
+| M2-002 | Notification Settings Screen | P0 | 45 min |
+| M2-003 | Interactive Notification Actions | P0 | 40 min |
+| M2-007 | Permission Onboarding Flow | P1 | 30 min |
+| M2-008 | Notification Content Polish | P1 | 20 min |
 
 ---
 
@@ -40,13 +43,9 @@
 
 | ID | Task | Priority | Waiting On |
 |----|------|----------|------------|
-| M2-002 | Notification Settings Screen | P0 | M2-001 |
-| M2-003 | Interactive Notification Actions | P0 | M2-001 |
 | M2-004 | Background Rescheduling Task | P1 | M2-001 |
 | M2-005 | Missed Dose Detection & Follow-up | P0 | M2-002, M2-003 |
 | M2-006 | Per-Medication Notification Settings | P1 | M2-003 |
-| M2-007 | Permission Onboarding Flow | P1 | M2-001 |
-| M2-008 | Notification Content Polish | P1 | M2-001 |
 | M2-009 | Today View Notification Sync | P0 | M2-003 |
 | M2-010 | Refill Reminders | P1 | M2-009 |
 | M2-011 | Notifications QA & Polish | P0 | All Phase 2 tasks |
@@ -55,7 +54,9 @@
 
 ### ✅ Completed
 
-*No completed tasks yet*
+| ID | Task | Completed At |
+|----|------|--------------|
+| M2-001 | App Lifecycle & Notification Setup | 2026-01-30T07:30:00Z |
 
 ---
 
@@ -90,16 +91,16 @@
 ### Phase 2
 ```
 Phase 1 Complete ✅
-  └─→ M2-001 App Lifecycle Setup 🟢
-        ├─→ M2-002 Notification Settings ⏳
+  └─→ M2-001 App Lifecycle Setup ✅
+        ├─→ M2-002 Notification Settings 🟢
         │     └─→ M2-005 Missed Dose Detection ⏳
-        ├─→ M2-003 Interactive Actions ⏳
+        ├─→ M2-003 Interactive Actions 🟢
         │     ├─→ M2-006 Per-Med Settings ⏳
         │     └─→ M2-009 Today View Sync 🟢
         │           └─→ M2-010 Refill Reminders ⏳
         ├─→ M2-004 Background Task ⏳
-        ├─→ M2-007 Permission Onboarding ⏳
-        ├─→ M2-008 Content Polish ⏳
+        ├─→ M2-007 Permission Onboarding 🟢
+        ├─→ M2-008 Content Polish 🟢
         └─→ M2-011 QA Pass ⏳ (after all)
 ```
 
@@ -128,14 +129,14 @@ M1-001 Design System Foundation ✅
 ### Phase 2
 | Task Group | Est. Total | Notes |
 |------------|------------|-------|
-| Lifecycle (M2-001) | 30 min | Starting now |
+| Lifecycle (M2-001) | 30 min | ✅ Complete |
 | Settings & Onboarding (M2-002, M2-007) | 75 min | ~1.25 hrs |
 | Actions & Sync (M2-003, M2-009) | 70 min | ~1.2 hrs |
 | Background (M2-004) | 30 min | |
 | Content & Polish (M2-008) | 20 min | |
 | Advanced (M2-005, M2-006, M2-010) | 125 min | ~2 hrs |
 | QA (M2-011) | 45 min | |
-| **Total** | ~395 min (~6.5 hrs) | |
+| **Total** | ~395 min (~6.5 hrs) | 9% complete |
 
 ### Phase 1 (Complete)
 | Task Group | Est. Total | Notes |

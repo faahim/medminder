@@ -2,6 +2,43 @@
 
 ## 2026-01-30
 
+### [07:30] ✅ M2-001 App Lifecycle & Notification Setup - COMPLETED
+**Executor**: Subagent medminder-M2-001
+
+**Summary**: Integrated notification service into app lifecycle. Notifications are now scheduled, managed, and cleaned up reliably.
+
+**Changes**:
+- `src/hooks/useNotificationLifecycle.ts` - New lifecycle hook that:
+  - Requests notification permissions on app startup
+  - Sets up notification action categories (Take/Snooze/Skip)
+  - Reschedules all notifications on app launch
+  - Cleans up expired medication notifications
+  - Handles notification response events (Take logs dose, Snooze schedules reminder, Skip logs as skipped)
+  - Listens for timezone changes and reschedules all notifications
+  - Updates badge count on app foreground
+- `app/_layout.tsx` - Updated to:
+  - Create inner component with access to DatabaseContext
+  - Use useNotificationLifecycle hook when database is ready
+- `src/hooks/index.ts` - Exported useNotificationLifecycle
+
+**Acceptance Criteria Met**:
+- ✅ Request notification permissions on first app launch
+- ✅ Reschedule all notifications on app startup
+- ✅ Cancel notifications when medication is deleted (already in MedicationService)
+- ✅ Update notifications when medication is edited (already in MedicationService)
+- ✅ Clean up expired medication notifications
+- ✅ Set up notification action categories (Take/Snooze/Skip)
+- ✅ Handle timezone changes (reschedule all)
+- ✅ Update badge count on app foreground
+
+**Verification**:
+- `npx tsc --noEmit` - passed (no new errors in modified files)
+- `npx expo export --platform ios` - passed
+
+**Commit**: (pending)
+
+---
+
 ### [05:45] 🎉 PHASE 1 COMPLETE - UI/UX Overhaul
 **Status**: All 15 tasks completed successfully!
 
@@ -24,7 +61,7 @@
 ### [05:45] ✅ M1-015 QA & Polish Pass - COMPLETED (PM Recovery)
 **Executor**: PM watchdog (recovered from subagent medminder-M1-015)
 
-**Summary**: Fixed remaining issues from the UI/UX overhaul including Ionicons replacements and build errors. All icons now use SF Symbols via the Icon component with fallbacks.
+**Summary**: Fixed remaining issues from UI/UX overhaul including Ionicons replacements and build errors. All icons now use SF Symbols via Icon component with fallbacks.
 
 **Changes**:
 - `app/(tabs)/history.tsx` - Fixed JSX syntax error (unclosed AnimatedView tag)
@@ -55,7 +92,7 @@
 ### [04:45] ✅ M1-011 Prescription Import Flow Redesign - COMPLETED (PM Recovery)
 **Executor**: Subagent medminder-M1-011, completed by PM watchdog recovery
 
-**Summary**: Redesigned the prescription import flow with camera/photo options, processing states, and review screen. Sub-agent completed all code work but stalled before updating tracking files. PM watchdog recovered by fixing TypeScript errors, verifying build, and updating tracking files.
+**Summary**: Redesigned prescription import flow with camera/photo options, processing states, and review screen. Sub-agent completed all code work but stalled before updating tracking files. PM watchdog recovered by fixing TypeScript errors, verifying build, and updating tracking files.
 
 **Changes**:
 - `src/components/prescription/ExtractedMedicationCard.tsx` - New component showing extracted medication with color indicator, name, dosage, meal timing, and schedule type. Includes expandable edit form and remove button.
@@ -186,7 +223,7 @@
 ### [02:15] ✅ M1-008 Settings Screen Redesign - COMPLETED (PM Recovery)
 **Executor**: Subagent medminder-M1-008, completed by PM watchdog recovery
 
-**Summary**: Redesigned Settings screen with grouped sections, native controls, SF Symbols icons, and proper visual hierarchy. Sub-agent completed the code work but stalled at TypeScript verification due to type errors. PM watchdog recovered by fixing the errors and completing tracking updates.
+**Summary**: Redesigned Settings screen with grouped sections, native controls, SF Symbols icons, and proper visual hierarchy. Sub-agent completed code work but stalled at TypeScript verification due to type errors. PM watchdog recovered by fixing errors and completing tracking updates.
 
 **Changes**:
 - `src/utils/haptics.ts` - New haptic feedback utility with expo-haptics
@@ -215,7 +252,7 @@
 ### [02:00] ✅ M1-007 History Screen Redesign - COMPLETED (PM Recovery)
 **Executor**: Subagent medminder-M1-007, completed by PM watchdog recovery
 
-**Summary**: Redesigned History screen with week strip, stats cards, adherence chart, and detailed day log. Sub-agent completed the code but stalled before updating tracking files. PM watchdog recovered by updating all tracking files and committing.
+**Summary**: Redesigned History screen with week strip, stats cards, adherence chart, and detailed day log. Sub-agent completed code but stalled before updating tracking files. PM watchdog recovered by updating all tracking files and committing.
 
 **Changes**:
 - `src/components/ui/WeekStrip.tsx` - Horizontal week calendar with swipe, completion dots, week navigation
@@ -240,7 +277,7 @@
 ### [00:40] ✅ M1-004 Core UI Components Rebuild - COMPLETED
 **Executor**: Subagent medminder-M1-004
 
-**Summary**: Rebuilt core UI primitives on design tokens (calm/minimal/premium), keeping NativeWind `className` compatibility while making the components animation-ready.
+**Summary**: Rebuilt core UI primitives on design tokens (calm/minimal/premium), keeping NativeWind `className` compatibility while making components animation-ready.
 
 **Changes**:
 - `src/components/ui/Card.tsx` - tokenized surface/border/radius + `borderCurve: 'continuous'` + token `boxShadow`
