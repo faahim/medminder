@@ -1,6 +1,5 @@
 import { View, ScrollView, Alert, Pressable } from 'react-native';
 import { useEffect, useState } from 'react';
-import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 

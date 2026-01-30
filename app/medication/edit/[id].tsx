@@ -1,4 +1,4 @@
-import { View, Alert } from 'react-native';
+import { View, Alert, Pressable } from 'react-native';
 import { useLocalSearchParams, Stack, router } from 'expo-router';
 import { useState, useEffect } from 'react';
 import { parseISO } from 'date-fns';
@@ -238,13 +238,14 @@ export default function EditMedicationScreen() {
           headerTitleStyle: { fontWeight: '600', color: colors.surface[900] },
           headerShadowVisible: false,
           headerLeft: () => (
-            <Icon
-              name="chevron.left"
-              fallback="arrow-back"
-              size={24}
-              color={colors.surface[900]}
-              onPress={() => router.back()}
-            />
+            <Pressable onPress={() => router.back()}>
+              <Icon
+                name="chevron.left"
+                fallback="arrow-back"
+                size={24}
+                color={colors.surface[900]}
+              />
+            </Pressable>
           ),
         }}
       />
@@ -261,7 +262,6 @@ export default function EditMedicationScreen() {
               value={name}
               onChangeText={setName}
               placeholder="e.g., Aspirin"
-              leftIcon={<Icon name="pill" fallback="medkit-outline" size={20} color={colors.surface[500]} />}
             />
             <View className="flex-row gap-3 mt-3">
               <View className="flex-1">
@@ -275,9 +275,8 @@ export default function EditMedicationScreen() {
               </View>
               <View className="flex-1">
                 <Select
-                  label="Unit"
                   value={dosageUnit}
-                  onValueChange={setDosageUnit}
+                  onChange={setDosageUnit}
                   options={DOSAGE_UNIT_OPTIONS.map((opt) => ({ ...opt, label: opt.value }))}
                 />
               </View>
@@ -301,9 +300,8 @@ export default function EditMedicationScreen() {
           </Typography>
           <View className="bg-white rounded-3xl border border-surface-100 p-4">
             <Select
-              label="When to take"
               value={mealTiming}
-              onValueChange={(value) => setMealTiming(value as MealTiming)}
+              onChange={(value: any) => setMealTiming(value as MealTiming)}
               options={MEAL_TIMING_OPTIONS}
             />
           </View>
@@ -316,9 +314,8 @@ export default function EditMedicationScreen() {
           </Typography>
           <View className="bg-white rounded-3xl border border-surface-100 p-4">
             <Select
-              label="Schedule Type"
               value={scheduleType}
-              onValueChange={(value) => setScheduleType(value as ScheduleType)}
+              onChange={(value: any) => setScheduleType(value as ScheduleType)}
               options={SCHEDULE_TYPE_OPTIONS}
             />
 
@@ -350,8 +347,8 @@ export default function EditMedicationScreen() {
                         <Button
                           variant="ghost"
                           size="sm"
+                          title="Remove"
                           onPress={() => handleRemoveScheduleTime(index)}
-                          leftIcon={<Icon name="trash" fallback="trash-outline" size={16} color={colors.error[500]} />}
                         />
                       </View>
                     ))}
@@ -360,7 +357,6 @@ export default function EditMedicationScreen() {
                       size="sm"
                       title="Add Time"
                       onPress={handleAddScheduleTime}
-                      leftIcon={<Icon name="plus" fallback="add-outline" size={16} color={colors.primary[600]} />}
                     />
                   </View>
                 )}
@@ -476,20 +472,14 @@ export default function EditMedicationScreen() {
       <DatePickerModal
         visible={showStartDatePicker}
         date={startDate}
-        onConfirm={(date) => {
-          setStartDate(date);
-          setShowStartDatePicker(false);
-        }}
-        onCancel={() => setShowStartDatePicker(false)}
+        onDateChange={(date) => setStartDate(date)}
+        onClose={() => setShowStartDatePicker(false)}
       />
       <DatePickerModal
         visible={showEndDatePicker}
         date={endDate || new Date()}
-        onConfirm={(date) => {
-          setEndDate(date);
-          setShowEndDatePicker(false);
-        }}
-        onCancel={() => setShowEndDatePicker(false)}
+        onDateChange={(date) => setEndDate(date)}
+        onClose={() => setShowEndDatePicker(false)}
       />
     </View>
   );

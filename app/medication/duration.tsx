@@ -2,7 +2,6 @@ import { View, Pressable } from 'react-native';
 import { useEffect, useState } from 'react';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 import { format, addDays } from 'date-fns';
 
 import { useMedicationForm } from '../../src/contexts/MedicationFormContext';
@@ -11,6 +10,7 @@ import { Typography } from '../../src/components/ui/Typography';
 import { Button } from '../../src/components/ui/Button';
 import { ProgressBar } from '../../src/components/ui/ProgressBar';
 import { Input } from '../../src/components/ui/Input';
+import { Icon } from '../../src/components/ui/Icon';
 import { MedicationService } from '../../src/services/medication.service';
 import { Medication } from '../../src/types';
 
@@ -79,7 +79,7 @@ export default function AddMedicationStep4() {
                   className="flex-row items-center p-4 rounded-2xl border border-dashed border-surface-300 bg-surface-50"
                 >
                   <View className="w-12 h-12 rounded-2xl bg-surface-100 items-center justify-center mr-4">
-                    <Ionicons name="git-branch-outline" size={22} color="#8B5CF6" />
+                    <Icon name="arrow.triangle.merge" fallback="git-branch" size={22} color="#8B5CF6" />
                   </View>
                   <View className="flex-1">
                     <Typography variant="body" className="text-surface-900 font-medium">
@@ -89,13 +89,13 @@ export default function AddMedicationStep4() {
                       Start after it finishes
                     </Typography>
                   </View>
-                  <Ionicons name="add-circle" size={22} color="#8B5CF6" />
+                  <Icon name="plus.circle" fallback="add-circle" size={22} color="#8B5CF6" />
                 </Pressable>
               ) : (
                 <View className="bg-surface-50 rounded-2xl p-4 border border-surface-100">
                   <View className="flex-row items-center mb-3">
                     <View className="w-10 h-10 rounded-2xl bg-white items-center justify-center mr-3">
-                      <Ionicons name="git-branch" size={18} color="#8B5CF6" />
+                      <Icon name="arrow.triangle.merge" fallback="git-branch" size={18} color="#8B5CF6" />
                     </View>
                     <View className="flex-1">
                       <Typography variant="small" className="text-surface-500">
@@ -109,7 +109,7 @@ export default function AddMedicationStep4() {
                       onPress={() => handleSelectDependency(null)}
                       className="w-9 h-9 rounded-full bg-white items-center justify-center"
                     >
-                      <Ionicons name="close" size={18} color="#737373" />
+                      <Icon name="xmark" fallback="close" size={18} color="#737373" />
                     </Pressable>
                   </View>
 
@@ -122,7 +122,7 @@ export default function AddMedicationStep4() {
                         onPress={() => updateFormData({ dependsOnOffsetDays: Math.max(0, formData.dependsOnOffsetDays - 1) })}
                         className="w-10 h-10 rounded-2xl bg-surface-100 items-center justify-center"
                       >
-                        <Ionicons name="remove" size={18} color="#737373" />
+                        <Icon name="minus" fallback="remove" size={18} color="#737373" />
                       </Pressable>
                       <Typography variant="h3" className="text-surface-900 font-bold mx-4 w-8 text-center">
                         {formData.dependsOnOffsetDays}
@@ -131,14 +131,14 @@ export default function AddMedicationStep4() {
                         onPress={() => updateFormData({ dependsOnOffsetDays: formData.dependsOnOffsetDays + 1 })}
                         className="w-10 h-10 rounded-2xl bg-surface-100 items-center justify-center"
                       >
-                        <Ionicons name="add" size={18} color="#737373" />
+                        <Icon name="plus" fallback="add" size={18} color="#737373" />
                       </Pressable>
                     </View>
                   </View>
 
                   {selectedDependency.endDate ? (
                     <View className="mt-3 flex-row items-center">
-                      <Ionicons name="calendar-outline" size={16} color="#8B5CF6" />
+                      <Icon name="calendar" fallback="calendar" size={16} color="#8B5CF6" />
                       <Typography variant="small" className="text-surface-600 ml-2">
                         Will start on {format(addDays(new Date(selectedDependency.endDate), formData.dependsOnOffsetDays), 'MMM d, yyyy')}
                       </Typography>
@@ -161,7 +161,7 @@ export default function AddMedicationStep4() {
                       className="flex-row items-center px-4 py-3 border-b border-surface-100"
                     >
                       <View className="w-10 h-10 rounded-2xl items-center justify-center mr-3" style={{ backgroundColor: med.color + '20' }}>
-                        <Ionicons name="medkit" size={18} color={med.color} />
+                        <Icon name="pills" fallback="medkit" size={18} color={med.color} />
                       </View>
                       <View className="flex-1">
                         <Typography variant="body" className="text-surface-900 font-medium">
@@ -171,7 +171,7 @@ export default function AddMedicationStep4() {
                           Ends {med.endDate ? format(new Date(med.endDate), 'MMM d, yyyy') : 'N/A'}
                         </Typography>
                       </View>
-                      <Ionicons name="chevron-forward" size={20} color="#A3A3A3" />
+                      <Icon name="chevron.right" fallback="chevron-forward" size={20} color="#A3A3A3" />
                     </Pressable>
                   ))}
                   <Pressable onPress={() => setShowDependencyPicker(false)} className="px-4 py-3">
@@ -216,7 +216,7 @@ export default function AddMedicationStep4() {
             className={`flex-row items-center p-4 rounded-2xl border ${formData.hasEndDate ? 'border-primary-500 bg-primary-50' : 'border-surface-100 bg-white'}`}
           >
             <View className={`w-12 h-12 rounded-2xl items-center justify-center mr-4 ${formData.hasEndDate ? 'bg-primary-100' : 'bg-surface-100'}`}>
-              <Ionicons name={formData.hasEndDate ? 'calendar' : 'calendar-outline'} size={22} color={formData.hasEndDate ? '#06B6D4' : '#737373'} />
+              <Icon name="calendar" fallback="calendar" size={22} color={formData.hasEndDate ? '#06B6D4' : '#737373'} />
             </View>
             <View className="flex-1">
               <Typography variant="body" className={`font-semibold ${formData.hasEndDate ? 'text-primary-700' : 'text-surface-900'}`}>
@@ -228,7 +228,7 @@ export default function AddMedicationStep4() {
             </View>
             {formData.hasEndDate ? (
               <View className="w-6 h-6 rounded-full bg-primary-500 items-center justify-center">
-                <Ionicons name="checkmark" size={16} color="#fff" />
+                <Icon name="checkmark" fallback="check" size={16} color="#fff" />
               </View>
             ) : (
               <View className="w-6 h-6 rounded-full bg-surface-200" />
@@ -275,7 +275,7 @@ export default function AddMedicationStep4() {
             <View className="mt-5 bg-surface-100 rounded-2xl p-4">
               <View className="flex-row items-start">
                 <View className="w-10 h-10 rounded-2xl bg-white items-center justify-center mr-3">
-                  <Ionicons name="infinite-outline" size={22} color="#737373" />
+                  <Icon name="infinity" fallback="repeat" size={22} color="#737373" />
                 </View>
                 <View className="flex-1">
                   <Typography variant="body" className="text-surface-900 font-medium mb-1">

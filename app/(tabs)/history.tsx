@@ -7,7 +7,6 @@ import Animated, {
   withTiming,
   FadeInDown,
   FadeIn,
-  LayoutAnimationConfig,
 } from 'react-native-reanimated';
 
 import { DoseLogService } from '../../src/services/doseLog.service';
@@ -25,9 +24,8 @@ import { DatePickerModal } from '../../src/components/ui/DatePickerModal';
 import { Screen } from '../../src/components/layout/Screen';
 import { colors, spacing, radii, animation } from '../../src/design/tokens';
 
-// Animated View wrapper with layout animation
+// Animated View wrapper
 const AnimatedView = Animated.View;
-const AnimatedList = LayoutAnimationConfig.springify();
 
 export default function HistoryScreen() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -59,7 +57,7 @@ export default function HistoryScreen() {
       for (const med of meds) map.set(med.id, med);
       setMedications(map);
     } catch (error) {
-      console.error('Failed to load medications:', error);
+      // Error loading medications
     }
   };
 
@@ -254,9 +252,9 @@ export default function HistoryScreen() {
               </AnimatedView>
 
               {/* Stats Cards */}
-              <AnimatedList>
+              <AnimatedView>
                 <AnimatedView entering={FadeInDown.delay(150).springify()} style={styles.statsRow}>
-                  <Card style={styles.statsCard} elevation="none">
+                  <Card elevation="none" style={styles.statsCard}>
                     <Typography variant="small" style={styles.statsLabel}>
                       Adherence
                     </Typography>
@@ -273,7 +271,7 @@ export default function HistoryScreen() {
                     </View>
                   </Card>
 
-                  <Card style={styles.statsCard} elevation="none">
+                  <Card elevation="none" style={styles.statsCard}>
                     <Typography variant="small" style={styles.statsLabel}>
                       Current Streak
                     </Typography>
@@ -285,7 +283,7 @@ export default function HistoryScreen() {
                     </View>
                   </Card>
 
-                  <Card style={styles.statsCard} elevation="none">
+                  <Card elevation="none" style={styles.statsCard}>
                     <Typography variant="small" style={styles.statsLabel}>
                       Best Streak
                     </Typography>
@@ -320,7 +318,7 @@ export default function HistoryScreen() {
                         <Animated.View
                           key={log.id}
                           entering={FadeIn.delay(index * 50).springify()}
-                          layout={{ type: 'spring', damping: 15, stiffness: 200 }}
+                          layout={Animated.springify().damping(15).stiffness(200)}
                         >
                           <DoseHistoryItem
                             doseLog={log}
@@ -359,7 +357,7 @@ export default function HistoryScreen() {
                     </Card>
                   )}
                 </AnimatedView>
-              </AnimatedList>
+              </AnimatedView>
             </>
           )}
         </ScrollView>

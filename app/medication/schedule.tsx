@@ -2,7 +2,6 @@ import { View, Pressable } from 'react-native';
 import { useState } from 'react';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 
 import { useMedicationForm } from '../../src/contexts/MedicationFormContext';
 import { Screen } from '../../src/components/layout/Screen';
@@ -10,22 +9,24 @@ import { Typography } from '../../src/components/ui/Typography';
 import { Button } from '../../src/components/ui/Button';
 import { ProgressBar } from '../../src/components/ui/ProgressBar';
 import { Input } from '../../src/components/ui/Input';
+import { Icon } from '../../src/components/ui/Icon';
 import { ScheduleType } from '../../src/types';
 
 interface ScheduleOption {
   value: ScheduleType;
   label: string;
   description: string;
-  icon: keyof typeof Ionicons.glyphMap;
+  sfSymbol: string;
+  fallbackIcon: string;
   iconColor: string;
   chipBg: string;
 }
 
 const SCHEDULE_OPTIONS: ScheduleOption[] = [
-  { value: 'daily', label: 'Daily', description: 'Same times every day', icon: 'calendar', iconColor: '#06B6D4', chipBg: 'bg-primary-100' },
-  { value: 'weekly', label: 'Weekly', description: 'Specific days of the week', icon: 'calendar-outline', iconColor: '#8B5CF6', chipBg: 'bg-surface-100' },
-  { value: 'interval', label: 'Every X Hours', description: 'Fixed interval throughout the day', icon: 'time-outline', iconColor: '#F59E0B', chipBg: 'bg-surface-100' },
-  { value: 'as-needed', label: 'As Needed (PRN)', description: 'No scheduled reminders', icon: 'flash-outline', iconColor: '#F97316', chipBg: 'bg-accent-100' },
+  { value: 'daily', label: 'Daily', description: 'Same times every day', sfSymbol: 'calendar', fallbackIcon: 'calendar', iconColor: '#06B6D4', chipBg: 'bg-primary-100' },
+  { value: 'weekly', label: 'Weekly', description: 'Specific days of the week', sfSymbol: 'calendar', fallbackIcon: 'calendar', iconColor: '#8B5CF6', chipBg: 'bg-surface-100' },
+  { value: 'interval', label: 'Every X Hours', description: 'Fixed interval throughout the day', sfSymbol: 'clock', fallbackIcon: 'time', iconColor: '#F59E0B', chipBg: 'bg-surface-100' },
+  { value: 'as-needed', label: 'As Needed (PRN)', description: 'No scheduled reminders', sfSymbol: 'bolt', fallbackIcon: 'flash', iconColor: '#F97316', chipBg: 'bg-accent-100' },
 ];
 
 const COMMON_SCHEDULES = [
@@ -91,7 +92,7 @@ export default function AddMedicationStep2() {
                   className={`flex-row items-center p-4 rounded-2xl border ${selected ? 'border-primary-500 bg-primary-50' : 'border-surface-100 bg-white'}`}
                 >
                   <View className={`w-12 h-12 rounded-2xl items-center justify-center mr-4 ${option.chipBg}`}>
-                    <Ionicons name={option.icon} size={22} color={option.iconColor} />
+                    <Icon name={option.sfSymbol} fallback={option.fallbackIcon} size={22} color={option.iconColor} />
                   </View>
                   <View className="flex-1">
                     <Typography variant="body" className={`font-semibold ${selected ? 'text-primary-700' : 'text-surface-900'}`}>
@@ -103,7 +104,7 @@ export default function AddMedicationStep2() {
                   </View>
                   {selected ? (
                     <View className="w-6 h-6 rounded-full bg-primary-500 items-center justify-center">
-                      <Ionicons name="checkmark" size={16} color="#fff" />
+                      <Icon name="checkmark" fallback="check" size={16} color="#fff" />
                     </View>
                   ) : null}
                 </Pressable>
@@ -115,7 +116,7 @@ export default function AddMedicationStep2() {
             <View className="mt-5 bg-accent-50 rounded-2xl p-4 border border-accent-100">
               <View className="flex-row items-start">
                 <View className="w-10 h-10 rounded-2xl bg-accent-100 items-center justify-center mr-3">
-                  <Ionicons name="information-circle" size={22} color="#F97316" />
+                  <Icon name="info.circle" fallback="info" size={22} color="#F97316" />
                 </View>
                 <View className="flex-1">
                   <Typography variant="body" className="text-surface-900 font-semibold mb-1">
@@ -156,7 +157,7 @@ export default function AddMedicationStep2() {
                           {schedule.times.join(' • ')}
                         </Typography>
                       </View>
-                      {selected ? <Ionicons name="checkmark-circle" size={22} color="#06B6D4" /> : null}
+                      {selected ? <Icon name="checkmark.circle" fallback="check-circle" size={22} color="#06B6D4" /> : null}
                     </Pressable>
                   );
                 })}
@@ -200,7 +201,7 @@ export default function AddMedicationStep2() {
                       className="ml-3 w-12 h-12 rounded-2xl bg-danger-50 items-center justify-center"
                       accessibilityLabel="Remove time"
                     >
-                      <Ionicons name="trash-outline" size={20} color="#EF4444" />
+                      <Icon name="trash" fallback="delete" size={20} color="#EF4444" />
                     </Pressable>
                   ) : null}
                 </View>
@@ -210,7 +211,7 @@ export default function AddMedicationStep2() {
                 onPress={handleAddTime}
                 className="flex-row items-center justify-center py-4 rounded-2xl border border-dashed border-surface-300"
               >
-                <Ionicons name="add-circle-outline" size={20} color="#06B6D4" />
+                <Icon name="plus.circle" fallback="add-circle" size={20} color="#06B6D4" />
                 <Typography variant="body" className="text-primary-700 ml-2 font-medium">
                   Add another time
                 </Typography>

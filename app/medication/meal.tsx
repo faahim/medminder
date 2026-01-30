@@ -1,27 +1,28 @@
 import { View, Pressable } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 
 import { useMedicationForm } from '../../src/contexts/MedicationFormContext';
 import { Screen } from '../../src/components/layout/Screen';
 import { Typography } from '../../src/components/ui/Typography';
 import { Button } from '../../src/components/ui/Button';
 import { ProgressBar } from '../../src/components/ui/ProgressBar';
+import { Icon } from '../../src/components/ui/Icon';
 import { MealTiming } from '../../src/types';
 
 const MEAL_OPTIONS: {
   value: MealTiming;
   label: string;
   description: string;
-  icon: keyof typeof Ionicons.glyphMap;
+  sfSymbol: string;
+  fallbackIcon: string;
   color: string;
   bg: string;
 }[] = [
-  { value: 'before', label: 'Before meal', description: '30–60 minutes before eating', icon: 'timer-outline', color: '#0891B2', bg: 'bg-primary-50' },
-  { value: 'after', label: 'After meal', description: 'Within 30 minutes after eating', icon: 'checkmark-circle-outline', color: '#F97316', bg: 'bg-accent-50' },
-  { value: 'with', label: 'With food', description: 'During your meal', icon: 'restaurant-outline', color: '#8B5CF6', bg: 'bg-surface-100' },
-  { value: 'anytime', label: 'Anytime', description: 'No meal timing needed', icon: 'ellipse-outline', color: '#737373', bg: 'bg-surface-100' },
+  { value: 'before', label: 'Before meal', description: '30–60 minutes before eating', sfSymbol: 'clock', fallbackIcon: 'time', color: '#0891B2', bg: 'bg-primary-50' },
+  { value: 'after', label: 'After meal', description: 'Within 30 minutes after eating', sfSymbol: 'checkmark.circle', fallbackIcon: 'check-circle', color: '#F97316', bg: 'bg-accent-50' },
+  { value: 'with', label: 'With food', description: 'During your meal', sfSymbol: 'fork.knife', fallbackIcon: 'restaurant', color: '#8B5CF6', bg: 'bg-surface-100' },
+  { value: 'anytime', label: 'Anytime', description: 'No meal timing needed', sfSymbol: 'circle', fallbackIcon: 'circle', color: '#737373', bg: 'bg-surface-100' },
 ];
 
 export default function AddMedicationStep3() {
@@ -51,7 +52,7 @@ export default function AddMedicationStep3() {
                   className={`flex-row items-center p-4 rounded-2xl border ${selected ? 'border-primary-500 bg-primary-50' : 'border-surface-100 bg-white'}`}
                 >
                   <View className={`w-14 h-14 rounded-2xl items-center justify-center mr-4 ${option.bg}`}>
-                    <Ionicons name={option.icon} size={26} color={option.color} />
+                    <Icon name={option.sfSymbol} fallback={option.fallbackIcon} size={26} color={option.color} />
                   </View>
                   <View className="flex-1">
                     <Typography variant="body" className={`font-semibold ${selected ? 'text-primary-700' : 'text-surface-900'}`}>
@@ -63,7 +64,7 @@ export default function AddMedicationStep3() {
                   </View>
                   {selected ? (
                     <View className="w-6 h-6 rounded-full bg-primary-500 items-center justify-center">
-                      <Ionicons name="checkmark" size={16} color="#fff" />
+                      <Icon name="checkmark" fallback="check" size={16} color="#fff" />
                     </View>
                   ) : null}
                 </Pressable>

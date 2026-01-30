@@ -1,16 +1,18 @@
 import { Tabs } from 'expo-router';
 import { NativeTabs, Icon, Label } from 'expo-router/unstable-native-tabs';
-import { Feather } from '@expo/vector-icons';
 import { Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TAB_BAR_BASE_HEIGHT, TAB_BAR_TOP_PADDING } from '../../src/constants/layout';
+import { Icon as UIIcon } from '../../src/components/ui/Icon';
 
 function AndroidTabIcon({
-  name,
+  sfSymbol,
+  fallbackIcon,
   focused,
   color,
 }: {
-  name: string;
+  sfSymbol: string;
+  fallbackIcon: string;
   focused: boolean;
   color: string;
 }) {
@@ -22,7 +24,12 @@ function AndroidTabIcon({
           : { padding: 7 }
       }
     >
-      <Feather name={name as any} size={22} color={color} />
+      <UIIcon
+        name={sfSymbol}
+        fallback={fallbackIcon}
+        size={22}
+        color={color}
+      />
     </View>
   );
 }
@@ -37,7 +44,12 @@ function IOSTabLayout() {
         selected: { fontSize: 11, fontWeight: '600', color: '#06B6D4' },
       }}
       blurEffect="systemUltraThinMaterial"
-      shadowColor="rgba(0,0,0,0.08)"
+      style={{
+        shadowColor: 'rgba(0,0,0,0.08)',
+        shadowOffset: { width: 0, height: -2 },
+        shadowOpacity: 1,
+        shadowRadius: 8,
+      }}
     >
       <NativeTabs.Trigger name="index">
         <Icon sf="calendar" />
@@ -71,14 +83,13 @@ function AndroidTabLayout() {
         tabBarStyle: {
           backgroundColor: '#FFFFFF',
           borderTopWidth: 0,
-          elevation: 0,
           height,
           paddingBottom: insets.bottom,
           paddingTop: TAB_BAR_TOP_PADDING,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: -4 },
-          shadowOpacity: 0.05,
-          shadowRadius: 16,
+          shadowColor: 'rgba(0, 0, 0, 0.08)',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 1,
+          shadowRadius: 8,
         },
         tabBarLabelStyle: {
           fontSize: 11,
@@ -96,7 +107,7 @@ function AndroidTabLayout() {
         options={{
           title: 'Today',
           tabBarIcon: ({ color, focused }) => (
-            <AndroidTabIcon name="calendar" focused={focused} color={color} />
+            <AndroidTabIcon sfSymbol="calendar" fallbackIcon="calendar" focused={focused} color={color} />
           ),
         }}
       />
@@ -105,7 +116,7 @@ function AndroidTabLayout() {
         options={{
           title: 'Meds',
           tabBarIcon: ({ color, focused }) => (
-            <AndroidTabIcon name="activity" focused={focused} color={color} />
+            <AndroidTabIcon sfSymbol="pills.fill" fallbackIcon="medkit" focused={focused} color={color} />
           ),
         }}
       />
@@ -114,7 +125,7 @@ function AndroidTabLayout() {
         options={{
           title: 'History',
           tabBarIcon: ({ color, focused }) => (
-            <AndroidTabIcon name="bar-chart-2" focused={focused} color={color} />
+            <AndroidTabIcon sfSymbol="chart.bar.fill" fallbackIcon="bar-chart" focused={focused} color={color} />
           ),
         }}
       />
@@ -123,7 +134,7 @@ function AndroidTabLayout() {
         options={{
           title: 'Settings',
           tabBarIcon: ({ color, focused }) => (
-            <AndroidTabIcon name="settings" focused={focused} color={color} />
+            <AndroidTabIcon sfSymbol="gearshape.fill" fallbackIcon="settings" focused={focused} color={color} />
           ),
         }}
       />

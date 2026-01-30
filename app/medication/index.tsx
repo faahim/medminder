@@ -1,12 +1,12 @@
 import { View, Pressable, TextInput, FlatList, StyleSheet, Text } from 'react-native';
 import { useState } from 'react';
 import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, radii } from '../../src/design/tokens';
 import { useMedicationForm } from '../../src/contexts/MedicationFormContext';
 import { Typography } from '../../src/components/ui/Typography';
 import { WizardScreen } from '../../src/components/medication/WizardScreen';
 import { MedicationPreviewCard } from '../../src/components/medication/MedicationPreviewCard';
+import { Icon } from '../../src/components/ui/Icon';
 import * as Haptics from 'expo-haptics';
 
 // Common medications for autocomplete suggestions
@@ -25,12 +25,12 @@ const COMMON_MEDICATIONS = [
 ];
 
 const DOSAGE_UNITS = [
-  { label: 'tablet', icon: 'ellipse' },
-  { label: 'capsule', icon: 'ellipse-outline' },
-  { label: 'mg', icon: 'flask-outline' },
-  { label: 'mL', icon: 'water-outline' },
-  { label: 'drop', icon: 'water' },
-  { label: 'puff', icon: 'cloud-outline' },
+  { label: 'tablet', sfSymbol: 'circle.dashed', fallbackIcon: 'radio-button-off' },
+  { label: 'capsule', sfSymbol: 'capsule', fallbackIcon: 'circle' },
+  { label: 'mg', sfSymbol: 'flask', fallbackIcon: 'test-tube' },
+  { label: 'mL', sfSymbol: 'drop', fallbackIcon: 'water' },
+  { label: 'drop', sfSymbol: 'drop.degreesign', fallbackIcon: 'water' },
+  { label: 'puff', sfSymbol: 'wind', fallbackIcon: 'cloud' },
 ];
 
 const MEDICATION_COLORS = [
@@ -88,13 +88,13 @@ export default function AddMedicationStep1() {
       style={styles.suggestionItem}
     >
       <View style={styles.suggestionIcon}>
-        <Ionicons name="medkit" size={18} color={colors.surface[300]} />
+        <Icon name="pill" fallback="medkit" size={18} color={colors.surface[300]} />
       </View>
       <View style={styles.suggestionContent}>
         <Text style={styles.suggestionName}>{item.name}</Text>
         <Text style={styles.suggestionDetails}>{item.dosage} {item.unit}</Text>
       </View>
-      <Ionicons name="add-circle" size={20} color={colors.primary[500]} />
+      <Icon name="plus.circle" fallback="add-circle" size={20} color={colors.primary[500]} />
     </Pressable>
   );
 
@@ -128,7 +128,7 @@ export default function AddMedicationStep1() {
 
           <View style={styles.searchContainer}>
             <View style={styles.searchInputWrapper}>
-              <Ionicons name="search" size={18} color={colors.surface[300]} />
+              <Icon name="magnifyingglass" fallback="search" size={18} color={colors.surface[300]} />
               <TextInput
                 style={styles.searchInput}
                 value={formData.name}
@@ -143,7 +143,7 @@ export default function AddMedicationStep1() {
               />
               {formData.name.length > 0 && (
                 <Pressable onPress={clearSelection} style={styles.clearButton}>
-                  <Ionicons name="close-circle" size={18} color={colors.surface[300]} />
+                  <Icon name="xmark.circle" fallback="close-circle" size={18} color={colors.surface[300]} />
                 </Pressable>
               )}
             </View>
@@ -200,8 +200,9 @@ export default function AddMedicationStep1() {
                     }}
                     style={[styles.unitChip, selected && styles.unitChipSelected]}
                   >
-                    <Ionicons
-                      name={unit.icon as any}
+                    <Icon
+                      name={unit.sfSymbol}
+                      fallback={unit.fallbackIcon}
                       size={14}
                       color={selected ? colors.primary[500] : colors.surface[500]}
                     />
@@ -251,7 +252,7 @@ export default function AddMedicationStep1() {
                   }}
                   style={[styles.colorOption, selected && styles.colorOptionSelected]}
                 >
-                  {selected ? <Ionicons name="checkmark" size={16} color="white" /> : null}
+                  {selected ? <Icon name="checkmark" fallback="check" size={16} color="white" /> : null}
                 </Pressable>
               );
             })}
@@ -320,11 +321,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.surface[200],
     marginTop: spacing.xs,
-    shadowColor: '#000',
+    shadowColor: 'rgba(0, 0, 0, 0.1)',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 1,
     shadowRadius: 12,
-    elevation: 4,
     maxHeight: 240,
   },
   suggestionItem: {

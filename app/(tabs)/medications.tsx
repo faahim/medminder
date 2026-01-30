@@ -108,11 +108,10 @@ export default function MedicationsScreen() {
                 onPress={() => router.push('/medication/add')}
                 className="w-11 h-11 rounded-xl bg-primary-500 items-center justify-center"
                 style={{
-                  shadowColor: colors.primary[500],
+                  shadowColor: 'rgba(6, 182, 212, 0.25)',
                   shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: 0.25,
+                  shadowOpacity: 1,
                   shadowRadius: 12,
-                  elevation: 4,
                 }}
                 accessibilityLabel="Add medication"
               >
@@ -211,7 +210,7 @@ export default function MedicationsScreen() {
           <Animated.View
             className="mb-3"
             entering={useStaggeredAnimation(index, 50, 'up')}
-            layout={{ type: 'spring', damping: 15, stiffness: 200 }}
+            layout={Animated.springify().damping(15).stiffness(200)}
           >
             <MedicationListItem
               medication={item}

@@ -97,7 +97,7 @@ export default function HomeScreen() {
           <Animated.View
             key={`${dose.medication.id}-${dose.scheduledTime}`}
             entering={useStaggeredAnimation(idx, 30, 'up')}
-            layout={{ type: 'spring', damping: 15, stiffness: 200 }}
+            layout={Animated.springify().damping(15).stiffness(200)}
           >
             <DoseCard
               dose={dose}
@@ -331,7 +331,7 @@ export default function HomeScreen() {
                     <Animated.View
                       key={med.id}
                       entering={useStaggeredAnimation(idx, 30, 'up')}
-                      layout={{ type: 'spring', damping: 15, stiffness: 200 }}
+                      layout={Animated.springify().damping(15).stiffness(200)}
                     >
                       <AsNeededCard key={med.id} medication={med} onLogDose={logAsNeededDose} />
                     </Animated.View>

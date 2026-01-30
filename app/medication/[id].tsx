@@ -1,7 +1,7 @@
 import { View, Alert, ScrollView } from 'react-native';
 import { useLocalSearchParams, router, Stack } from 'expo-router';
 import { useState, useEffect } from 'react';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, isToday as isTodayDate } from 'date-fns';
 import * as Haptics from 'expo-haptics';
 
 import { MedicationService } from '../../src/services/medication.service';
@@ -133,13 +133,14 @@ export default function MedicationDetailScreen() {
           headerTitleStyle: { fontWeight: '600', color: colors.surface[900] },
           headerShadowVisible: false,
           headerLeft: () => (
-            <Icon
-              name="chevron.left"
-              fallback="arrow-back"
-              size={24}
-              color={colors.surface[900]}
-              onPress={() => router.back()}
-            />
+            <Pressable onPress={() => router.back()}>
+              <Icon
+                name="chevron.left"
+                fallback="arrow-back"
+                size={24}
+                color={colors.surface[900]}
+              />
+            </Pressable>
           ),
         }}
       />
@@ -363,7 +364,7 @@ export default function MedicationDetailScreen() {
             ) : (
               recentLogs.slice(0, 10).map((log, index) => {
                 const scheduledDate = parseISO(log.scheduledDate);
-                const isRecent = isToday(scheduledDate) || scheduledDate > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+                const isRecent = isTodayDate(scheduledDate) || scheduledDate > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
                 return (
                   <View
@@ -376,7 +377,7 @@ export default function MedicationDetailScreen() {
                       <View className="flex-row items-center">
                         <Typography variant="body" style={{ color: colors.surface[900] }}>
                           {isRecent
-                            ? isToday(scheduledDate)
+                            ? isTodayDate(scheduledDate)
                               ? 'Today'
                               : format(scheduledDate, 'EEE')
                             : format(scheduledDate, 'MMM d')}
@@ -434,7 +435,7 @@ export default function MedicationDetailScreen() {
                             : log.status === 'missed'
                             ? colors.error[600]
                             : log.status === 'skipped'
-                            ? colors.surface[600]
+                            ? colors.surface[500]
                             : colors.warning[600]
                         }
                       />
@@ -446,10 +447,10 @@ export default function MedicationDetailScreen() {
                             log.status === 'taken'
                               ? colors.success[700]
                               : log.status === 'missed'
-                              ? colors.error[700]
+                              ? colors.error[600]
                               : log.status === 'skipped'
                               ? colors.surface[700]
-                              : colors.warning[700],
+                              : colors.warning[600],
                         }}
                       >
                         {log.status}
@@ -466,38 +467,41 @@ export default function MedicationDetailScreen() {
       {/* Quick Actions Footer */}
       <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-surface-100 p-4 pb-8">
         <View className="flex-row gap-3">
-          <Button
-            title="Edit"
-            variant="outline"
-            size="lg"
-            flex={1}
-            onPress={handleEdit}
-            leftIcon={<Icon name="pencil" fallback="create-outline" size={18} color={colors.primary[600]} />}
-          />
-          <Button
-            title={isPaused ? 'Resume' : 'Pause'}
-            variant={isPaused ? 'success' : 'secondary'}
-            size="lg"
-            flex={1}
-            onPress={handleTogglePause}
-            leftIcon={
-              <Icon
-                name={isPaused ? 'play' : 'pause'}
-                fallback={isPaused ? 'play-outline' : 'pause-outline'}
-                size={18}
-                color={isPaused ? colors.success[700] : colors.surface[900]}
-              />
-            }
-          />
-          <Button
-            title="Delete"
-            variant="ghost"
-            size="lg"
-            flex={1}
-            onPress={handleDelete}
-            disabled={isDeleting}
-            leftIcon={<Icon name="trash" fallback="trash-outline" size={18} color={colors.error[600]} />}
-          />
+          <View className="flex-1">
+            <Button
+              title="Edit"
+              variant="outline"
+              size="lg"
+              onPress={handleEdit}
+              leftIcon={<Icon name="pencil" fallback="create-outline" size={18} color={colors.primary[600]} />}
+            />
+          </View>
+          <View className="flex-1">
+            <Button
+              title={isPaused ? 'Resume' : 'Pause'}
+              variant={isPaused ? 'success' : 'secondary'}
+              size="lg"
+              onPress={handleTogglePause}
+              leftIcon={
+                <Icon
+                  name={isPaused ? 'play' : 'pause'}
+                  fallback={isPaused ? 'play-outline' : 'pause-outline'}
+                  size={18}
+                  color={isPaused ? colors.success[700] : colors.surface[900]}
+                />
+              }
+            />
+          </View>
+          <View className="flex-1">
+            <Button
+              title="Delete"
+              variant="ghost"
+              size="lg"
+              onPress={handleDelete}
+              disabled={isDeleting}
+              leftIcon={<Icon name="trash" fallback="trash-outline" size={18} color={colors.error[600]} />}
+            />
+          </View>
         </View>
       </View>
     </View>

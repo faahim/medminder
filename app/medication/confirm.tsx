@@ -2,7 +2,6 @@ import { View, Alert } from 'react-native';
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 import { format, addDays } from 'date-fns';
 import * as Haptics from 'expo-haptics';
 
@@ -13,6 +12,7 @@ import { Typography } from '../../src/components/ui/Typography';
 import { Button } from '../../src/components/ui/Button';
 import { ProgressBar } from '../../src/components/ui/ProgressBar';
 import { MealTimingBadge } from '../../src/components/medication/MealTimingBadge';
+import { Icon } from '../../src/components/ui/Icon';
 import { Medication } from '../../src/types';
 
 export default function AddMedicationStep5() {
@@ -76,7 +76,7 @@ export default function AddMedicationStep5() {
           <View className="p-5 border-b border-surface-100">
             <View className="flex-row items-start mb-4">
               <View className="w-14 h-14 rounded-2xl items-center justify-center mr-4" style={{ backgroundColor: formData.color }}>
-                <Ionicons name="medkit" size={24} color="#fff" />
+                <Icon name="pills" fallback="medkit" size={24} color="#fff" />
               </View>
               <View className="flex-1">
                 <Typography variant="h3" className="text-surface-900 font-bold mb-1">
@@ -90,7 +90,7 @@ export default function AddMedicationStep5() {
 
             {formData.instructions ? (
               <View className="bg-surface-50 rounded-2xl p-3 flex-row items-start">
-                <Ionicons name="document-text-outline" size={18} color="#737373" />
+                <Icon name="doc.text" fallback="document-text" size={18} color="#737373" />
                 <Typography variant="small" className="text-surface-700 ml-2 flex-1">
                   {formData.instructions}
                 </Typography>
@@ -102,7 +102,7 @@ export default function AddMedicationStep5() {
           <View className="p-5 border-b border-surface-100">
             <View className="flex-row items-center mb-2">
               <View className="w-8 h-8 rounded-xl bg-primary-50 items-center justify-center mr-3">
-                <Ionicons name="calendar" size={16} color="#06B6D4" />
+                <Icon name="calendar" fallback="calendar" size={16} color="#06B6D4" />
               </View>
               <Typography variant="label" className="text-surface-500 uppercase tracking-wider text-xs">
                 Schedule
@@ -117,7 +117,7 @@ export default function AddMedicationStep5() {
           <View className="p-5 border-b border-surface-100">
             <View className="flex-row items-center mb-2">
               <View className="w-8 h-8 rounded-xl bg-accent-50 items-center justify-center mr-3">
-                <Ionicons name="restaurant-outline" size={16} color="#F97316" />
+                <Icon name="fork.knife" fallback="utensils" size={16} color="#F97316" />
               </View>
               <Typography variant="label" className="text-surface-500 uppercase tracking-wider text-xs">
                 Meal timing
@@ -130,7 +130,7 @@ export default function AddMedicationStep5() {
           <View className="p-5">
             <View className="flex-row items-center mb-2">
               <View className="w-8 h-8 rounded-xl bg-surface-100 items-center justify-center mr-3">
-                <Ionicons name="time-outline" size={16} color="#737373" />
+                <Icon name="clock" fallback="time" size={16} color="#737373" />
               </View>
               <Typography variant="label" className="text-surface-500 uppercase tracking-wider text-xs">
                 Duration
@@ -158,7 +158,7 @@ export default function AddMedicationStep5() {
               </Typography>
             ) : (
               <View className="flex-row items-center mt-1">
-                <Ionicons name="infinite-outline" size={18} color="#737373" />
+                <Icon name="infinity" fallback="repeat" size={18} color="#737373" />
                 <Typography variant="body" className="text-surface-600 ml-2">
                   Ongoing
                 </Typography>

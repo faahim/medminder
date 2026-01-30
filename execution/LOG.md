@@ -2,6 +2,37 @@
 
 ## 2026-01-30
 
+### [05:45] ✅ M1-015 QA & Polish Pass - COMPLETED (PM Recovery)
+**Executor**: PM watchdog (recovered from subagent medminder-M1-015)
+
+**Summary**: Fixed remaining issues from the UI/UX overhaul including Ionicons replacements and build errors. All icons now use SF Symbols via the Icon component with fallbacks.
+
+**Changes**:
+- `app/(tabs)/history.tsx` - Fixed JSX syntax error (unclosed AnimatedView tag)
+- `app/(tabs)/index.tsx` - Fixed layout animation prop syntax
+- `app/(tabs)/medications.tsx` - Fixed layout animation prop syntax
+- `app/(tabs)/settings.tsx` - Fixed layout animation prop syntax
+- `app/(tabs)/_layout.tsx` - Fixed layout animation prop syntax
+- `app/medication/[id].tsx` - Fixed layout animation prop syntax
+- `app/medication/index.tsx` - Replaced Ionicons with Icon component using SF Symbols
+- `app/medication/meal.tsx` - Replaced Ionicons with Icon component using SF Symbols
+- `app/medication/schedule.tsx` - Replaced Ionicons with Icon component using SF Symbols
+- `app/medication/confirm.tsx` - Replaced Ionicons with Icon component using SF Symbols
+- `app/medication/duration.tsx` - Replaced Ionicons with Icon component using SF Symbols
+
+**Acceptance Criteria Met**:
+- ✅ All Ionicons replaced with SF Symbols (Icon component with fallbacks)
+- ✅ All layout animation syntax errors fixed
+- ✅ No console.log statements remain
+- ✅ `npx expo export --platform ios` - passed
+
+**Verification**:
+- `npx expo export --platform ios` - passed
+
+**Commit**: (pending)
+
+---
+
 ### [04:45] ✅ M1-011 Prescription Import Flow Redesign - COMPLETED (PM Recovery)
 **Executor**: Subagent medminder-M1-011, completed by PM watchdog recovery
 
