@@ -1,11 +1,11 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-01-30T02:15:00Z",
+  "lastUpdated": "2026-01-30T02:30:00Z",
   "summary": {
     "total": 15,
-    "pending": 7,
-    "claimed": 0,
-    "inProgress": 0,
+    "pending": 6,
+    "claimed": 1,
+    "inProgress": 1,
     "completed": 8,
     "failed": 0,
     "blocked": 0
@@ -156,7 +156,7 @@
       "id": "M1-009",
       "title": "Add Medication Wizard Redesign",
       "phase": 1,
-      "status": "pending",
+      "status": "in_progress",
       "priority": "P0",
       "estimate": 90,
       "dependencies": [
