@@ -483,7 +483,16 @@ Every 15 min:
       - Spawn ONE agent for the highest priority ready task
       - Follows standard sequential flow
 
-5) After each task completes: update tracking files + git commit + git push
+5) After each task completes (or you recover one):
+   - Ensure canonical state is correct:
+     - tasks/MANIFEST.json updated (task status + updated timestamp)
+     - execution/ACTIVE.json claim removed
+     - (optional) task spec md updated (only if it exists / needed)
+   - Append a short entry to execution/LOG.md
+   - Run:
+     - node tools/manifest/validate.mjs
+     - node tools/manifest/render.mjs   # regenerates tasks/INDEX.json + tasks/BOARD.md
+   - git add -A && git commit -m "PM: <what changed>" && git push
 
 6) Optional: ping user on completion via message tool
 
@@ -507,11 +516,13 @@ If state corrupted:
 
 ```
 1. Check execution/LOG.md
-2. Reset ACTIVE.json to {"claims": []}
-3. Verify task statuses vs codebase
-4. Update INDEX.json to match reality
-5. Update BOARD.md
-6. Document in LOG.md
+2. Reset execution/ACTIVE.json to {"claims": []}
+3. Verify tasks/MANIFEST.json vs codebase (statuses + deps)
+4. Run:
+   - node tools/manifest/validate.mjs
+   - node tools/manifest/render.mjs
+5. If validate fails, fix MANIFEST/ACTIVE until it passes
+6. Document recovery in execution/LOG.md
 ```
 
 ---
