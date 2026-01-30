@@ -1,6 +1,6 @@
 # 📋 Medminder - Task Board
 
-**Last Updated**: 2026-01-30T08:45:00Z
+**Last Updated**: 2026-01-30T09:10:00Z
 
 ## Overview
 
@@ -8,7 +8,7 @@
 |-------|----------|--------|
 | Phase 0: Foundation | ██████████ 100% | ✅ Complete (pre-existing) |
 | Phase 1: UI/UX Overhaul | ██████████ 100% (15/15) | ✅ Complete |
-| Phase 2: Notifications | ████████░░░ 55% (6/11) | 🟡 In Progress |
+| Phase 2: Notifications | █████████░░ 64% (7/11) | 🟡 In Progress |
 
 ---
 
@@ -26,7 +26,6 @@
 
 | ID | Task | Priority | Started At |
 |----|------|----------|------------|
-| M2-006 | Per-Medication Notification Settings | P1 | 2026-01-30T09:05:00Z |
 | *No tasks in progress* | | | |
 
 ---
@@ -58,6 +57,7 @@
 | M2-004 | Background Rescheduling Task | 2026-01-30T08:45:00Z |
 | M2-009 | Today View Notification Sync | 2026-01-30T08:15:00Z |
 | M2-005 | Missed Dose Detection & Follow-up | 2026-01-30T08:39:00Z |
+| M2-006 | Per-Medication Notification Settings | 2026-01-30T09:10:00Z |
 
 ---
 

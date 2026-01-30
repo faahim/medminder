@@ -68,6 +68,21 @@ const COLOR_OPTIONS = [
   { label: 'Gray', value: '#6B7280' },
 ] as const;
 
+const NOTIFICATION_SOUND_OPTIONS = [
+  { label: 'Default', value: 'default' },
+  { label: 'Gentle', value: 'gentle' },
+  { label: 'Urgent', value: 'urgent' },
+] as const;
+
+const REMINDER_ADVANCE_OPTIONS = [
+  { label: 'None', value: 0 },
+  { label: '5 minutes', value: 5 },
+  { label: '10 minutes', value: 10 },
+  { label: '15 minutes', value: 15 },
+  { label: '30 minutes', value: 30 },
+  { label: '1 hour', value: 60 },
+] as const;
+
 export default function EditMedicationScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [medication, setMedication] = useState<Medication | null>(null);
@@ -88,6 +103,12 @@ export default function EditMedicationScreen() {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [hasEndDate, setHasEndDate] = useState(false);
   const [color, setColor] = useState('#06B6D4');
+
+  // Notification settings state
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [notificationSound, setNotificationSound] = useState<'default' | 'gentle' | 'urgent'>('default');
+  const [vibrationEnabled, setVibrationEnabled] = useState(true);
+  const [reminderAdvanceMinutes, setReminderAdvanceMinutes] = useState(0);
 
   // Date picker state
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
@@ -127,6 +148,12 @@ export default function EditMedicationScreen() {
         setHasEndDate(true);
       }
       setColor(med.color || '#06B6D4');
+
+      // Load notification settings
+      setNotificationsEnabled(med.notificationsEnabled ?? true);
+      setNotificationSound((med.notificationSound || 'default') as 'default' | 'gentle' | 'urgent');
+      setVibrationEnabled(med.vibrationEnabled ?? true);
+      setReminderAdvanceMinutes(med.reminderAdvanceMinutes || 0);
     } catch (error) {
       console.error('Error loading medication:', error);
       Alert.alert('Error', 'Failed to load medication');
@@ -176,6 +203,10 @@ export default function EditMedicationScreen() {
         startDate,
         endDate: hasEndDate ? endDate : null,
         color,
+        notificationsEnabled,
+        notificationSound,
+        vibrationEnabled,
+        reminderAdvanceMinutes,
       };
 
       await MedicationService.update(medication!.id, formData);
@@ -427,6 +458,93 @@ export default function EditMedicationScreen() {
                 />
               )}
             </View>
+          </View>
+        </View>
+
+        {/* Notifications */}
+        <View className="mb-5">
+          <Typography variant="label" className="text-surface-500 mb-2 ml-1 uppercase tracking-wider text-xs">
+            Notifications
+          </Typography>
+          <View className="bg-white rounded-3xl border border-surface-100 p-4">
+            {/* Enable/Disable Toggle */}
+            <View className="flex-row items-center justify-between mb-4">
+              <View className="flex-1">
+                <Typography variant="label" className="text-surface-900">
+                  Enable Notifications
+                </Typography>
+                <Typography variant="caption" className="text-surface-500">
+                  Receive reminders for this medication
+                </Typography>
+              </View>
+              <Pressable
+                onPress={() => setNotificationsEnabled(!notificationsEnabled)}
+                className={`w-14 h-8 rounded-full p-1 transition-colors ${
+                  notificationsEnabled ? 'bg-primary-500' : 'bg-surface-300'
+                }`}
+              >
+                <View
+                  className={`w-6 h-6 rounded-full bg-white shadow-sm transition-transform ${
+                    notificationsEnabled ? 'translate-x-6' : 'translate-x-0'
+                  }`}
+                />
+              </Pressable>
+            </View>
+
+            {notificationsEnabled && (
+              <>
+                {/* Notification Sound */}
+                <View className="mb-4">
+                  <Typography variant="label" className="text-surface-700 mb-2">
+                    Notification Sound
+                  </Typography>
+                  <Select
+                    value={notificationSound}
+                    onChange={(value: any) => setNotificationSound(value as 'default' | 'gentle' | 'urgent')}
+                    options={NOTIFICATION_SOUND_OPTIONS}
+                  />
+                </View>
+
+                {/* Vibration Toggle */}
+                <View className="flex-row items-center justify-between mb-4">
+                  <View className="flex-1">
+                    <Typography variant="label" className="text-surface-900">
+                      Vibration
+                    </Typography>
+                    <Typography variant="caption" className="text-surface-500">
+                      Vibrate when notification arrives
+                    </Typography>
+                  </View>
+                  <Pressable
+                    onPress={() => setVibrationEnabled(!vibrationEnabled)}
+                    className={`w-14 h-8 rounded-full p-1 transition-colors ${
+                      vibrationEnabled ? 'bg-primary-500' : 'bg-surface-300'
+                    }`}
+                  >
+                    <View
+                      className={`w-6 h-6 rounded-full bg-white shadow-sm transition-transform ${
+                        vibrationEnabled ? 'translate-x-6' : 'translate-x-0'
+                      }`}
+                    />
+                  </Pressable>
+                </View>
+
+                {/* Reminder Advance Time */}
+                <View>
+                  <Typography variant="label" className="text-surface-700 mb-2">
+                    Advance Reminder
+                  </Typography>
+                  <Select
+                    value={reminderAdvanceMinutes}
+                    onChange={(value: any) => setReminderAdvanceMinutes(value as number)}
+                    options={REMINDER_ADVANCE_OPTIONS}
+                  />
+                  <Typography variant="caption" className="text-surface-500 mt-1">
+                    Receive a reminder before the scheduled time
+                  </Typography>
+                </View>
+              </>
+            )}
           </View>
         </View>
 

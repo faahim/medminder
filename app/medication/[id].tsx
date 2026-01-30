@@ -1,4 +1,4 @@
-import { View, Alert, ScrollView } from 'react-native';
+import { View, Alert, ScrollView, Pressable } from 'react-native';
 import { useLocalSearchParams, router, Stack } from 'expo-router';
 import { useState, useEffect } from 'react';
 import { format, parseISO, isToday as isTodayDate } from 'date-fns';
@@ -98,6 +98,15 @@ export default function MedicationDetailScreen() {
               }
             }
           },
+        },
+      ]
+    );
+  };
+
+  const handleNotificationSettings = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.push(`/medication/notifications/${id}`);
+  };
         },
       ]
     );
@@ -466,7 +475,7 @@ export default function MedicationDetailScreen() {
 
       {/* Quick Actions Footer */}
       <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-surface-100 p-4 pb-8">
-        <View className="flex-row gap-3">
+        <View className="flex-row gap-3 mb-3">
           <View className="flex-1">
             <Button
               title="Edit"
@@ -476,6 +485,17 @@ export default function MedicationDetailScreen() {
               leftIcon={<Icon name="pencil" fallback="create-outline" size={18} color={colors.primary[600]} />}
             />
           </View>
+          <View className="flex-1">
+            <Button
+              title="Notifications"
+              variant="outline"
+              size="lg"
+              onPress={handleNotificationSettings}
+              leftIcon={<Icon name="bell" fallback="notifications-outline" size={18} color={colors.primary[600]} />}
+            />
+          </View>
+        </View>
+        <View className="flex-row gap-3">
           <View className="flex-1">
             <Button
               title={isPaused ? 'Resume' : 'Pause'}

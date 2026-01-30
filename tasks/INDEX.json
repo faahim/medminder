@@ -1,12 +1,12 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-01-30T08:45:00Z",
+  "lastUpdated": "2026-01-30T09:10:00Z",
   "summary": {
     "total": 26,
     "pending": 2,
-    "claimed": 1,
+    "claimed": 0,
     "inProgress": 0,
-    "completed": 21,
+    "completed": 22,
     "failed": 0,
     "blocked": 0
   },
@@ -28,9 +28,9 @@
     "phase-2": {
       "name": "Notifications & Reminders",
       "total": 11,
-      "completed": 6,
+      "completed": 7,
       "status": "inProgress",
-      "lastUpdated": "2026-01-30T08:40:00Z"
+      "lastUpdated": "2026-01-30T09:10:00Z"
     }
   },
   "tasks": [
@@ -336,13 +336,12 @@
       "id": "M2-006",
       "title": "Per-Medication Notification Settings",
       "phase": 2,
-      "status": "claimed",
+      "status": "completed",
       "priority": "P1",
       "estimate": 40,
       "dependencies": [],
       "blocks": [],
-      "claimedBy": "WATCHDOG-M2-006-2026-01-30T09:05:00Z",
-      "claimedAt": "2026-01-30T09:05:00Z"
+      "completedAt": "2026-01-30T09:10:00Z"
     },
     {
       "id": "M2-007",

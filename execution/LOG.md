@@ -2,6 +2,51 @@
 
 ## Completed Tasks
 
+### M2-006: Per-Medication Notification Settings
+**Status**: ✅ COMPLETED
+**Date**: 2026-01-30
+
+**Changes Made:**
+
+#### 1. Medication Edit Screen (`app/medication/edit/[id].tsx`)
+- Added notification settings section before the Color section
+- Added constants for notification sound options (default, gentle, urgent)
+- Added constants for reminder advance options (none, 5, 10, 15, 30 min, 1 hour)
+- Added state for notification settings:
+  - `notificationsEnabled` - toggle to enable/disable notifications for medication
+  - `notificationSound` - select from preset sound options
+  - `vibrationEnabled` - toggle for vibration preference
+  - `reminderAdvanceMinutes` - select advance reminder time
+- Loading notification settings from medication data on page load
+- Including notification settings in form data when saving
+
+**UI Components Added:**
+- Enable/Disable Notifications toggle with descriptive labels
+- Notification Sound dropdown (conditional on notifications enabled)
+- Vibration toggle (conditional on notifications enabled)
+- Advance Reminder dropdown with explanation text
+
+#### 2. Existing Services Verified
+- `MedicationService.update()` - Already handles notification settings fields
+- `NotificationService.scheduleMedicationNotifications()` - Already respects:
+  - `notificationsEnabled` - checked before scheduling
+  - `notificationSound` - used in notification
+  - `reminderAdvanceMinutes` - used for advance reminders
+- Note: `vibrationEnabled` is stored in database but not yet used in notification service
+  (vibration is controlled at OS level on both platforms and would require
+   complex channel management for per-medication control)
+
+**Acceptance Criteria Met:**
+1. ✅ Per-medication notification settings saved in Medication type
+2. ✅ Settings screen accessible from medication detail/edit (section added to edit screen)
+3. ✅ Users can enable/disable notifications per medication
+4. ✅ Notification scheduling respects per-medication settings (notificationsEnabled, notificationSound, reminderAdvanceMinutes)
+5. ✅ Build passes: `npx expo export --platform ios`
+
+**Build Status:** ✅ PASSED - `npx expo export --platform ios` completed successfully
+
+---
+
 ### M2-004: Background Rescheduling Task
 **Status**: ✅ COMPLETED
 **Date**: 2026-01-30

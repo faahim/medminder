@@ -206,10 +206,12 @@ export const NotificationService = {
     const notif = await getNotifications();
     if (!notif) return;
 
-    // Cancel all existing medication notifications
+    // Cancel all existing medication notifications (including advance and missed)
     const scheduled = await notif.getAllScheduledNotificationsAsync();
     for (const notification of scheduled) {
-      if (notification.identifier.startsWith('med-')) {
+      if (notification.identifier.startsWith('med-') ||
+          notification.identifier.startsWith('advance-') ||
+          notification.identifier.startsWith('missed-')) {
         await notif.cancelScheduledNotificationAsync(notification.identifier);
       }
     }
