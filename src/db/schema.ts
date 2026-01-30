@@ -48,4 +48,5 @@ export const settings = sqliteTable('settings', {
   fontSize: text('font_size').notNull().default('normal'),
   reminderAdvanceMinutes: integer('reminder_advance_minutes').notNull().default(0),
   notificationsEnabled: integer('notifications_enabled', { mode: 'boolean' }).notNull().default(true),
+  notificationsPermission: text('notifications_permission').notNull().default('not-determined'),
 });

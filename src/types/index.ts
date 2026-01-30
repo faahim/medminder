@@ -45,6 +45,8 @@ export interface DoseLog {
   createdAt: string;               // ISO timestamp
 }
 
+export type NotificationPermissionStatus = 'not-determined' | 'granted' | 'denied';
+
 export interface Settings {
   id: number;                      // Always 1 (singleton)
   snoozeDurationMinutes: number;   // Default: 15
@@ -56,6 +58,7 @@ export interface Settings {
   fontSize: 'normal' | 'large' | 'xlarge';
   reminderAdvanceMinutes: number;  // How early to remind (default: 0)
   notificationsEnabled: boolean;   // Master toggle for notifications (default: true)
+  notificationsPermission: NotificationPermissionStatus; // Permission status: 'not-determined' | 'granted' | 'denied'
 }
 
 // ============ DERIVED TYPES ============

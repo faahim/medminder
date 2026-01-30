@@ -13,6 +13,7 @@ const DEFAULT_SETTINGS: Omit<Settings, 'id'> = {
   fontSize: 'normal',
   reminderAdvanceMinutes: 0,
   notificationsEnabled: true,
+  notificationsPermission: 'not-determined',
 };
 
 export const SettingsService = {
