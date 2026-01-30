@@ -25,6 +25,11 @@ export const medications = sqliteTable('medications', {
   isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),
+  // Refill settings
+  currentSupply: integer('current_supply'),
+  supplyUnit: text('supply_unit'),
+  lowSupplyThreshold: integer('low_supply_threshold'),
+  lastRefillDate: text('last_refill_date'),
 });
 
 export const doseLogs = sqliteTable('dose_logs', {

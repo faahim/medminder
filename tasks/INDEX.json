@@ -1,11 +1,11 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-01-30T09:26:00Z",
+  "lastUpdated": "2026-01-30T09:28:00Z",
   "summary": {
     "total": 26,
     "pending": 0,
     "claimed": 0,
-    "inProgress": 0,
+    "inProgress": 1,
     "completed": 24,
     "failed": 0,
     "blocked": 0
@@ -389,11 +389,13 @@
       "id": "M2-010",
       "title": "Refill Reminders",
       "phase": 2,
-      "status": "ready",
+      "status": "claimed",
       "priority": "P1",
       "estimate": 35,
       "dependencies": [],
-      "blocks": []
+      "blocks": [],
+      "claimedBy": "WATCHDOG-M2-010-2026-01-30T09:28:00Z",
+      "claimedAt": "2026-01-30T09:28:00Z"
     },
     {
       "id": "M2-011",
