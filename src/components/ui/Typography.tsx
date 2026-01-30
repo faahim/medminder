@@ -1,38 +1,93 @@
-import { Text, TextStyle } from 'react-native';
+import * as React from 'react';
+import { Text, TextProps, TextStyle } from 'react-native';
+import { colors, typography as typeScale } from '../../design/tokens';
 
-type TypographyVariant = 'h1' | 'h2' | 'h3' | 'body' | 'small' | 'label' | 'button';
+export type TypographyVariant =
+  | 'display'
+  | 'h1'
+  | 'h2'
+  | 'h3'
+  | 'body'
+  | 'small'
+  | 'label'
+  | 'button';
 
-interface TypographyProps {
+export interface TypographyProps extends Omit<TextProps, 'style'> {
   variant?: TypographyVariant;
   children: React.ReactNode;
+  /** Kept for NativeWind compatibility across existing screens */
   className?: string;
-  numberOfLines?: number;
-  style?: TextStyle;
+  style?: TextStyle | TextStyle[];
 }
 
-const variantStyles: Record<TypographyVariant, string> = {
-  h1: 'text-3xl font-bold',           // 30sp
-  h2: 'text-2xl font-bold',           // 24sp
-  h3: 'text-xl font-semibold',        // 20sp
-  body: 'text-lg',                    // 18sp - minimum for elderly
-  small: 'text-base',                 // 16sp
-  label: 'text-base font-medium uppercase tracking-wider',
-  button: 'text-lg font-semibold',    // 18sp
+const variantStyle: Record<TypographyVariant, TextStyle> = {
+  display: {
+    fontSize: typeScale.display.fontSize,
+    fontWeight: typeScale.display.fontWeight,
+    lineHeight: typeScale.display.fontSize * typeScale.display.lineHeight,
+    color: colors.surface[900],
+  },
+  h1: {
+    fontSize: typeScale.h1.fontSize,
+    fontWeight: typeScale.h1.fontWeight,
+    lineHeight: typeScale.h1.fontSize * typeScale.h1.lineHeight,
+    color: colors.surface[900],
+  },
+  h2: {
+    fontSize: typeScale.h2.fontSize,
+    fontWeight: typeScale.h2.fontWeight,
+    lineHeight: typeScale.h2.fontSize * typeScale.h2.lineHeight,
+    color: colors.surface[900],
+  },
+  h3: {
+    fontSize: typeScale.h3.fontSize,
+    fontWeight: typeScale.h3.fontWeight,
+    lineHeight: typeScale.h3.fontSize * typeScale.h3.lineHeight,
+    color: colors.surface[900],
+  },
+  body: {
+    fontSize: typeScale.body.fontSize,
+    fontWeight: typeScale.body.fontWeight,
+    lineHeight: typeScale.body.fontSize * typeScale.body.lineHeight,
+    color: colors.surface[700],
+  },
+  small: {
+    fontSize: typeScale.small.fontSize,
+    fontWeight: typeScale.small.fontWeight,
+    lineHeight: typeScale.small.fontSize * typeScale.small.lineHeight,
+    color: colors.surface[500],
+  },
+  label: {
+    fontSize: typeScale.label.fontSize,
+    fontWeight: typeScale.label.fontWeight,
+    lineHeight: typeScale.label.fontSize * typeScale.label.lineHeight,
+    color: colors.surface[500],
+    textTransform: 'uppercase',
+    letterSpacing: 1.25,
+  },
+  button: {
+    fontSize: typeScale.label.fontSize,
+    fontWeight: '600',
+    lineHeight: typeScale.label.fontSize * typeScale.label.lineHeight,
+    color: colors.surface[900],
+  },
 };
 
 export function Typography({
   variant = 'body',
   children,
   className = '',
-  numberOfLines,
   style,
+  ...props
 }: TypographyProps) {
+  const isHeader = variant === 'display' || variant.startsWith('h');
+
   return (
     <Text
-      className={`${variantStyles[variant]} ${className}`}
-      numberOfLines={numberOfLines}
-      style={style}
-      accessibilityRole={variant.startsWith('h') ? 'header' : 'text'}
+      {...props}
+      className={className}
+      style={[variantStyle[variant], style]}
+      accessibilityRole={isHeader ? 'header' : 'text'}
     >
       {children}
     </Text>

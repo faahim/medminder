@@ -1,13 +1,13 @@
 # 📋 Medminder - Task Board
 
-**Last Updated**: 2026-01-29T22:38:58Z
+**Last Updated**: 2026-01-30T00:40:28Z
 
 ## Overview
 
 | Phase | Progress | Status |
 |-------|----------|--------|
 | Phase 0: Foundation | ██████████ 100% | ✅ Complete (pre-existing) |
-| Phase 1: UI/UX Overhaul | ██░░░░░░░░░ 20% (3/15) | 🟡 In Progress |
+| Phase 1: UI/UX Overhaul | ███░░░░░░░░ 27% (4/15) | 🟡 In Progress |
 | Phase 2: Notifications | ░░░░░░░░░░ 0% | 🔲 Not Started |
 
 ---
@@ -32,7 +32,12 @@
 
 | ID | Task | Priority | Estimate |
 |----|------|----------|----------|
-| M1-004 | Core UI Components Rebuild | P0 | 60 min |
+| M1-005 | Today Screen Redesign | P0 | 90 min |
+| M1-006 | Medications Screen Redesign | P0 | 75 min |
+| M1-007 | History Screen Redesign | P0 | 75 min |
+| M1-008 | Settings Screen Redesign | P0 | 60 min |
+| M1-009 | Add Medication Wizard Redesign | P0 | 90 min |
+| M1-014 | Empty States & Error States | P1 | 40 min |
 
 ---
 
@@ -40,16 +45,10 @@
 
 | ID | Task | Priority | Waiting On |
 |----|------|----------|------------|
-| M1-005 | Today Screen Redesign | P0 | M1-004 |
-| M1-006 | Medications Screen Redesign | P0 | M1-004 |
-| M1-007 | History Screen Redesign | P0 | M1-004 |
-| M1-008 | Settings Screen Redesign | P0 | M1-004 |
-| M1-009 | Add Medication Wizard Redesign | P0 | M1-004 |
 | M1-010 | Medication Detail & Edit Screens | P0 | M1-005, M1-006 |
 | M1-011 | Prescription Import Flow Redesign | P1 | M1-010 |
 | M1-012 | Animations & Micro-interactions | P0 | M1-005-008 |
 | M1-013 | Haptics Integration | P1 | M1-012 |
-| M1-014 | Empty States & Error States | P1 | M1-004 |
 | M1-015 | QA & Polish Pass | P0 | All above |
 
 ---
@@ -61,6 +60,7 @@
 | M1-001 | Design System Foundation | 2026-01-29T22:26:00Z |
 | M1-002 | Install & Configure New Dependencies | 2026-01-29T22:34:00Z |
 | M1-003 | Native Tabs Migration | 2026-01-29T22:38:58Z |
+| M1-004 | Core UI Components Rebuild | 2026-01-30T00:40:28Z |
 
 ---
 
@@ -70,7 +70,7 @@
 M1-001 Design System Foundation ✅
   ├─→ M1-002 Install Dependencies ✅
   │     └─→ M1-003 Native Tabs ✅
-  └─→ M1-004 Core UI Components 🟢
+  └─→ M1-004 Core UI Components ✅
         ├─→ M1-005 Today Screen ─────┐
         ├─→ M1-006 Medications ──────┼─→ M1-010 Detail/Edit
         ├─→ M1-007 History ──────────┤      └─→ M1-011 Prescription Import
@@ -88,9 +88,9 @@ M1-001 Design System Foundation ✅
 
 | Task Group | Est. Total | Notes |
 |------------|------------|-------|
-| Foundation (M1-001, 002) | 65 min | M1-001 ✅ done |
-| Navigation (M1-003) | 40 min | Native tabs |
-| Components (M1-004) | 60 min | Blocks all screens |
+| Foundation (M1-001, 002) | 65 min | ✅ done |
+| Navigation (M1-003) | 40 min | ✅ done |
+| Components (M1-004) | 60 min | ✅ done |
 | Screens (M1-005-011) | 495 min (~8 hrs) | Can parallelize some |
 | Polish (M1-012-015) | 190 min (~3 hrs) | Final touches |
 | **Total** | ~850 min (~14 hrs) | |

@@ -1,10 +1,15 @@
-import { TextInput, View, TextInputProps } from 'react-native';
+import * as React from 'react';
+import { TextInput, View, TextInputProps, ViewStyle } from 'react-native';
+import { colors, radii, spacing, typography } from '../../design/tokens';
 import { Typography } from './Typography';
 
-interface InputProps extends TextInputProps {
+export interface InputProps extends TextInputProps {
   label?: string;
   error?: string;
   size?: 'md' | 'lg';
+  /** Kept for NativeWind compatibility across existing screens */
+  className?: string;
+  containerStyle?: ViewStyle | ViewStyle[];
 }
 
 export function Input({
@@ -12,37 +17,64 @@ export function Input({
   error,
   size = 'md',
   className = '',
+  containerStyle,
+  onFocus,
+  onBlur,
+  style,
   ...props
 }: InputProps) {
-  const sizeClass = size === 'lg'
-    ? 'py-4 px-4 text-lg'
-    : 'py-3.5 px-4 text-base';
+  const [focused, setFocused] = React.useState(false);
+
+  const height = size === 'lg' ? 52 : 44;
+  const fontSize = size === 'lg' ? typography.body.fontSize : typography.label.fontSize;
+
+  const borderColor = error
+    ? colors.error[500]
+    : focused
+      ? colors.primary[500]
+      : colors.surface[200];
 
   return (
-    <View>
-      {label && (
-        <Typography variant="label" className="text-surface-600 mb-2 uppercase tracking-wider text-xs">
+    <View style={containerStyle}>
+      {label ? (
+        <Typography variant="label" style={{ marginBottom: spacing.sm }}>
           {label}
         </Typography>
-      )}
+      ) : null}
+
       <TextInput
-        className={`
-          bg-surface-100
-          border-2 border-transparent
-          rounded-xl
-          text-surface-900
-          ${sizeClass}
-          ${error ? 'border-danger-500' : 'focus:border-primary-500'}
-          ${className}
-        `}
-        placeholderTextColor="#A3A3A3"
         {...props}
+        className={className}
+        onFocus={(e) => {
+          setFocused(true);
+          onFocus?.(e);
+        }}
+        onBlur={(e) => {
+          setFocused(false);
+          onBlur?.(e);
+        }}
+        placeholderTextColor={colors.surface[300]}
+        style={[
+          {
+            minHeight: height,
+            paddingHorizontal: spacing.md,
+            paddingVertical: 10,
+            borderRadius: radii.md,
+            backgroundColor: colors.surface[100],
+            borderWidth: 1,
+            borderColor,
+            color: colors.surface[900],
+            fontSize,
+          },
+          style as any,
+        ]}
       />
-      {error && (
-        <Typography variant="small" className="text-danger-500 mt-1.5">
+
+      {error ? (
+        <Typography variant="small" style={{ marginTop: spacing.xs, color: colors.error[500] }}>
           {error}
         </Typography>
-      )}
+      ) : null}
     </View>
   );
 }

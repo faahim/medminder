@@ -1,5 +1,28 @@
 # 📜 Medminder Execution Log
 
+## 2026-01-30
+
+### [00:40] ✅ M1-004 Core UI Components Rebuild - COMPLETED
+**Executor**: Subagent medminder-M1-004
+
+**Summary**: Rebuilt core UI primitives on design tokens (calm/minimal/premium), keeping NativeWind `className` compatibility while making the components animation-ready.
+
+**Changes**:
+- `src/components/ui/Card.tsx` - tokenized surface/border/radius + `borderCurve: 'continuous'` + token `boxShadow`
+- `src/components/ui/Button.tsx` - variants/sizes/press states + Reanimated scale micro-interaction + token `boxShadow`
+- `src/components/ui/Input.tsx` - consistent sizing + focus/error border colors
+- `src/components/ui/Typography.tsx` - token type scale + sensible default colors
+- `src/components/ui/Icon.tsx` (new) - `expo-symbols` on iOS with Ionicons fallback on Android/Web
+- `src/components/ui/Badge.tsx` (new) - variants for status indicators
+- `src/components/ui/Pill.tsx` (new) - chip/tag primitive + Reanimated press scale
+- `src/components/ui/index.ts` - exported new primitives
+
+**Verification**:
+- `npx tsc --noEmit`
+- `npx expo export --platform ios`
+
+---
+
 ## 2026-01-29
 
 ### [22:26] ✅ M1-001 Design System Foundation - COMPLETED
