@@ -336,13 +336,15 @@
       "id": "M2-006",
       "title": "Per-Medication Notification Settings",
       "phase": 2,
-      "status": "pending",
+      "status": "claimed",
       "priority": "P1",
       "estimate": 40,
       "dependencies": [
         "M2-003"
       ],
-      "blocks": []
+      "blocks": [],
+      "claimedBy": "WATCHDOG-M2-006-2026-01-30T08:45:00Z",
+      "claimedAt": "2026-01-30T08:45:00Z"
     },
     {
       "id": "M2-007",
