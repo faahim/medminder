@@ -2,6 +2,28 @@
 
 ## 2026-01-30
 
+### [03:45] ✅ M1-009 Add Medication Wizard Redesign - COMPLETED (PM Recovery)
+**Executor**: Subagent medminder-M1-009, completed by PM watchdog recovery
+
+**Summary**: Redesigned 5-step Add Medication wizard with progressive preview card, smooth transitions, autocomplete suggestions, and all schedule options. Sub-agent completed all code work but stalled before updating tracking files. PM watchdog recovered by updating tracking files and verifying build.
+
+**Changes**:
+- `src/components/medication/WizardScreen.tsx` - New wizard shell with progress header, step transitions, keyboard avoid, back confirmation
+- `src/components/medication/MedicationPreviewCard.tsx` - Progressive preview card that builds as user fills form
+- `src/components/medication/WizardProgress.tsx` - Step indicator with dots and connecting lines
+- `src/components/medication/WizardSuccessAnimation.tsx` - Animated success screen with checkmark
+- `src/components/medication/index.ts` - Added exports for new components
+- `app/medication/index.tsx` - Step 1: Name, dosage with autocomplete, instructions, color picker
+- `app/medication/schedule.tsx` - Step 2: Schedule type (daily/weekly/interval/PRN), quick presets, custom times
+- `app/medication/meal.tsx` - Step 3: Meal timing (before/after/with/anytime) with visual options
+- `app/medication/duration.tsx` - Step 4: Start/end dates, medication dependencies, refill options
+- `app/medication/confirm.tsx` - Step 5: Review summary with live preview, save to storage
+
+**Verification**:
+- `npx expo export --platform ios` - passed
+
+---
+
 ### [02:15] ✅ M1-008 Settings Screen Redesign - COMPLETED (PM Recovery)
 **Executor**: Subagent medminder-M1-008, completed by PM watchdog recovery
 
