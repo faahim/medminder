@@ -2,25 +2,34 @@ import { View, FlatList, Pressable } from 'react-native';
 import { useState } from 'react';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 
 import { useMedications } from '../../src/hooks/useMedications';
-import { MedicationCard } from '../../src/components/medication/MedicationCard';
+import { Icon } from '../../src/components/ui/Icon';
+import { Input } from '../../src/components/ui/Input';
+import { Pill } from '../../src/components/ui/Pill';
 import { Typography } from '../../src/components/ui/Typography';
 import { EmptyState } from '../../src/components/ui/EmptyState';
 import { AppHeader } from '../../src/components/layout/AppHeader';
+import { colors, radii } from '../../src/design/tokens';
 
 export default function MedicationsScreen() {
   const insets = useSafeAreaInsets();
   const [showArchived, setShowArchived] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const { medications, archivedMedications } = useMedications();
 
   const displayList = showArchived ? archivedMedications : medications;
   const activeCount = medications.length;
   const archivedCount = archivedMedications.length;
 
+  // Filter by search query
+  const filteredList = displayList.filter((med) =>
+    med.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    med.dosage.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <View className="flex-1 bg-surface-50">
+    <View className="flex-1 bg-surface-50" style={{ backgroundColor: colors.surface[50] }}>
       <AppHeader
         title="Medications"
         subtitle="Manage"
@@ -29,71 +38,79 @@ export default function MedicationsScreen() {
           <>
             <Pressable
               onPress={() => router.push('/prescription/import')}
-              className="w-12 h-12 rounded-2xl bg-surface-100 items-center justify-center"
+              className="w-12 h-12 rounded-2xl items-center justify-center"
+              style={{ backgroundColor: colors.surface[100] }}
               accessibilityLabel="Import prescription"
             >
-              <Ionicons name="camera" size={22} color="#06B6D4" />
+              <Icon
+                name="camera"
+                fallback="camera"
+                size="md"
+                color={colors.primary[500]}
+              />
             </Pressable>
             <Pressable
               onPress={() => router.push('/medication/add')}
-              className="w-12 h-12 rounded-2xl bg-primary-500 items-center justify-center"
-              style={{ shadowColor: '#06B6D4', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.22, shadowRadius: 12, elevation: 6 }}
+              className="w-12 h-12 rounded-2xl items-center justify-center"
+              style={{
+                backgroundColor: colors.primary[500],
+                shadowColor: colors.primary[500],
+                shadowOffset: { width: 0, height: 6 },
+                shadowOpacity: 0.22,
+                shadowRadius: 12,
+                elevation: 6,
+              }}
               accessibilityLabel="Add medication"
             >
-              <Ionicons name="add" size={24} color="#fff" />
+              <Icon name="plus" fallback="add" size="lg" color={colors.white} />
             </Pressable>
           </>
         }
         bottomSlot={
-          <View className="flex-row bg-surface-100 rounded-2xl p-1">
-            <Pressable
-              onPress={() => setShowArchived(false)}
-              className={`flex-1 flex-row items-center justify-center py-2.5 rounded-xl ${!showArchived ? 'bg-white' : ''}`}
-              style={!showArchived ? { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 } : {}}
-            >
-              <Ionicons name="medkit" size={16} color={!showArchived ? '#06B6D4' : '#A3A3A3'} />
-              <Typography
-                variant="body"
-                className={`ml-2 font-semibold ${!showArchived ? 'text-primary-700' : 'text-surface-500'}`}
-              >
-                Active
-              </Typography>
-              <View className={`ml-2 px-2 py-0.5 rounded-full ${!showArchived ? 'bg-primary-100' : 'bg-surface-200'}`}>
-                <Typography variant="small" className={`${!showArchived ? 'text-primary-700 font-bold' : 'text-surface-500 font-medium'}`}>
-                  {activeCount}
-                </Typography>
-              </View>
-            </Pressable>
+          <View className="gap-3">
+            {/* Search Input */}
+            <Input
+              placeholder="Search medications..."
+              size="md"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
 
-            <Pressable
-              onPress={() => setShowArchived(true)}
-              className={`flex-1 flex-row items-center justify-center py-2.5 rounded-xl ${showArchived ? 'bg-white' : ''}`}
-              style={showArchived ? { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 } : {}}
-            >
-              <Ionicons name="archive" size={16} color={showArchived ? '#06B6D4' : '#A3A3A3'} />
-              <Typography
-                variant="body"
-                className={`ml-2 font-semibold ${showArchived ? 'text-primary-700' : 'text-surface-500'}`}
-              >
-                Archived
-              </Typography>
-              {archivedCount > 0 ? (
-                <View className={`ml-2 px-2 py-0.5 rounded-full ${showArchived ? 'bg-primary-100' : 'bg-surface-200'}`}>
-                  <Typography
-                    variant="small"
-                    className={`${showArchived ? 'text-primary-700 font-bold' : 'text-surface-500 font-medium'}`}
-                  >
-                    {archivedCount}
-                  </Typography>
-                </View>
-              ) : null}
-            </Pressable>
+            {/* Toggle Pills */}
+            <View className="flex-row gap-2">
+              <Pill
+                label={`Active (${activeCount})`}
+                selected={!showArchived}
+                onPress={() => setShowArchived(false)}
+                left={
+                  <Icon
+                    name="pills.fill"
+                    fallback="medkit"
+                    size="sm"
+                    color={!showArchived ? colors.white : colors.surface[700]}
+                  />
+                }
+              />
+              <Pill
+                label={`Archived (${archivedCount})`}
+                selected={showArchived}
+                onPress={() => setShowArchived(true)}
+                left={
+                  <Icon
+                    name="archivebox"
+                    fallback="archive"
+                    size="sm"
+                    color={showArchived ? colors.white : colors.surface[700]}
+                  />
+                }
+              />
+            </View>
           </View>
         }
       />
 
       <FlatList
-        data={displayList}
+        data={filteredList}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{
           paddingHorizontal: 16,
@@ -101,16 +118,61 @@ export default function MedicationsScreen() {
           paddingBottom: insets.bottom + 96,
         }}
         renderItem={({ item }) => (
-          <Pressable onPress={() => router.push(`/medication/${item.id}`)}>
-            <MedicationCard medication={item} allMedications={medications} showChevron />
-          </Pressable>
+          <View className="mb-3">
+            <View
+              onPress={() => router.push(`/medication/${item.id}`)}
+              accessibilityRole="button"
+            >
+              {/* Import MedicationListItem component here - using inline for now */}
+              <View
+                className="rounded-2xl p-4 border"
+                style={{
+                  backgroundColor: colors.white,
+                  borderColor: colors.surface[200],
+                  borderRadius: radii.lg,
+                  borderCurve: 'continuous',
+                  boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+                }}
+              >
+                <View className="flex-row items-start">
+                  <View
+                    className="w-14 h-14 rounded-xl items-center justify-center mr-3.5"
+                    style={{ backgroundColor: item.color + '15' }}
+                  >
+                    <Icon
+                      name={item.scheduleType === 'as-needed' ? 'bolt.fill' : 'pills.fill'}
+                      fallback={item.scheduleType === 'as-needed' ? 'flash' : 'medkit'}
+                      size="lg"
+                      color={item.color}
+                    />
+                  </View>
+                  <View className="flex-1">
+                    <Typography variant="h3" className="text-surface-900 font-semibold">
+                      {item.name}
+                    </Typography>
+                    <Typography variant="small" className="text-surface-500 mb-1.5">
+                      {item.dosage} {item.dosageUnit}
+                    </Typography>
+                  </View>
+                  <Icon
+                    name="chevron.right"
+                    fallback="chevron-forward"
+                    size="md"
+                    color={colors.surface[400]}
+                  />
+                </View>
+              </View>
+            </View>
+          </View>
         )}
-        ItemSeparatorComponent={() => <View className="h-3" />}
         ListEmptyComponent={
           <EmptyState
-            icon={showArchived ? 'archive-outline' : 'medkit-outline'}
-            title={showArchived ? 'No archived medications' : 'No medications yet'}
-            subtitle={showArchived ? 'Archived medications will appear here' : 'Add your first medication to get started'}
+            icon={showArchived ? 'archivebox' : 'pills'}
+            title={searchQuery ? 'No results found' : (showArchived ? 'No archived medications' : 'No medications yet')}
+            subtitle={searchQuery
+              ? 'Try a different search term'
+              : (showArchived ? 'Archived medications will appear here' : 'Add your first medication to get started')
+            }
             actionLabel={showArchived ? undefined : 'Add Medication'}
             actionHref={showArchived ? undefined : '/medication/add'}
           />
