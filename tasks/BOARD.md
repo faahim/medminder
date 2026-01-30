@@ -24,7 +24,9 @@
 
 ### 🟡 In Progress
 
-*No tasks in progress*
+| ID | Task | Priority | Started At |
+|----|------|----------|------------|
+| M2-005 | Missed Dose Detection & Follow-up | P0 | 2026-01-30T08:30:00Z |
 
 ---
 
@@ -32,7 +34,6 @@
 | ID | Task | Priority | Estimate |
 |----|------|----------|----------|
 | M2-004 | Background Rescheduling Task | P1 | 30 min |
-| M2-005 | Missed Dose Detection & Follow-up | P0 | 50 min |
 | M2-006 | Per-Medication Notification Settings | P1 | 40 min |
 | M2-007 | Permission Onboarding Flow | P1 | 30 min |
 | M2-008 | Notification Content Polish | P1 | 20 min |
