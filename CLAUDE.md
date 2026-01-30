@@ -342,5 +342,5 @@ If state corrupted:
 
 ## Key Resources
 
-- Repo: {{REPO_URL}}
+- Repo: https://github.com/faahim/medminder
 - Docs: /docs folder
