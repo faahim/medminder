@@ -55,14 +55,14 @@ export default function AddMedicationStep4() {
 
   return (
     <View className="flex-1 bg-surface-50">
-      <ProgressBar current={4} total={5} />
+      <ProgressBar current={4} total={6} />
 
       <Screen scroll keyboardAvoiding includeTopInset={false} padX={16} padY={16} padBottomExtra={170}>
         <Typography variant="h2" className="text-surface-900 mb-1">
           Duration
         </Typography>
         <Typography variant="body" className="text-surface-500 mb-6">
-          Step 4 of 5 · Start & end
+          Step 4 of 6 · Start & end
         </Typography>
 
         <View className="bg-white rounded-3xl border border-surface-100 p-5">
@@ -294,7 +294,7 @@ export default function AddMedicationStep4() {
       <View className="px-6 pt-4 bg-white border-t border-surface-100" style={{ paddingBottom: insets.bottom + 16 }}>
         <View className="flex-row gap-3">
           <Button title="Back" variant="secondary" size="lg" onPress={() => router.back()} className="flex-1" />
-          <Button title="Review" size="lg" onPress={() => router.push('/medication/confirm')} className="flex-1" />
+          <Button title="Next" size="lg" onPress={() => router.push('/medication/refill')} className="flex-1" />
         </View>
       </View>
     </View>

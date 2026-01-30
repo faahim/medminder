@@ -1,12 +1,12 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-01-30T09:28:00Z",
+  "lastUpdated": "2026-01-30T09:47:00Z",
   "summary": {
     "total": 26,
-    "pending": 0,
+    "pending": 1,
     "claimed": 0,
     "inProgress": 1,
-    "completed": 24,
+    "completed": 25,
     "failed": 0,
     "blocked": 0
   },
@@ -28,9 +28,9 @@
     "phase-2": {
       "name": "Notifications & Reminders",
       "total": 11,
-      "completed": 9,
+      "completed": 10,
       "status": "inProgress",
-      "lastUpdated": "2026-01-30T09:26:00Z"
+      "lastUpdated": "2026-01-30T09:47:00Z"
     }
   },
   "tasks": [
@@ -389,13 +389,12 @@
       "id": "M2-010",
       "title": "Refill Reminders",
       "phase": 2,
-      "status": "claimed",
+      "status": "completed",
       "priority": "P1",
       "estimate": 35,
       "dependencies": [],
       "blocks": [],
-      "claimedBy": "WATCHDOG-M2-010-2026-01-30T09:28:00Z",
-      "claimedAt": "2026-01-30T09:28:00Z"
+      "completedAt": "2026-01-30T09:47:00Z"
     },
     {
       "id": "M2-011",
@@ -404,18 +403,7 @@
       "status": "pending",
       "priority": "P0",
       "estimate": 45,
-      "dependencies": [
-        "M2-001",
-        "M2-002",
-        "M2-003",
-        "M2-004",
-        "M2-005",
-        "M2-006",
-        "M2-007",
-        "M2-008",
-        "M2-009",
-        "M2-010"
-      ],
+      "dependencies": [],
       "blocks": []
     }
   ]

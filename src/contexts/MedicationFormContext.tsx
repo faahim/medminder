@@ -27,6 +27,16 @@ const defaultFormData: MedicationFormData = {
   dependsOnMedicationId: null,
   dependsOnOffsetDays: 0,
   color: '#4CAF50',
+  // Notification settings
+  notificationsEnabled: true,
+  notificationSound: 'default',
+  vibrationEnabled: true,
+  reminderAdvanceMinutes: 0,
+  // Refill settings
+  currentSupply: 0,
+  supplyUnit: 'pills',
+  lowSupplyThreshold: 7,
+  lastRefillDate: null,
 };
 
 const MedicationFormContext = createContext<MedicationFormContextType | null>(null);

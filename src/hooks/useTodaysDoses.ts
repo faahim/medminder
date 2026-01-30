@@ -11,6 +11,7 @@ interface UseTodaysDosesReturn {
   doses: ScheduledDose[];
   groupedDoses: Record<TimeOfDay, ScheduledDose[]>;
   asNeededMeds: Medication[];
+  lowSupplyMeds: Medication[]; // Medications that need refill
   notificationStatus: Map<string, boolean>; // Key: ${medId}-${time}, Value: hasNotification
   missedFollowUpStatus: Map<string, boolean>; // Key: ${medId}-${time}, Value: hasMissedFollowUp
   isLoading: boolean;
@@ -19,12 +20,14 @@ interface UseTodaysDosesReturn {
   logDose: (medicationId: string, time: string, status: DoseStatus) => Promise<void>;
   logAsNeededDose: (medicationId: string) => Promise<void>;
   snoozeDose: (medicationId: string, time: string, minutes: number) => Promise<void>;
+  markRefilled: (medicationId: string, newSupply: number) => Promise<void>;
 }
 
 export function useTodaysDoses(): UseTodaysDosesReturn {
   const { isReady } = useDatabase();
   const [doses, setDoses] = useState<ScheduledDose[]>([]);
   const [asNeededMeds, setAsNeededMeds] = useState<Medication[]>([]);
+  const [lowSupplyMeds, setLowSupplyMeds] = useState<Medication[]>([]);
   const [notificationStatus, setNotificationStatus] = useState<Map<string, boolean>>(new Map());
   const [missedFollowUpStatus, setMissedFollowUpStatus] = useState<Map<string, boolean>>(new Map());
   const [isLoading, setIsLoading] = useState(true);
@@ -46,6 +49,9 @@ export function useTodaysDoses(): UseTodaysDosesReturn {
       // Separate scheduled vs as-needed medications
       const scheduledMedications = allMedications.filter(med => med.scheduleType !== 'as-needed');
       const asNeededMedications = allMedications.filter(med => med.scheduleType === 'as-needed');
+
+      // Get medications that need refill
+      const lowSupplyMeds = await MedicationService.getLowSupplyMedications();
 
       // Get existing logs for today
       const logs = await DoseLogService.getDosesForDate(today);
@@ -107,6 +113,7 @@ export function useTodaysDoses(): UseTodaysDosesReturn {
 
       setDoses(scheduled);
       setAsNeededMeds(asNeededMedications);
+      setLowSupplyMeds(lowSupplyMeds);
       setNotificationStatus(notifStatusMap);
       setMissedFollowUpStatus(missedFollowUpMap);
     } catch (err) {
@@ -194,12 +201,20 @@ export function useTodaysDoses(): UseTodaysDosesReturn {
     await DoseLogService.logDose(medicationId, today, now, 'taken');
   }, []);
 
+  const markRefilled = useCallback(async (medicationId: string, newSupply: number) => {
+    await MedicationService.markAsRefilled(medicationId, newSupply);
+
+    // Update lowSupplyMeds list optimistically
+    setLowSupplyMeds(prev => prev.filter(med => med.id !== medicationId));
+  }, []);
+
   const groupedDoses = useMemo(() => groupDosesByTimeOfDay(doses), [doses]);
 
   return {
     doses,
     groupedDoses,
     asNeededMeds,
+    lowSupplyMeds,
     notificationStatus,
     missedFollowUpStatus,
     isLoading,
@@ -208,5 +223,6 @@ export function useTodaysDoses(): UseTodaysDosesReturn {
     logDose,
     logAsNeededDose,
     snoozeDose,
+    markRefilled,
   };
 }

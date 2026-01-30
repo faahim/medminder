@@ -4,6 +4,7 @@ import { medications } from '../db/schema';
 import { Medication, MedicationFormData, MedicationNotificationSettings } from '../types';
 import { generateUUID } from '../utils/uuid';
 import { NotificationService } from './notification.service';
+import { format, parseISO, differenceInDays, addDays } from 'date-fns';
 
 export const MedicationService = {
   // Get all active medications
@@ -81,6 +82,11 @@ export const MedicationService = {
       isActive: true,
       createdAt: now,
       updatedAt: now,
+      // Refill settings
+      currentSupply: data.currentSupply ?? null,
+      supplyUnit: data.supplyUnit ?? null,
+      lowSupplyThreshold: data.lowSupplyThreshold ?? null,
+      lastRefillDate: data.lastRefillDate ? data.lastRefillDate.toISOString() : null,
     };
 
     await db.insert(medications).values(newMed);
@@ -121,6 +127,11 @@ export const MedicationService = {
     if (data.notificationSound !== undefined) updateData.notification_sound = data.notificationSound;
     if (data.vibrationEnabled !== undefined) updateData.vibration_enabled = data.vibrationEnabled;
     if (data.reminderAdvanceMinutes !== undefined) updateData.reminder_advance_minutes = data.reminderAdvanceMinutes;
+    // Refill settings
+    if (data.currentSupply !== undefined) updateData.current_supply = data.currentSupply;
+    if (data.supplyUnit !== undefined) updateData.supply_unit = data.supplyUnit;
+    if (data.lowSupplyThreshold !== undefined) updateData.low_supply_threshold = data.lowSupplyThreshold;
+    if (data.lastRefillDate !== undefined) updateData.last_refill_date = data.lastRefillDate ? data.lastRefillDate.toISOString() : null;
 
     await db
       .update(medications)
@@ -196,6 +207,90 @@ export const MedicationService = {
 
     return medication;
   },
+
+  // Calculate days remaining for a medication based on supply and dosage
+  calculateDaysRemaining(medication: Medication): number | null {
+    if (medication.currentSupply === null || medication.currentSupply <= 0) {
+      return null;
+    }
+
+    // Only calculate for scheduled medications (not as-needed)
+    if (medication.scheduleType === 'as-needed') {
+      return null;
+    }
+
+    const times = JSON.parse(medication.scheduleTimes) as string[];
+    const dosesPerDay = times.length;
+
+    if (dosesPerDay === 0) {
+      return null;
+    }
+
+    // Days remaining = supply / doses per day
+    return Math.floor(medication.currentSupply / dosesPerDay);
+  },
+
+  // Check if medication needs refill
+  needsRefill(medication: Medication): boolean {
+    const daysRemaining = this.calculateDaysRemaining(medication);
+    if (daysRemaining === null) {
+      return false;
+    }
+
+    const threshold = medication.lowSupplyThreshold || 7;
+    return daysRemaining <= threshold;
+  },
+
+  // Get all medications that need refill
+  async getLowSupplyMedications(): Promise<Medication[]> {
+    const allMeds = await this.getAll();
+    return allMeds.filter((med) => this.needsRefill(med));
+  },
+
+  // Mark medication as refilled
+  async markAsRefilled(
+    id: string,
+    newSupply: number,
+    unit?: string
+  ): Promise<Medication | null> {
+    const now = new Date();
+    const updateData: Partial<MedicationFormData> = {
+      currentSupply: newSupply,
+      lastRefillDate: now,
+    };
+
+    if (unit) {
+      updateData.supplyUnit = unit;
+    }
+
+    const updated = await this.update(id, updateData);
+
+    // Cancel and reschedule refill notifications
+    if (updated) {
+      await NotificationService.cancelMedicationNotifications(id);
+      await NotificationService.scheduleMedicationNotifications(updated);
+    }
+
+    return updated;
+  },
+
+  // Update refill settings only
+  async updateRefillSettings(
+    id: string,
+    settings: {
+      currentSupply?: number | null;
+      supplyUnit?: string | null;
+      lowSupplyThreshold?: number | null;
+    }
+  ): Promise<Medication | null> {
+    const updateData: Partial<MedicationFormData> = {};
+
+    if (settings.currentSupply !== undefined) updateData.currentSupply = settings.currentSupply;
+    if (settings.supplyUnit !== undefined) updateData.supplyUnit = settings.supplyUnit;
+    if (settings.lowSupplyThreshold !== undefined) updateData.lowSupplyThreshold = settings.lowSupplyThreshold;
+
+    return this.update(id, updateData);
+  },
 };
 
 // Helper to map DB row to Medication type
@@ -224,5 +319,10 @@ function mapToMedication(row: any): Medication {
     isActive: Boolean(row.isActive ?? row.is_active),
     createdAt: row.createdAt || row.created_at,
     updatedAt: row.updatedAt || row.updated_at,
+    // Refill settings
+    currentSupply: row.currentSupply ?? row.current_supply ?? null,
+    supplyUnit: row.supplyUnit ?? row.supply_unit ?? null,
+    lowSupplyThreshold: row.lowSupplyThreshold ?? row.low_supply_threshold ?? null,
+    lastRefillDate: row.lastRefillDate ?? row.last_refill_date ?? null,
   };
 }

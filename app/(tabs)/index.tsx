@@ -25,7 +25,7 @@ import { colors, radii, shadows, spacing } from '../../src/design';
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
-  const { doses, isLoading, refresh, groupedDoses, logDose, asNeededMeds, logAsNeededDose, notificationStatus, missedFollowUpStatus, snoozeDose } = useTodaysDoses();
+  const { doses, isLoading, refresh, groupedDoses, logDose, asNeededMeds, logAsNeededDose, notificationStatus, missedFollowUpStatus, snoozeDose, lowSupplyMeds, markRefilled } = useTodaysDoses();
   const [refreshing, setRefreshing] = useState(false);
 
   const fabScale = useSharedValue(1);
@@ -114,7 +114,7 @@ export default function HomeScreen() {
   };
 
   let asNeededDelay = 600;
-  const asNeededSectionIndex = Object.values(groupedDoses).filter((d) => d.length > 0).length;
+  const asNeededSectionIndex = Object.values(groupedDoses).filter((d) => d.length > 0).length + (lowSupplyMeds?.length > 0 ? 1 : 0);
 
   // Loading state
   if (isLoading && !hasScheduledDoses && !hasAsNeededMeds) {
@@ -280,6 +280,89 @@ export default function HomeScreen() {
             </LinearGradient>
           </View>
         </Animated.View>
+
+        {/* Refill Alerts Section */}
+        {lowSupplyMeds && lowSupplyMeds.length > 0 ? (
+          <Animated.View entering={FadeInUp.delay(200).springify()} style={{ marginBottom: spacing.lg }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.sm }}>
+              <View
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: radii.md,
+                  backgroundColor: colors.warning[100],
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginRight: spacing.sm,
+                }}
+              >
+                <Icon name="exclamationmark.triangle" fallback="alert-triangle" size={18} color={colors.warning[600]} />
+              </View>
+              <Typography variant="label" style={{ color: colors.surface[500], textTransform: 'uppercase', letterSpacing: 1.2 }}>
+                Refill Needed
+              </Typography>
+              <View style={{ flex: 1, height: 1, backgroundColor: colors.surface[200], marginLeft: spacing.md }} />
+            </View>
+
+            {lowSupplyMeds.map((med, idx) => {
+              const times = JSON.parse(med.scheduleTimes) as string[];
+              const dosesPerDay = times.length || 1;
+              const daysRemaining = med.currentSupply ? Math.floor(med.currentSupply / dosesPerDay) : 0;
+              const threshold = med.lowSupplyThreshold || 7;
+              const isCritical = daysRemaining <= 3;
+
+              return (
+                <Animated.View
+                  key={med.id}
+                  entering={useStaggeredAnimation(idx, 30, 'up')}
+                  layout={Animated.springify().damping(15).stiffness(200)}
+                  style={{ marginBottom: spacing.sm }}
+                >
+                  <Card
+                    style={{
+                      backgroundColor: isCritical ? colors.warning[50] : colors.surface[50],
+                      borderColor: isCritical ? colors.warning[200] : colors.surface[200],
+                      borderWidth: 1,
+                    }}
+                  >
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <View
+                        style={{
+                          width: 44,
+                          height: 44,
+                          borderRadius: radii.lg,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          marginRight: spacing.md,
+                          backgroundColor: med.color || colors.primary[500],
+                        }}
+                      >
+                        <Icon name="pills" fallback="medkit" size={22} color="#fff" />
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Typography variant="body" style={{ color: colors.surface[900], fontWeight: '600', marginBottom: 2 }}>
+                          {med.name}
+                        </Typography>
+                        <Typography variant="small" style={{ color: colors.surface[600] }}>
+                          {daysRemaining} days left · {med.currentSupply} {med.supplyUnit || 'doses'} remaining
+                        </Typography>
+                      </View>
+                      <Button
+                        title="Refilled"
+                        variant="primary"
+                        size="sm"
+                        onPress={() => {
+                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                          markRefilled(med.id, med.currentSupply || 30);
+                        }}
+                      />
+                    </View>
+                  </Card>
+                </Animated.View>
+              );
+            })}
+          </Animated.View>
+        ) : null}
 
         {isEmpty ? (
           <Animated.View entering={FadeInUp.delay(400).springify()}>

@@ -31,14 +31,14 @@ export default function AddMedicationStep3() {
 
   return (
     <View className="flex-1 bg-surface-50">
-      <ProgressBar current={3} total={5} />
+      <ProgressBar current={3} total={6} />
 
       <Screen scroll includeTopInset={false} padX={16} padY={16} padBottomExtra={160}>
         <Typography variant="h2" className="text-surface-900 mb-1">
           Meal timing
         </Typography>
         <Typography variant="body" className="text-surface-500 mb-6">
-          Step 3 of 5 · Optional guidance
+          Step 3 of 6 · Optional guidance
         </Typography>
 
         <View className="bg-white rounded-3xl border border-surface-100 p-5">

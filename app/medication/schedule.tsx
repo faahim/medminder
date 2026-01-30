@@ -67,14 +67,14 @@ export default function AddMedicationStep2() {
 
   return (
     <View className="flex-1 bg-surface-50">
-      <ProgressBar current={2} total={5} />
+      <ProgressBar current={2} total={6} />
 
       <Screen scroll keyboardAvoiding includeTopInset={false} padX={16} padY={16} padBottomExtra={160}>
         <Typography variant="h2" className="text-surface-900 mb-1">
           Schedule
         </Typography>
         <Typography variant="body" className="text-surface-500 mb-6">
-          Step 2 of 5 · When do you take it?
+          Step 2 of 6 · When do you take it?
         </Typography>
 
         <View className="bg-white rounded-3xl border border-surface-100 p-5">

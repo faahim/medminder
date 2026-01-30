@@ -5,6 +5,7 @@ export type DoseStatus = 'pending' | 'taken' | 'missed' | 'skipped';
 export type ScheduleType = 'daily' | 'weekly' | 'interval' | 'as-needed';
 export type TimeOfDay = 'morning' | 'afternoon' | 'evening' | 'night';
 export type NotificationSound = 'default' | 'gentle' | 'urgent';
+export type SupplyUnit = 'pills' | 'ml' | 'doses';
 
 // ============ CORE ENTITIES ============
 
@@ -32,6 +33,11 @@ export interface Medication {
   isActive: boolean;               // Soft delete / archive
   createdAt: string;               // ISO timestamp
   updatedAt: string;               // ISO timestamp
+  // Refill settings
+  currentSupply: number | null;    // Current supply count (e.g., 30 pills)
+  supplyUnit: string | null;        // 'pills' | 'ml' | 'doses'
+  lowSupplyThreshold: number | null; // Alert when days remaining <= threshold (3/5/7/10)
+  lastRefillDate: string | null;   // ISO timestamp of last refill
 }
 
 export interface DoseLog {
@@ -107,6 +113,11 @@ export interface MedicationFormData {
   notificationSound: NotificationSound;
   vibrationEnabled: boolean;
   reminderAdvanceMinutes: number;
+  // Refill settings
+  currentSupply: number;
+  supplyUnit: string;
+  lowSupplyThreshold: number;
+  lastRefillDate: Date | null;
 }
 
 // Per-medication notification settings (subset of MedicationFormData)

@@ -108,6 +108,32 @@ export default function MedicationDetailScreen() {
     router.push(`/medication/notifications/${id}`);
   };
 
+  const handleMarkRefilled = async () => {
+    if (!medication) return;
+
+    Alert.alert(
+      'Mark as Refilled',
+      'Enter your new supply amount:',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Save',
+          onPress: async () => {
+            // For simplicity, just refill with same amount
+            const newSupply = medication.currentSupply || 30;
+            const updated = await MedicationService.markAsRefilled(medication.id, newSupply);
+            if (updated) {
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              setMedication(updated);
+            } else {
+              Alert.alert('Error', 'Failed to update refill');
+            }
+          },
+        },
+      ]
+    );
+  };
+
   if (isLoading || !medication) {
     return (
       <Screen scroll padX={16} padY={16}>
@@ -316,6 +342,75 @@ export default function MedicationDetailScreen() {
           </View>
         </View>
 
+        {/* Refill Status Section */}
+        {medication.currentSupply !== null && medication.currentSupply > 0 ? (
+          <View className="mb-5">
+            <Typography variant="label" className="text-surface-500 mb-2 ml-1 uppercase tracking-wider text-xs">
+              Refill Status
+            </Typography>
+            <View className="bg-white rounded-3xl border border-surface-100 p-4">
+              <View className="flex-row items-center justify-between mb-3">
+                <View className="flex-row items-center">
+                  <View
+                    className="w-10 h-10 rounded-2xl items-center justify-center mr-3"
+                    style={{ backgroundColor: colors.success[50] }}
+                  >
+                    <Icon name="cube.box" fallback="cube" size={20} color={colors.success[600]} />
+                  </View>
+                  <View>
+                    <Typography variant="label" className="text-surface-500 mb-0.5">
+                      Current Supply
+                    </Typography>
+                    <Typography variant="body" style={{ color: colors.surface[900], fontWeight: '600' }}>
+                      {medication.currentSupply} {medication.supplyUnit || 'doses'}
+                    </Typography>
+                  </View>
+                </View>
+                {(function() {
+                  const daysRemaining = MedicationService.calculateDaysRemaining(medication);
+                  if (daysRemaining !== null) {
+                    const threshold = medication.lowSupplyThreshold || 7;
+                    const isLow = daysRemaining <= threshold;
+                    return (
+                      <View
+                        className={`px-3 py-1.5 rounded-full ${
+                          isLow ? 'bg-warning-100' : 'bg-success-100'
+                        }`}
+                      >
+                        <Typography
+                          variant="small"
+                          className={`font-semibold ${
+                            isLow ? 'text-warning-700' : 'text-success-700'
+                          }`}
+                        >
+                          {daysRemaining} days left
+                        </Typography>
+                      </View>
+                    );
+                  }
+                  return null;
+                })()}
+              </View>
+
+              {medication.lastRefillDate ? (
+                <View className="flex-row items-center bg-surface-50 rounded-2xl p-3 mb-3">
+                  <Icon name="calendar" fallback="calendar" size={16} color={colors.surface[500]} />
+                  <Typography variant="small" className="text-surface-600 ml-2">
+                    Last refill: {format(parseISO(medication.lastRefillDate), 'MMM d, yyyy')}
+                  </Typography>
+                </View>
+              ) : null}
+
+              <View className="flex-row items-center bg-surface-50 rounded-2xl p-3">
+                <Icon name="bell" fallback="notifications" size={16} color={colors.surface[500]} />
+                <Typography variant="small" className="text-surface-600 ml-2 flex-1">
+                  Alert when ≤ {medication.lowSupplyThreshold || 7} days remaining
+                </Typography>
+              </View>
+            </View>
+          </View>
+        ) : null}
+
         {/* Instructions Section */}
         {medication.instructions ? (
           <View className="mb-5">
@@ -491,6 +586,22 @@ export default function MedicationDetailScreen() {
             />
           </View>
         </View>
+
+        {/* Refill Action - Only show if refill tracking is enabled */}
+        {medication.currentSupply !== null && medication.currentSupply > 0 ? (
+          <View className="flex-row gap-3 mb-3">
+            <View className="flex-1">
+              <Button
+                title="Mark Refilled"
+                variant="success"
+                size="lg"
+                onPress={handleMarkRefilled}
+                leftIcon={<Icon name="plus.circle" fallback="add-circle" size={18} color={colors.success[700]} />}
+              />
+            </View>
+          </View>
+        ) : null}
+
         <View className="flex-row gap-3">
           <View className="flex-1">
             <Button

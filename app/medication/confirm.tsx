@@ -155,14 +155,14 @@ export default function AddMedicationStep5() {
 
   return (
     <View className="flex-1 bg-surface-50">
-      <ProgressBar current={5} total={5} />
+      <ProgressBar current={6} total={6} />
 
       <Screen scroll includeTopInset={false} padX={16} padY={16} padBottomExtra={170}>
         <Typography variant="h2" className="text-surface-900 mb-1">
           Review & confirm
         </Typography>
         <Typography variant="body" className="text-surface-500 mb-6">
-          Step 5 of 5 · Check everything
+          Step 6 of 6 · Check everything
         </Typography>
 
         <View className="bg-white rounded-3xl border border-surface-100 overflow-hidden">
@@ -259,6 +259,36 @@ export default function AddMedicationStep5() {
               </View>
             )}
           </View>
+
+          {/* Refill settings */}
+          {formData.currentSupply > 0 ? (
+            <View className="p-5">
+              <View className="flex-row items-center mb-2">
+                <View className="w-8 h-8 rounded-xl bg-success-50 items-center justify-center mr-3">
+                  <Icon name="cube.box" fallback="cube" size={16} color="#22C55E" />
+                </View>
+                <Typography variant="label" className="text-surface-500 uppercase tracking-wider text-xs">
+                  Refill tracking
+                </Typography>
+              </View>
+
+              <View className="flex-row items-center justify-between">
+                <View>
+                  <Typography variant="body" className="text-surface-900 font-medium">
+                    {formData.currentSupply} {formData.supplyUnit} on hand
+                  </Typography>
+                  <Typography variant="small" className="text-surface-500">
+                    Alert when ≤ {formData.lowSupplyThreshold} days remaining
+                  </Typography>
+                </View>
+                <View className="bg-success-100 rounded-full px-3 py-1">
+                  <Typography variant="small" className="text-success-700 font-medium">
+                    Enabled
+                  </Typography>
+                </View>
+              </View>
+            </View>
+          ) : null}
         </View>
 
         <Button title="Edit Details" variant="secondary" size="lg" onPress={() => router.push('/medication/index')} fullWidth className="mt-4" />

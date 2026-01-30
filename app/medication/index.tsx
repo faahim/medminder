@@ -101,9 +101,9 @@ export default function AddMedicationStep1() {
   return (
     <WizardScreen
       stepNumber={1}
-      totalSteps={5}
+      totalSteps={6}
       title={isEditing ? 'Edit medication' : 'Add medication'}
-      subtitle="Step 1 of 5 · Name and dosage"
+      subtitle="Step 1 of 6 · Name and dosage"
       onNext={() => router.push('/medication/schedule')}
       canProceed={canProceed}
       nextLabel="Schedule"

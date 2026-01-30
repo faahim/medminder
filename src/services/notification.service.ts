@@ -1,7 +1,7 @@
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { Platform } from 'react-native';
 import { Medication, MealTiming, NotificationPermissionStatus } from '../types';
-import { format, addMinutes } from 'date-fns';
+import { format, addMinutes, addDays } from 'date-fns';
 import { DoseLogService } from './doseLog.service';
 import { SettingsService } from './settings.service';
 
@@ -554,6 +554,122 @@ export const NotificationService = {
     const systemStatus = await this.getPermissionStatus();
     await SettingsService.update({ notificationsPermission: systemStatus });
   },
+
+  // Schedule refill reminder for a medication
+  async scheduleRefillReminder(medication: Medication, daysRemaining: number): Promise<void> {
+    const notif = await getNotifications();
+    if (!notif) return;
+
+    try {
+      const settings = await SettingsService.get();
+
+      // Skip if notifications are disabled
+      if (!settings.notificationsEnabled) return;
+
+      const refillId = `refill-${medication.id}`;
+
+      // Cancel existing refill notification
+      await notif.cancelScheduledNotificationAsync(refillId).catch(() => {});
+
+      // Calculate when to send the reminder (at threshold day)
+      const threshold = medication.lowSupplyThreshold || 7;
+      const daysUntilReminder = daysRemaining - threshold;
+
+      if (daysUntilReminder <= 0) {
+        // Already at or below threshold, notify now
+        await notif.scheduleNotificationAsync({
+          identifier: refillId,
+          content: {
+            title: `📦 Refill Needed: ${medication.name}`,
+            body: `Only ${daysRemaining} ${medication.supplyUnit || 'doses'} remaining. Order a refill soon!`,
+            data: {
+              medicationId: medication.id,
+              medicationName: medication.name,
+              type: 'refill-reminder',
+            },
+            categoryIdentifier: 'refill',
+            sound: 'default',
+          },
+          trigger: {
+            type: notif.SchedulableTriggerInputTypes.DATE,
+            date: new Date(),
+          },
+        });
+      } else {
+        // Schedule for when supply reaches threshold
+        const reminderDate = addDays(new Date(), daysUntilReminder);
+
+        await notif.scheduleNotificationAsync({
+          identifier: refillId,
+          content: {
+            title: `📦 Refill Needed: ${medication.name}`,
+            body: `Only ${threshold} ${medication.supplyUnit || 'doses'} remaining. Order a refill soon!`,
+            data: {
+              medicationId: medication.id,
+              medicationName: medication.name,
+              type: 'refill-reminder',
+            },
+            categoryIdentifier: 'refill',
+            sound: 'default',
+          },
+          trigger: {
+            type: notif.SchedulableTriggerInputTypes.DATE,
+            date: reminderDate,
+          },
+        });
+      }
+    } catch (error) {
+      console.error('[NotificationService] Failed to schedule refill reminder:', error);
+    }
+  },
+
+  // Cancel refill reminder for a medication
+  async cancelRefillReminder(medicationId: string): Promise<void> {
+    const notif = await getNotifications();
+    if (!notif) return;
+
+    const refillId = `refill-${medicationId}`;
+    await notif.cancelScheduledNotificationAsync(refillId).catch(() => {});
+  },
+
+  // Schedule refill reminders for all medications
+  async scheduleRefillReminders(medications: Medication[]): Promise<void> {
+    const { MedicationService } = await import('./medication.service');
+
+    for (const med of medications) {
+      if (!med.isActive) continue;
+      if (med.scheduleType === 'as-needed') continue;
+      if (med.currentSupply === null || med.currentSupply <= 0) continue;
+
+      const daysRemaining = MedicationService.calculateDaysRemaining(med);
+      if (daysRemaining !== null && daysRemaining <= (med.lowSupplyThreshold || 7)) {
+        await this.scheduleRefillReminder(med, daysRemaining);
+      }
+    }
+  },
+
+  // Setup refill notification category
+  async setupRefillCategory(): Promise<void> {
+    const notif = await getNotifications();
+    if (!notif) return;
+
+    await notif.setNotificationCategoryAsync('refill', [
+      {
+        identifier: 'MARK_REFILLED',
+        buttonTitle: 'Mark Refilled',
+        options: {
+          opensAppToForeground: true,
+        },
+      },
+      {
+        identifier: 'DISMISS',
+        buttonTitle: 'Dismiss',
+        options: {
+          opensAppToForeground: false,
+        },
+      },
+    ]);
+  },
 };
 
 // Export individual functions for convenience
@@ -577,4 +693,8 @@ export const {
   getPermissionStatus,
   requestPermissionAndSync,
   syncPermissionStatus,
+  scheduleRefillReminder,
+  cancelRefillReminder,
+  scheduleRefillReminders,
+  setupRefillCategory,
 } = NotificationService;
