@@ -24,7 +24,9 @@
 
 ### 🟡 In Progress
 
-*No tasks in progress*
+| ID | Task | Priority | Claimed At |
+|----|------|----------|------------|
+| M1-010 | Medication Detail & Edit Screens | P0 | 04:00 |
 
 ---
 
@@ -32,7 +34,6 @@
 
 | ID | Task | Priority | Estimate |
 |----|------|----------|----------|
-| M1-010 | Medication Detail & Edit Screens | P0 | 60 min |
 | M1-012 | Animations & Micro-interactions | P0 | 60 min |
 | M1-014 | Empty States & Error States | P1 | 40 min |
 
