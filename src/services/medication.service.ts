@@ -1,7 +1,7 @@
 import { eq, desc } from 'drizzle-orm';
 import { db } from '../db/client';
 import { medications } from '../db/schema';
-import { Medication, MedicationFormData } from '../types';
+import { Medication, MedicationFormData, MedicationNotificationSettings } from '../types';
 import { generateUUID } from '../utils/uuid';
 import { NotificationService } from './notification.service';
 
@@ -53,7 +53,7 @@ export const MedicationService = {
   async create(data: MedicationFormData): Promise<Medication> {
     const now = new Date().toISOString();
     const id = generateUUID();
-    
+
     const newMed = {
       id,
       name: data.name,
@@ -63,8 +63,8 @@ export const MedicationService = {
       mealTiming: data.mealTiming,
       scheduleType: data.scheduleType,
       scheduleTimes: JSON.stringify(data.scheduleTimes),
-      scheduleWeekdays: data.scheduleWeekdays.length > 0 
-        ? JSON.stringify(data.scheduleWeekdays) 
+      scheduleWeekdays: data.scheduleWeekdays.length > 0
+        ? JSON.stringify(data.scheduleWeekdays)
         : null,
       scheduleIntervalHours: data.scheduleIntervalHours || null,
       startDate: data.startDate.toISOString().split('T')[0],
@@ -73,28 +73,33 @@ export const MedicationService = {
       dependsOnOffsetDays: data.dependsOnOffsetDays || null,
       color: data.color,
       photoUri: null,
+      // Notification settings
+      notificationsEnabled: data.notificationsEnabled ?? true,
+      notificationSound: data.notificationSound ?? 'default',
+      vibrationEnabled: data.vibrationEnabled ?? true,
+      reminderAdvanceMinutes: data.reminderAdvanceMinutes ?? 0,
       isActive: true,
       createdAt: now,
       updatedAt: now,
     };
 
     await db.insert(medications).values(newMed);
-    
+
     // Schedule notifications for this medication
     const medication = await this.getById(id);
     if (medication) {
       await NotificationService.scheduleMedicationNotifications(medication);
     }
-    
+
     return medication!;
   },
 
   // Update medication
   async update(id: string, data: Partial<MedicationFormData>): Promise<Medication | null> {
     const now = new Date().toISOString();
-    
+
     const updateData: Record<string, any> = { updatedAt: now };
-    
+
     if (data.name !== undefined) updateData.name = data.name;
     if (data.dosage !== undefined) updateData.dosage = data.dosage;
     if (data.dosageUnit !== undefined) updateData.dosageUnit = data.dosageUnit;
@@ -103,14 +108,19 @@ export const MedicationService = {
     if (data.scheduleType !== undefined) updateData.scheduleType = data.scheduleType;
     if (data.scheduleTimes !== undefined) updateData.scheduleTimes = JSON.stringify(data.scheduleTimes);
     if (data.scheduleWeekdays !== undefined) {
-      updateData.scheduleWeekdays = data.scheduleWeekdays.length > 0 
-        ? JSON.stringify(data.scheduleWeekdays) 
+      updateData.scheduleWeekdays = data.scheduleWeekdays.length > 0
+        ? JSON.stringify(data.scheduleWeekdays)
         : null;
     }
     if (data.scheduleIntervalHours !== undefined) updateData.scheduleIntervalHours = data.scheduleIntervalHours;
     if (data.startDate !== undefined) updateData.startDate = data.startDate.toISOString().split('T')[0];
     if (data.endDate !== undefined) updateData.endDate = data.endDate ? data.endDate.toISOString().split('T')[0] : null;
     if (data.color !== undefined) updateData.color = data.color;
+    // Notification settings
+    if (data.notificationsEnabled !== undefined) updateData.notifications_enabled = data.notificationsEnabled;
+    if (data.notificationSound !== undefined) updateData.notification_sound = data.notificationSound;
+    if (data.vibrationEnabled !== undefined) updateData.vibration_enabled = data.vibrationEnabled;
+    if (data.reminderAdvanceMinutes !== undefined) updateData.reminder_advance_minutes = data.reminderAdvanceMinutes;
 
     await db
       .update(medications)
@@ -157,6 +167,35 @@ export const MedicationService = {
     await NotificationService.cancelMedicationNotifications(id);
     await db.delete(medications).where(eq(medications.id, id));
   },
+
+  // Update only notification settings for a medication
+  async updateNotificationSettings(
+    id: string,
+    settings: Partial<MedicationNotificationSettings>
+  ): Promise<Medication | null> {
+    const now = new Date().toISOString();
+
+    const updateData: Record<string, any> = { updatedAt: now };
+
+    if (settings.notificationsEnabled !== undefined) updateData.notifications_enabled = settings.notificationsEnabled;
+    if (settings.notificationSound !== undefined) updateData.notification_sound = settings.notificationSound;
+    if (settings.vibrationEnabled !== undefined) updateData.vibration_enabled = settings.vibrationEnabled;
+    if (settings.reminderAdvanceMinutes !== undefined) updateData.reminder_advance_minutes = settings.reminderAdvanceMinutes;
+
+    await db
+      .update(medications)
+      .set(updateData)
+      .where(eq(medications.id, id));
+
+    // Reschedule notifications
+    await NotificationService.cancelMedicationNotifications(id);
+    const medication = await this.getById(id);
+    if (medication && medication.isActive) {
+      await NotificationService.scheduleMedicationNotifications(medication);
+    }
+
+    return medication;
+  },
 };
 
 // Helper to map DB row to Medication type
@@ -178,6 +217,10 @@ function mapToMedication(row: any): Medication {
     dependsOnOffsetDays: row.dependsOnOffsetDays || row.depends_on_offset_days,
     photoUri: row.photoUri || row.photo_uri,
     color: row.color,
+    notificationsEnabled: Boolean(row.notifications_enabled ?? row.notificationsEnabled ?? true),
+    notificationSound: row.notificationSound || row.notification_sound || 'default',
+    vibrationEnabled: Boolean(row.vibration_enabled ?? row.vibrationEnabled ?? true),
+    reminderAdvanceMinutes: row.reminderAdvanceMinutes || row.reminder_advance_minutes || 0,
     isActive: Boolean(row.isActive ?? row.is_active),
     createdAt: row.createdAt || row.created_at,
     updatedAt: row.updatedAt || row.updated_at,

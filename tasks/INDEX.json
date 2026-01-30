@@ -339,12 +339,10 @@
       "status": "claimed",
       "priority": "P1",
       "estimate": 40,
-      "dependencies": [
-        "M2-003"
-      ],
+      "dependencies": [],
       "blocks": [],
-      "claimedBy": "WATCHDOG-M2-006-2026-01-30T08:45:00Z",
-      "claimedAt": "2026-01-30T08:45:00Z"
+      "claimedBy": "WATCHDOG-M2-006-2026-01-30T09:05:00Z",
+      "claimedAt": "2026-01-30T09:05:00Z"
     },
     {
       "id": "M2-007",

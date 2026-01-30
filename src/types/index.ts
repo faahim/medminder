@@ -4,6 +4,7 @@ export type MealTiming = 'before' | 'after' | 'with' | 'anytime';
 export type DoseStatus = 'pending' | 'taken' | 'missed' | 'skipped';
 export type ScheduleType = 'daily' | 'weekly' | 'interval' | 'as-needed';
 export type TimeOfDay = 'morning' | 'afternoon' | 'evening' | 'night';
+export type NotificationSound = 'default' | 'gentle' | 'urgent';
 
 // ============ CORE ENTITIES ============
 
@@ -24,6 +25,10 @@ export interface Medication {
   dependsOnOffsetDays: number | null;   // Days after dependency completes
   photoUri: string | null;         // Local file path
   color: string;                   // Hex color for UI "#4CAF50"
+  notificationsEnabled: boolean;   // Per-medication notification toggle
+  notificationSound: string;       // "default" | "gentle" | "urgent"
+  vibrationEnabled: boolean;       // Enable vibration for this medication
+  reminderAdvanceMinutes: number;  // Minutes before scheduled time to remind (0 = none)
   isActive: boolean;               // Soft delete / archive
   createdAt: string;               // ISO timestamp
   updatedAt: string;               // ISO timestamp
@@ -92,4 +97,17 @@ export interface MedicationFormData {
   dependsOnMedicationId: string | null;
   dependsOnOffsetDays: number;
   color: string;
+  // Notification settings
+  notificationsEnabled: boolean;
+  notificationSound: NotificationSound;
+  vibrationEnabled: boolean;
+  reminderAdvanceMinutes: number;
+}
+
+// Per-medication notification settings (subset of MedicationFormData)
+export interface MedicationNotificationSettings {
+  notificationsEnabled: boolean;
+  notificationSound: NotificationSound;
+  vibrationEnabled: boolean;
+  reminderAdvanceMinutes: number;
 }

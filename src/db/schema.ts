@@ -17,6 +17,11 @@ export const medications = sqliteTable('medications', {
   dependsOnOffsetDays: integer('depends_on_offset_days'),
   photoUri: text('photo_uri'),
   color: text('color').notNull().default('#4CAF50'),
+  // Per-medication notification settings
+  notificationsEnabled: integer('notifications_enabled', { mode: 'boolean' }).notNull().default(true),
+  notificationSound: text('notification_sound').notNull().default('default'),
+  vibrationEnabled: integer('vibration_enabled', { mode: 'boolean' }).notNull().default(true),
+  reminderAdvanceMinutes: integer('reminder_advance_minutes').notNull().default(0),
   isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),

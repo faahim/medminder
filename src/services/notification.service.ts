@@ -87,11 +87,26 @@ export const NotificationService = {
   // Schedule notifications for a medication
   async scheduleMedicationNotifications(medication: Medication): Promise<void> {
     if (!medication.isActive) return;
+    // Check if notifications are enabled for this medication
+    if (!medication.notificationsEnabled) return;
+
     const notif = await getNotifications();
     if (!notif) return;
 
     const times = JSON.parse(medication.scheduleTimes) as string[];
     const mealText = getMealTimingText(medication.mealTiming);
+
+    // Map sound name to expo-notifications sound
+    const getSound = (soundName: string): any => {
+      switch (soundName) {
+        case 'gentle':
+          return null; // Use system default gentle sound
+        case 'urgent':
+          return 'default'; // Use default (louder)
+        default:
+          return 'default';
+      }
+    };
 
     for (const time of times) {
       const [hour, minute] = time.split(':').map(Number);
@@ -114,7 +129,7 @@ export const NotificationService = {
             type: 'medication-reminder',
           },
           categoryIdentifier: 'medication',
-          sound: 'default',
+          sound: getSound(medication.notificationSound),
         },
         trigger: {
           type: notif.SchedulableTriggerInputTypes.DAILY,
@@ -122,6 +137,50 @@ export const NotificationService = {
           minute,
         },
       });
+
+      // Schedule advance reminder if enabled
+      if (medication.reminderAdvanceMinutes && medication.reminderAdvanceMinutes > 0) {
+        const advanceId = `advance-${medication.id}-${time.replace(':', '')}`;
+        await notif.cancelScheduledNotificationAsync(advanceId).catch(() => {});
+
+        // Calculate trigger time for advance reminder
+        // We schedule this for the same day, but advance minutes before
+        const advanceMinutes = medication.reminderAdvanceMinutes;
+        let advanceHour = hour;
+        let advanceMinute = minute - advanceMinutes;
+
+        // Handle minute overflow
+        if (advanceMinute < 0) {
+          advanceMinute += 60;
+          advanceHour -= 1;
+        }
+        // Handle hour overflow
+        if (advanceHour < 0) {
+          advanceHour += 24;
+        }
+
+        await notif.scheduleNotificationAsync({
+          identifier: advanceId,
+          content: {
+            title: '⏰ Upcoming medication reminder',
+            body: `${medication.name} ${medication.dosage} coming up in ${advanceMinutes} minute${advanceMinutes > 1 ? 's' : ''} ${mealText}`.trim(),
+            data: {
+              medicationId: medication.id,
+              medicationName: medication.name,
+              dosage: medication.dosage,
+              scheduledTime: time,
+              type: 'medication-advance',
+            },
+            categoryIdentifier: 'medication',
+            sound: getSound(medication.notificationSound),
+          },
+          trigger: {
+            type: notif.SchedulableTriggerInputTypes.DAILY,
+            hour: advanceHour,
+            minute: advanceMinute,
+          },
+        });
+      }
     }
   },
 
@@ -133,7 +192,10 @@ export const NotificationService = {
     const scheduled = await notif.getAllScheduledNotificationsAsync();
 
     for (const notification of scheduled) {
-      if (notification.identifier.startsWith(`med-${medicationId}-`)) {
+      // Cancel both regular and advance notifications
+      if (notification.identifier.startsWith(`med-${medicationId}-`) ||
+          notification.identifier.startsWith(`advance-${medicationId}-`) ||
+          notification.identifier.startsWith(`missed-${medicationId}-`)) {
         await notif.cancelScheduledNotificationAsync(notification.identifier);
       }
     }
