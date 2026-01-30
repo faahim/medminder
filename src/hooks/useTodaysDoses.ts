@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { format } from 'date-fns';
+import { format, parseISO, addMinutes, isAfter } from 'date-fns';
 import { MedicationService } from '../services/medication.service';
 import { DoseLogService } from '../services/doseLog.service';
 import { NotificationService } from '../services/notification.service';
@@ -12,6 +12,7 @@ interface UseTodaysDosesReturn {
   groupedDoses: Record<TimeOfDay, ScheduledDose[]>;
   asNeededMeds: Medication[];
   notificationStatus: Map<string, boolean>; // Key: ${medId}-${time}, Value: hasNotification
+  missedFollowUpStatus: Map<string, boolean>; // Key: ${medId}-${time}, Value: hasMissedFollowUp
   isLoading: boolean;
   error: Error | null;
   refresh: () => Promise<void>;
@@ -25,6 +26,7 @@ export function useTodaysDoses(): UseTodaysDosesReturn {
   const [doses, setDoses] = useState<ScheduledDose[]>([]);
   const [asNeededMeds, setAsNeededMeds] = useState<Medication[]>([]);
   const [notificationStatus, setNotificationStatus] = useState<Map<string, boolean>>(new Map());
+  const [missedFollowUpStatus, setMissedFollowUpStatus] = useState<Map<string, boolean>>(new Map());
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -36,6 +38,7 @@ export function useTodaysDoses(): UseTodaysDosesReturn {
 
     try {
       const today = format(new Date(), 'yyyy-MM-dd');
+      const now = new Date();
 
       // Get all active medications
       const allMedications = await MedicationService.getAll();
@@ -55,21 +58,57 @@ export function useTodaysDoses(): UseTodaysDosesReturn {
       }
 
       // Build today's schedule (only for scheduled medications)
-      const scheduled = buildTodaySchedule(scheduledMedications, logMap, new Date());
+      const scheduled = buildTodaySchedule(scheduledMedications, logMap, now);
 
       // Check notification status for each pending dose
       const notifStatusMap = new Map<string, boolean>();
+      const missedFollowUpMap = new Map<string, boolean>();
+      const settings = await (async () => {
+        try {
+          const settingsModule = await import('../services/settings.service');
+          return await settingsModule.SettingsService.get();
+        } catch {
+          return { gracePeriodMinutes: 30 };
+        }
+      })();
+
       for (const dose of scheduled) {
+        const key = `${dose.medication.id}-${dose.scheduledTime}`;
+
+        // Check for original notification
         if (dose.status === 'pending') {
-          const key = `${dose.medication.id}-${dose.scheduledTime}`;
           const hasNotification = await NotificationService.isNotificationScheduled(dose.medication.id, dose.scheduledTime);
           notifStatusMap.set(key, hasNotification);
+
+          // Check if we need to schedule a follow-up notification for missed dose
+          const scheduledDateTime = parseISO(`${dose.scheduledDate}T${dose.scheduledTime}`);
+          const gracePeriodEnd = addMinutes(scheduledDateTime, settings.gracePeriodMinutes || 30);
+
+          if (isAfter(now, scheduledDateTime)) {
+            // We're past the scheduled time
+            const hasMissedFollowUp = await NotificationService.isMissedDoseFollowUpScheduled(dose.medication.id, dose.scheduledTime);
+            missedFollowUpMap.set(key, hasMissedFollowUp);
+
+            // If no follow-up is scheduled yet and we're still within a reasonable window to remind, schedule it
+            if (!hasMissedFollowUp && isAfter(gracePeriodEnd, now)) {
+              await NotificationService.scheduleMissedDoseFollowUp(dose.medication, dose.scheduledTime);
+              missedFollowUpMap.set(key, true);
+            }
+          }
+        } else {
+          // For non-pending doses, check if there's a follow-up to cancel
+          const hasMissedFollowUp = await NotificationService.isMissedDoseFollowUpScheduled(dose.medication.id, dose.scheduledTime);
+          if (hasMissedFollowUp) {
+            await NotificationService.cancelMissedDoseFollowUp(dose.medication.id, dose.scheduledTime);
+          }
+          missedFollowUpMap.set(key, false);
         }
       }
 
       setDoses(scheduled);
       setAsNeededMeds(asNeededMedications);
       setNotificationStatus(notifStatusMap);
+      setMissedFollowUpStatus(missedFollowUpMap);
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to load doses'));
     } finally {
@@ -92,6 +131,9 @@ export function useTodaysDoses(): UseTodaysDosesReturn {
     // Cancel the notification for this dose
     await NotificationService.cancelDoseNotification(medicationId, time);
 
+    // Cancel any missed dose follow-up notification
+    await NotificationService.cancelMissedDoseFollowUp(medicationId, time);
+
     // Update local state optimistically
     setDoses(prev => prev.map(dose => {
       if (dose.medication.id === medicationId && dose.scheduledTime === time) {
@@ -104,6 +146,13 @@ export function useTodaysDoses(): UseTodaysDosesReturn {
     setNotificationStatus(prev => {
       const updated = new Map(prev);
       updated.delete(`${medicationId}-${time}`);
+      return updated;
+    });
+
+    // Update missed follow-up status map
+    setMissedFollowUpStatus(prev => {
+      const updated = new Map(prev);
+      updated.set(`${medicationId}-${time}`, false);
       return updated;
     });
 
@@ -152,6 +201,7 @@ export function useTodaysDoses(): UseTodaysDosesReturn {
     groupedDoses,
     asNeededMeds,
     notificationStatus,
+    missedFollowUpStatus,
     isLoading,
     error,
     refresh: loadTodaysDoses,

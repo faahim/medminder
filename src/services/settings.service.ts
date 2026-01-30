@@ -6,6 +6,7 @@ import { Settings } from '../types';
 const DEFAULT_SETTINGS: Omit<Settings, 'id'> = {
   snoozeDurationMinutes: 15,
   missedThresholdMinutes: 60,
+  gracePeriodMinutes: 30,
   notificationSound: 'default',
   hapticFeedback: true,
   darkMode: 'light',

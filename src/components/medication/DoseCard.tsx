@@ -18,6 +18,7 @@ interface DoseCardProps {
   onLogDose?: (medicationId: string, date: string, time: string, status: DoseStatus) => Promise<void>;
   onSnooze?: (medicationId: string, time: string, minutes: number) => Promise<void>;
   hasNotification?: boolean;
+  hasMissedFollowUp?: boolean;
 }
 
 function statusTokens(status: DoseStatus) {
@@ -63,7 +64,7 @@ function formatTimeParts(scheduledTime: string) {
   return { h, m };
 }
 
-export function DoseCard({ dose, onStatusChange, onLogDose, onSnooze, hasNotification = false }: DoseCardProps) {
+export function DoseCard({ dose, onStatusChange, onLogDose, onSnooze, hasNotification = false, hasMissedFollowUp = false }: DoseCardProps) {
   const [isLogging, setIsLogging] = useState(false);
   const [showActions, setShowActions] = useState(false);
   const [showSnoozeOptions, setShowSnoozeOptions] = useState(false);
@@ -172,8 +173,18 @@ export function DoseCard({ dose, onStatusChange, onLogDose, onSnooze, hasNotific
 
         {dose.status === 'pending' ? (
           <View style={{ marginTop: spacing.md, gap: spacing.sm }}>
-            {/* Reminder scheduled indicator */}
-            {hasNotification && (
+            {/* Missed dose follow-up indicator */}
+            {hasMissedFollowUp && (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, marginBottom: spacing.xs, backgroundColor: colors.warning[50], padding: spacing.xs, borderRadius: radii.sm }}>
+                <Icon name="exclamationmark.triangle.fill" fallback="warning" size={14} color={colors.warning[600]} />
+                <Typography variant="small" style={{ color: colors.warning[700] }}>
+                  Follow-up reminder scheduled
+                </Typography>
+              </View>
+            )}
+
+            {/* Reminder scheduled indicator (only show if no missed follow-up) */}
+            {hasNotification && !hasMissedFollowUp && (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, marginBottom: spacing.xs }}>
                 <Icon name="bell.fill" fallback="notifications" size={14} color={colors.primary[600]} />
                 <Typography variant="small" style={{ color: colors.primary[700] }}>

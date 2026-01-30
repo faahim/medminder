@@ -2,35 +2,59 @@
 
 ## Completed Tasks
 
-### M2-009: Today View Notification Sync
+### M2-005: Missed Dose Detection & Follow-up
 **Status**: ✅ COMPLETED
 **Date**: 2026-01-30
 
 **Changes Made:**
 
-1. **NotificationService** (`src/services/notification.service.ts`):
-   - Added `isNotificationScheduled(medicationId, time)` - Check if a notification is scheduled for a specific dose
-   - Added `cancelDoseNotification(medicationId, time)` - Cancel a specific dose notification
+#### 1. Types & Settings (`src/types/index.ts`)
+- Added `gracePeriodMinutes` to Settings interface (default: 30 minutes)
 
-2. **useTodaysDoses Hook** (`src/hooks/useTodaysDoses.ts`):
-   - Added `notificationStatus` state - Tracks which doses have active notifications
-   - Updated `loadTodaysDoses` to check notification status for pending doses
-   - Updated `logDose` to cancel the specific notification when a dose is logged
-   - Added `snoozeDose(medicationId, time, minutes)` - Handle snooze actions
+#### 2. Settings Service (`src/services/settings.service.ts`)
+- Added `gracePeriodMinutes: 30` to DEFAULT_SETTINGS
 
-3. **Today View** (`app/(tabs)/index.tsx`):
-   - Updated to pass `onSnooze` and `hasNotification` props to DoseCard
+#### 3. Notification Service (`src/services/notification.service.ts`)
+- Imported SettingsService for grace period configuration
+- Added `medication-missed` notification category with TAKE_LATE and SKIP actions
+- Added `scheduleMissedDoseFollowUp()` - schedules follow-up notification after grace period
+- Added `cancelMissedDoseFollowUp()` - cancels follow-up notification
+- Added `isMissedDoseFollowUpScheduled()` - checks if follow-up is scheduled
+- Added `checkAndUpdateMissedDoses()` - marks overdue doses as missed
+- Updated exports to include new functions
 
-4. **DoseCard** (`src/components/medication/DoseCard.tsx`):
-   - Added `onSnooze` and `hasNotification` props
-   - Added "Reminder scheduled" indicator when notification is active
-   - Added snooze options (15m, 30m, 1h) accessible via "Snooze" button
-   - Improved action menu with expanded options
+#### 4. Notification Lifecycle Hook (`src/hooks/useNotificationLifecycle.ts`)
+- Added handling for TAKE_LATE action (for missed dose follow-up)
+- Added cancellation of missed dose follow-up notifications on TAKE and SKIP actions
+- Added call to `checkAndUpdateMissedDoses()` on app foreground
+
+#### 5. Today's Doses Hook (`src/hooks/useTodaysDoses.ts`)
+- Added `missedFollowUpStatus` to interface and state
+- Updated `loadTodaysDoses()` to:
+  - Check for and schedule missed dose follow-up notifications for overdue doses
+  - Cancel follow-ups for logged doses
+  - Track follow-up status
+- Updated `logDose()` to cancel missed dose follow-up notifications
+
+#### 6. Today View (`app/(tabs)/index.tsx`)
+- Added `missedFollowUpStatus` from useTodaysDoses hook
+- Passed `hasMissedFollowUp` prop to DoseCard components
+
+#### 7. DoseCard Component (`src/components/medication/DoseCard.tsx`)
+- Added `hasMissedFollowUp` prop to interface
+- Added visual indicator for missed dose follow-up (yellow warning box with icon)
+- Shows "Follow-up reminder scheduled" when a missed dose follow-up is active
+
+#### 8. Notification Settings Screen (`app/settings/notifications.tsx`)
+- Added `GRACE_PERIOD_OPTIONS` constant (15, 30, 60 minutes)
+- Added grace period setting to default settings initialization
+- Added "Missed Dose Grace Period" setting row in Timing section
 
 **Acceptance Criteria Met:**
-1. ✅ When a user logs a dose as taken/skipped in the Today view, the corresponding notification is cancelled
-2. ✅ When a user snoozes from the Today view, a snooze notification is scheduled
-3. ✅ Today view shows "Reminder scheduled" indicator when notification is active for that dose
-4. ✅ Badge count updates after any Today view action
+1. ✅ Follow-up notification is sent after grace period expires
+2. ✅ Follow-up notification allows logging the dose (Take Now / Skip)
+3. ✅ Missed doses are visually distinct in the Today view (yellow warning indicator)
+4. ✅ Settings allow configuring grace period (15/30/60 minutes)
+5. ✅ Missed dose history is tracked via DoseLogService.markOverdueDosesAsMissed()
 
-**Build Verification**: `npx expo export --platform ios` passed successfully.
+**Build Status:** ✅ PASSED - `npx expo export --platform ios` completed successfully

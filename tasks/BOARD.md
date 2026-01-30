@@ -8,7 +8,7 @@
 |-------|----------|--------|
 | Phase 0: Foundation | ██████████ 100% | ✅ Complete (pre-existing) |
 | Phase 1: UI/UX Overhaul | ██████████ 100% (15/15) | ✅ Complete |
-| Phase 2: Notifications | ████░░░░░░ 36% (4/11) | 🟡 In Progress |
+| Phase 2: Notifications | █████░░░░░ 45% (5/11) | 🟡 In Progress |
 
 ---
 
@@ -24,9 +24,7 @@
 
 ### 🟡 In Progress
 
-| ID | Task | Priority | Started At |
-|----|------|----------|------------|
-| M2-005 | Missed Dose Detection & Follow-up | P0 | 2026-01-30T08:30:00Z |
+*No tasks in progress*
 
 ---
 
@@ -57,6 +55,7 @@
 | M2-002 | Notification Settings Screen | 2026-01-30T07:45:00Z |
 | M2-003 | Interactive Notification Actions | 2026-01-30T08:15:00Z |
 | M2-009 | Today View Notification Sync | 2026-01-30T08:15:00Z |
+| M2-005 | Missed Dose Detection & Follow-up | 2026-01-30T08:39:00Z |
 
 ---
 
@@ -132,11 +131,12 @@ M1-001 Design System Foundation ✅
 | Lifecycle (M2-001) | 30 min | ✅ Complete |
 | Settings & Onboarding (M2-002, M2-007) | 75 min | ~1.25 hrs |
 | Actions & Sync (M2-003, M2-009) | 70 min | ✅ Complete |
+| Missed Dose (M2-005) | 50 min | ✅ Complete |
 | Background (M2-004) | 30 min | |
 | Content & Polish (M2-008) | 20 min | |
-| Advanced (M2-005, M2-006, M2-010) | 125 min | ~2 hrs |
+| Advanced (M2-006, M2-010) | 75 min | ~1.25 hrs |
 | QA (M2-011) | 45 min | |
-| **Total** | ~395 min (~6.5 hrs) | 36% complete |
+| **Total** | ~395 min (~6.5 hrs) | 45% complete |
 
 ### Phase 1 (Complete)
 | Task Group | Est. Total | Notes |

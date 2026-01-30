@@ -3,6 +3,7 @@ import { Platform } from 'react-native';
 import { Medication, MealTiming } from '../types';
 import { format, addMinutes } from 'date-fns';
 import { DoseLogService } from './doseLog.service';
+import { SettingsService } from './settings.service';
 
 // Check if running in Expo Go (notifications not supported in SDK 53+)
 const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
@@ -257,6 +258,25 @@ export const NotificationService = {
         },
       },
     ]);
+
+    // Category for missed dose follow-up notifications
+    await notif.setNotificationCategoryAsync('medication-missed', [
+      {
+        identifier: 'TAKE_LATE',
+        buttonTitle: 'Take Now',
+        options: {
+          opensAppToForeground: false,
+        },
+      },
+      {
+        identifier: 'SKIP',
+        buttonTitle: 'Skip',
+        options: {
+          opensAppToForeground: false,
+          isDestructive: true,
+        },
+      },
+    ]);
   },
 
   // Update badge count based on pending doses today
@@ -320,6 +340,87 @@ export const NotificationService = {
     const notificationId = getNotificationId(medicationId, time);
     await notif.cancelScheduledNotificationAsync(notificationId).catch(() => {});
   },
+
+  // Schedule a follow-up notification for a missed dose
+  async scheduleMissedDoseFollowUp(
+    medication: Medication,
+    originalTime: string
+  ): Promise<void> {
+    const notif = await getNotifications();
+    if (!notif) return;
+
+    try {
+      const settings = await SettingsService.get();
+
+      // Skip if notifications are disabled
+      if (!settings.notificationsEnabled) return;
+
+      const gracePeriodMinutes = settings.gracePeriodMinutes || 30;
+      const followUpId = `missed-${medication.id}-${originalTime}`;
+      const followUpDate = addMinutes(new Date(), gracePeriodMinutes);
+
+      const mealText = getMealTimingText(medication.mealTiming);
+
+      await notif.scheduleNotificationAsync({
+        identifier: followUpId,
+        content: {
+          title: '⚠️ Missed dose',
+          body: `You missed ${medication.name} ${medication.dosage} ${mealText}`.trim(),
+          data: {
+            medicationId: medication.id,
+            medicationName: medication.name,
+            dosage: medication.dosage,
+            scheduledTime: originalTime,
+            type: 'medication-missed',
+          },
+          categoryIdentifier: 'medication-missed',
+          sound: 'default',
+        },
+        trigger: {
+          type: notif.SchedulableTriggerInputTypes.DATE,
+          date: followUpDate,
+        },
+      });
+    } catch (error) {
+      console.error('[NotificationService] Failed to schedule missed dose follow-up:', error);
+    }
+  },
+
+  // Cancel a missed dose follow-up notification
+  async cancelMissedDoseFollowUp(medicationId: string, time: string): Promise<void> {
+    const notif = await getNotifications();
+    if (!notif) return;
+
+    const followUpId = `missed-${medicationId}-${time}`;
+    await notif.cancelScheduledNotificationAsync(followUpId).catch(() => {});
+  },
+
+  // Check if a missed dose follow-up is scheduled
+  async isMissedDoseFollowUpScheduled(medicationId: string, time: string): Promise<boolean> {
+    const notif = await getNotifications();
+    if (!notif) return false;
+
+    const followUpId = `missed-${medicationId}-${time}`;
+    const scheduled = await notif.getAllScheduledNotificationsAsync();
+
+    return scheduled.some(n => n.identifier === followUpId);
+  },
+
+  // Process and check for missed doses
+  // This should be called when the app is opened to detect and update any missed doses
+  async checkAndUpdateMissedDoses(): Promise<number> {
+    const settings = await SettingsService.get();
+    const thresholdMinutes = settings.missedThresholdMinutes || 60;
+
+    // Use the dose log service to mark overdue doses as missed
+    const missedCount = await DoseLogService.markOverdueDosesAsMissed(thresholdMinutes);
+
+    if (missedCount > 0) {
+      console.log(`[NotificationService] Marked ${missedCount} doses as missed`);
+    }
+
+    return missedCount;
+  },
 };
 
 // Export individual functions for convenience
@@ -336,4 +437,8 @@ export const {
   cleanupExpiredNotifications,
   isNotificationScheduled,
   cancelDoseNotification,
+  scheduleMissedDoseFollowUp,
+  cancelMissedDoseFollowUp,
+  isMissedDoseFollowUpScheduled,
+  checkAndUpdateMissedDoses,
 } = NotificationService;

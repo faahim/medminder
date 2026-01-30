@@ -44,6 +44,7 @@ export interface Settings {
   id: number;                      // Always 1 (singleton)
   snoozeDurationMinutes: number;   // Default: 15
   missedThresholdMinutes: number;  // Minutes after scheduled to mark missed (default: 60)
+  gracePeriodMinutes: number;      // Grace period before follow-up notification (default: 30)
   notificationSound: string;       // "default" | "gentle" | "urgent"
   hapticFeedback: boolean;         // Enable/disable haptics
   darkMode: 'system' | 'light' | 'dark';

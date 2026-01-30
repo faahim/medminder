@@ -35,6 +35,13 @@ const REMINDER_STYLE_OPTIONS = [
   { label: 'Firm', value: 'urgent' },
 ];
 
+// Grace period options for missed dose follow-up
+const GRACE_PERIOD_OPTIONS = [
+  { label: '15 minutes', value: 15 },
+  { label: '30 minutes', value: 30 },
+  { label: '60 minutes', value: 60 },
+];
+
 const AnimatedView = Animated.View;
 
 export default function NotificationSettingsScreen() {
@@ -55,6 +62,7 @@ export default function NotificationSettingsScreen() {
         id: 1,
         snoozeDurationMinutes: 15,
         missedThresholdMinutes: 60,
+        gracePeriodMinutes: 30,
         notificationSound: 'default',
         hapticFeedback: true,
         darkMode: 'light',
@@ -191,12 +199,30 @@ export default function NotificationSettingsScreen() {
                   iconColor={colors.primary[700]}
                   title="Remind Me"
                   subtitle="When to receive the reminder"
-                  showBorder={false}
+                  showBorder
                   right={
                     <Select
                       value={settings.reminderAdvanceMinutes}
                       options={REMINDER_TIMING_OPTIONS}
                       onChange={(v) => updateSetting('reminderAdvanceMinutes', v)}
+                      compact
+                    />
+                  }
+                />
+
+                <SettingRow
+                  icon="hourglass"
+                  iconFallback="hourglass"
+                  iconBg={colors.warning[50]}
+                  iconColor={colors.warning[600]}
+                  title="Missed Dose Grace Period"
+                  subtitle="Wait before sending a follow-up reminder"
+                  showBorder={false}
+                  right={
+                    <Select
+                      value={settings.gracePeriodMinutes ?? 30}
+                      options={GRACE_PERIOD_OPTIONS}
+                      onChange={(v) => updateSetting('gracePeriodMinutes', v as any)}
                       compact
                     />
                   }

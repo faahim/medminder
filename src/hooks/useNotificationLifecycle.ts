@@ -129,6 +129,9 @@ export function useNotificationLifecycle(isDbReady: boolean) {
         lastTimezone.current = currentTimezone;
       }
 
+      // Check for and update missed doses
+      await NotificationService.checkAndUpdateMissedDoses();
+
       // Update badge count on foreground
       await NotificationService.updatePendingBadgeCount();
 
@@ -150,12 +153,15 @@ export function useNotificationLifecycle(isDbReady: boolean) {
 
       switch (action) {
         case 'TAKE':
+        case 'TAKE_LATE':
           await DoseLogService.logDose(
             medicationId,
             today,
             scheduledTime,
             'taken'
           );
+          // Cancel any scheduled missed dose follow-up
+          await NotificationService.cancelMissedDoseFollowUp(medicationId, scheduledTime);
           // Haptic feedback for successful action
           try {
             await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -195,6 +201,8 @@ export function useNotificationLifecycle(isDbReady: boolean) {
             scheduledTime,
             'skipped'
           );
+          // Cancel any scheduled missed dose follow-up
+          await NotificationService.cancelMissedDoseFollowUp(medicationId, scheduledTime);
           // Haptic feedback for error/destructive action
           try {
             await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);

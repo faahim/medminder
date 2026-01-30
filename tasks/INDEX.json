@@ -1,12 +1,12 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-01-30T08:30:00Z",
+  "lastUpdated": "2026-01-30T08:40:00Z",
   "summary": {
     "total": 26,
-    "pending": 3,
+    "pending": 2,
     "claimed": 0,
     "inProgress": 0,
-    "completed": 19,
+    "completed": 20,
     "failed": 0,
     "blocked": 0
   },
@@ -28,9 +28,9 @@
     "phase-2": {
       "name": "Notifications & Reminders",
       "total": 11,
-      "completed": 4,
+      "completed": 5,
       "status": "inProgress",
-      "lastUpdated": "2026-01-30T08:30:00Z"
+      "lastUpdated": "2026-01-30T08:40:00Z"
     }
   },
   "tasks": [
@@ -326,13 +326,12 @@
       "id": "M2-005",
       "title": "Missed Dose Detection & Follow-up",
       "phase": 2,
-      "status": "claimed",
+      "status": "completed",
       "priority": "P0",
       "estimate": 50,
       "dependencies": [],
       "blocks": [],
-      "claimedBy": "WATCHDOG-M2-005-2026-01-30T08:30:00Z",
-      "claimedAt": "2026-01-30T08:30:00Z"
+      "completedAt": "2026-01-30T08:39:00Z"
     },
     {
       "id": "M2-006",
