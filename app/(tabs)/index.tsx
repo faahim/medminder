@@ -25,7 +25,7 @@ import { colors, radii, shadows, spacing } from '../../src/design';
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
-  const { doses, isLoading, refresh, groupedDoses, logDose, asNeededMeds, logAsNeededDose } = useTodaysDoses();
+  const { doses, isLoading, refresh, groupedDoses, logDose, asNeededMeds, logAsNeededDose, notificationStatus, snoozeDose } = useTodaysDoses();
   const [refreshing, setRefreshing] = useState(false);
 
   const fabScale = useSharedValue(1);
@@ -103,6 +103,8 @@ export default function HomeScreen() {
               dose={dose}
               onLogDose={handleLogDose}
               onStatusChange={refresh}
+              onSnooze={snoozeDose}
+              hasNotification={notificationStatus.get(`${dose.medication.id}-${dose.scheduledTime}`) || false}
             />
           </Animated.View>
         ))}

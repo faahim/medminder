@@ -1,10 +1,11 @@
-import { View } from 'react-native';
+import { View, Pressable } from 'react-native';
 import { useState } from 'react';
 
 import { Typography } from '../ui/Typography';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { Icon } from '../ui/Icon';
+import { Badge } from '../ui/Badge';
 import { MealTimingBadge } from './MealTimingBadge';
 import { triggerHaptic } from '../../utils/haptics';
 
@@ -15,6 +16,8 @@ interface DoseCardProps {
   dose: ScheduledDose;
   onStatusChange: (status: DoseStatus) => void;
   onLogDose?: (medicationId: string, date: string, time: string, status: DoseStatus) => Promise<void>;
+  onSnooze?: (medicationId: string, time: string, minutes: number) => Promise<void>;
+  hasNotification?: boolean;
 }
 
 function statusTokens(status: DoseStatus) {
@@ -60,9 +63,10 @@ function formatTimeParts(scheduledTime: string) {
   return { h, m };
 }
 
-export function DoseCard({ dose, onStatusChange, onLogDose }: DoseCardProps) {
+export function DoseCard({ dose, onStatusChange, onLogDose, onSnooze, hasNotification = false }: DoseCardProps) {
   const [isLogging, setIsLogging] = useState(false);
   const [showActions, setShowActions] = useState(false);
+  const [showSnoozeOptions, setShowSnoozeOptions] = useState(false);
 
   const handleTake = async () => {
     setIsLogging(true);
@@ -76,6 +80,7 @@ export function DoseCard({ dose, onStatusChange, onLogDose }: DoseCardProps) {
     } finally {
       setIsLogging(false);
       setShowActions(false);
+      setShowSnoozeOptions(false);
     }
   };
 
@@ -90,6 +95,21 @@ export function DoseCard({ dose, onStatusChange, onLogDose }: DoseCardProps) {
     } finally {
       setIsLogging(false);
       setShowActions(false);
+      setShowSnoozeOptions(false);
+    }
+  };
+
+  const handleSnooze = async (minutes: number) => {
+    setIsLogging(true);
+    try {
+      triggerHaptic('medium');
+      if (onSnooze) {
+        await onSnooze(dose.medication.id, dose.scheduledTime, minutes);
+      }
+    } finally {
+      setIsLogging(false);
+      setShowActions(false);
+      setShowSnoozeOptions(false);
     }
   };
 
@@ -152,49 +172,128 @@ export function DoseCard({ dose, onStatusChange, onLogDose }: DoseCardProps) {
 
         {dose.status === 'pending' ? (
           <View style={{ marginTop: spacing.md, gap: spacing.sm }}>
-            {!showActions ? (
-              <Button
-                title={isLogging ? 'Logging…' : 'Take now'}
-                onPress={handleTake}
-                disabled={isLogging}
-                loading={isLogging}
-                leftIcon={<Icon name="checkmark" fallback="checkmark" size={18} color={colors.white} weight="bold" />}
-                fullWidth
-              />
-            ) : (
-              <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-                <View style={{ flex: 1 }}>
-                  <Button
-                    title="Take"
-                    onPress={handleTake}
-                    disabled={isLogging}
-                    loading={isLogging}
-                    leftIcon={<Icon name="checkmark" fallback="checkmark" size={18} color={colors.white} weight="bold" />}
-                    fullWidth
-                  />
+            {/* Reminder scheduled indicator */}
+            {hasNotification && (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, marginBottom: spacing.xs }}>
+                <Icon name="bell.fill" fallback="notifications" size={14} color={colors.primary[600]} />
+                <Typography variant="small" style={{ color: colors.primary[700] }}>
+                  Reminder scheduled
+                </Typography>
+              </View>
+            )}
+
+            {!showSnoozeOptions ? (
+              !showActions ? (
+                <Button
+                  title={isLogging ? 'Logging…' : 'Take now'}
+                  onPress={handleTake}
+                  disabled={isLogging}
+                  loading={isLogging}
+                  leftIcon={<Icon name="checkmark" fallback="checkmark" size={18} color={colors.white} weight="bold" />}
+                  fullWidth
+                />
+              ) : (
+                <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+                  <View style={{ flex: 1 }}>
+                    <Button
+                      title="Take"
+                      onPress={handleTake}
+                      disabled={isLogging}
+                      loading={isLogging}
+                      leftIcon={<Icon name="checkmark" fallback="checkmark" size={18} color={colors.white} weight="bold" />}
+                      fullWidth
+                    />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Button
+                      title="Skip"
+                      onPress={handleSkip}
+                      disabled={isLogging}
+                      variant="secondary"
+                      leftIcon={<Icon name="xmark" fallback="close" size={18} color={colors.surface[900]} weight="bold" />}
+                      fullWidth
+                    />
+                  </View>
                 </View>
-                <View style={{ flex: 1 }}>
-                  <Button
-                    title="Skip"
-                    onPress={handleSkip}
-                    disabled={isLogging}
-                    variant="secondary"
-                    leftIcon={<Icon name="xmark" fallback="close" size={18} color={colors.surface[900]} weight="bold" />}
-                    fullWidth
-                  />
+              )
+            ) : (
+              /* Snooze options */
+              <View style={{ gap: spacing.sm }}>
+                <Typography variant="small" style={{ color: colors.surface[600], textAlign: 'center' }}>
+                  Snooze for how long?
+                </Typography>
+                <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+                  <View style={{ flex: 1 }}>
+                    <Pressable
+                      onPress={() => handleSnooze(15)}
+                      disabled={isLogging}
+                      style={{
+                        paddingVertical: spacing.sm,
+                        paddingHorizontal: spacing.sm,
+                        borderRadius: radii.md,
+                        backgroundColor: colors.surface[100],
+                        borderWidth: 1,
+                        borderColor: colors.surface[200],
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Typography variant="label" style={{ color: colors.surface[900] }}>15m</Typography>
+                    </Pressable>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Pressable
+                      onPress={() => handleSnooze(30)}
+                      disabled={isLogging}
+                      style={{
+                        paddingVertical: spacing.sm,
+                        paddingHorizontal: spacing.sm,
+                        borderRadius: radii.md,
+                        backgroundColor: colors.surface[100],
+                        borderWidth: 1,
+                        borderColor: colors.surface[200],
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Typography variant="label" style={{ color: colors.surface[900] }}>30m</Typography>
+                    </Pressable>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Pressable
+                      onPress={() => handleSnooze(60)}
+                      disabled={isLogging}
+                      style={{
+                        paddingVertical: spacing.sm,
+                        paddingHorizontal: spacing.sm,
+                        borderRadius: radii.md,
+                        backgroundColor: colors.surface[100],
+                        borderWidth: 1,
+                        borderColor: colors.surface[200],
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Typography variant="label" style={{ color: colors.surface[900] }}>1h</Typography>
+                    </Pressable>
+                  </View>
                 </View>
               </View>
             )}
 
             <Button
-              title={showActions ? 'Cancel' : 'More options'}
-              onPress={() => setShowActions((v) => !v)}
+              title={showSnoozeOptions ? 'Cancel' : showActions ? 'Cancel' : 'More options'}
+              onPress={() => {
+                if (showSnoozeOptions) {
+                  setShowSnoozeOptions(false);
+                  setShowActions(true);
+                } else {
+                  setShowActions((v) => !v);
+                }
+              }}
               variant="ghost"
               size="sm"
               leftIcon={
                 <Icon
-                  name={showActions ? 'xmark' : 'ellipsis'}
-                  fallback={showActions ? 'close' : 'ellipsis-horizontal'}
+                  name={showSnoozeOptions ? 'xmark' : showActions ? 'xmark' : 'ellipsis'}
+                  fallback={showSnoozeOptions ? 'close' : showActions ? 'close' : 'ellipsis-horizontal'}
                   size={16}
                   color={colors.primary[600]}
                 />
@@ -202,6 +301,46 @@ export function DoseCard({ dose, onStatusChange, onLogDose }: DoseCardProps) {
               fullWidth
               style={{ boxShadow: shadows.none as any }}
             />
+
+            {/* Snooze button (shown when not in expanded actions) */}
+            {!showActions && !showSnoozeOptions && hasNotification && (
+              <Button
+                title="Snooze"
+                onPress={() => setShowSnoozeOptions(true)}
+                variant="ghost"
+                size="sm"
+                leftIcon={
+                  <Icon
+                    name="clock"
+                    fallback="time-outline"
+                    size={16}
+                    color={colors.surface[600]}
+                  />
+                }
+                fullWidth
+                style={{ boxShadow: shadows.none as any }}
+              />
+            )}
+
+            {/* Snooze button in expanded actions */}
+            {showActions && !showSnoozeOptions && (
+              <Button
+                title="Snooze"
+                onPress={() => setShowSnoozeOptions(true)}
+                variant="ghost"
+                size="sm"
+                leftIcon={
+                  <Icon
+                    name="clock"
+                    fallback="time-outline"
+                    size={16}
+                    color={colors.surface[600]}
+                  />
+                }
+                fullWidth
+                style={{ boxShadow: shadows.none as any }}
+              />
+            )}
           </View>
         ) : s.label ? (
           <View style={{ marginTop: spacing.sm, alignItems: 'center' }}>

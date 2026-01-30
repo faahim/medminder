@@ -11,17 +11,20 @@ interface UseTodaysDosesReturn {
   doses: ScheduledDose[];
   groupedDoses: Record<TimeOfDay, ScheduledDose[]>;
   asNeededMeds: Medication[];
+  notificationStatus: Map<string, boolean>; // Key: ${medId}-${time}, Value: hasNotification
   isLoading: boolean;
   error: Error | null;
   refresh: () => Promise<void>;
   logDose: (medicationId: string, time: string, status: DoseStatus) => Promise<void>;
   logAsNeededDose: (medicationId: string) => Promise<void>;
+  snoozeDose: (medicationId: string, time: string, minutes: number) => Promise<void>;
 }
 
 export function useTodaysDoses(): UseTodaysDosesReturn {
   const { isReady } = useDatabase();
   const [doses, setDoses] = useState<ScheduledDose[]>([]);
   const [asNeededMeds, setAsNeededMeds] = useState<Medication[]>([]);
+  const [notificationStatus, setNotificationStatus] = useState<Map<string, boolean>>(new Map());
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -54,8 +57,19 @@ export function useTodaysDoses(): UseTodaysDosesReturn {
       // Build today's schedule (only for scheduled medications)
       const scheduled = buildTodaySchedule(scheduledMedications, logMap, new Date());
 
+      // Check notification status for each pending dose
+      const notifStatusMap = new Map<string, boolean>();
+      for (const dose of scheduled) {
+        if (dose.status === 'pending') {
+          const key = `${dose.medication.id}-${dose.scheduledTime}`;
+          const hasNotification = await NotificationService.isNotificationScheduled(dose.medication.id, dose.scheduledTime);
+          notifStatusMap.set(key, hasNotification);
+        }
+      }
+
       setDoses(scheduled);
       setAsNeededMeds(asNeededMedications);
+      setNotificationStatus(notifStatusMap);
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to load doses'));
     } finally {
@@ -75,6 +89,9 @@ export function useTodaysDoses(): UseTodaysDosesReturn {
     const today = format(new Date(), 'yyyy-MM-dd');
     await DoseLogService.logDose(medicationId, today, time, status);
 
+    // Cancel the notification for this dose
+    await NotificationService.cancelDoseNotification(medicationId, time);
+
     // Update local state optimistically
     setDoses(prev => prev.map(dose => {
       if (dose.medication.id === medicationId && dose.scheduledTime === time) {
@@ -82,6 +99,39 @@ export function useTodaysDoses(): UseTodaysDosesReturn {
       }
       return dose;
     }));
+
+    // Update notification status map
+    setNotificationStatus(prev => {
+      const updated = new Map(prev);
+      updated.delete(`${medicationId}-${time}`);
+      return updated;
+    });
+
+    // Update badge count
+    await NotificationService.updatePendingBadgeCount();
+  }, []);
+
+  const snoozeDose = useCallback(async (
+    medicationId: string,
+    time: string,
+    minutes: number
+  ) => {
+    // Find the medication
+    const medication = await MedicationService.getById(medicationId);
+    if (!medication) return;
+
+    // Schedule snooze notification
+    await NotificationService.scheduleSnooze(medication, time, minutes);
+
+    // Cancel the original notification
+    await NotificationService.cancelDoseNotification(medicationId, time);
+
+    // Update notification status map
+    setNotificationStatus(prev => {
+      const updated = new Map(prev);
+      updated.set(`${medicationId}-${time}`, false); // Original notification is cancelled
+      return updated;
+    });
 
     // Update badge count
     await NotificationService.updatePendingBadgeCount();
@@ -101,10 +151,12 @@ export function useTodaysDoses(): UseTodaysDosesReturn {
     doses,
     groupedDoses,
     asNeededMeds,
+    notificationStatus,
     isLoading,
     error,
     refresh: loadTodaysDoses,
     logDose,
     logAsNeededDose,
+    snoozeDose,
   };
 }

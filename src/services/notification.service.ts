@@ -300,6 +300,26 @@ export const NotificationService = {
       }
     }
   },
+
+  // Check if a notification is scheduled for a specific medication and time
+  async isNotificationScheduled(medicationId: string, time: string): Promise<boolean> {
+    const notif = await getNotifications();
+    if (!notif) return false;
+
+    const notificationId = getNotificationId(medicationId, time);
+    const scheduled = await notif.getAllScheduledNotificationsAsync();
+
+    return scheduled.some(n => n.identifier === notificationId);
+  },
+
+  // Cancel notification for a specific medication and time slot
+  async cancelDoseNotification(medicationId: string, time: string): Promise<void> {
+    const notif = await getNotifications();
+    if (!notif) return;
+
+    const notificationId = getNotificationId(medicationId, time);
+    await notif.cancelScheduledNotificationAsync(notificationId).catch(() => {});
+  },
 };
 
 // Export individual functions for convenience
@@ -314,4 +334,6 @@ export const {
   updatePendingBadgeCount,
   isMedicationSchedulable,
   cleanupExpiredNotifications,
+  isNotificationScheduled,
+  cancelDoseNotification,
 } = NotificationService;
