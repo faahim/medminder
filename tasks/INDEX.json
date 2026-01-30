@@ -1,11 +1,11 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-01-30T00:40:28Z",
+  "lastUpdated": "2026-01-30T00:46:29Z",
   "summary": {
     "total": 15,
-    "pending": 11,
+    "pending": 10,
     "claimed": 0,
-    "inProgress": 0,
+    "inProgress": 1,
     "completed": 4,
     "failed": 0,
     "blocked": 0
@@ -100,7 +100,7 @@
       "id": "M1-005",
       "title": "Today Screen Redesign",
       "phase": 1,
-      "status": "pending",
+      "status": "in_progress",
       "priority": "P0",
       "estimate": 90,
       "dependencies": [

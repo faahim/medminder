@@ -1,6 +1,6 @@
 # 📋 Medminder - Task Board
 
-**Last Updated**: 2026-01-30T00:40:28Z
+**Last Updated**: 2026-01-30T00:46:29Z
 
 ## Overview
 
@@ -24,7 +24,8 @@
 
 ### 🟡 In Progress
 
-*No tasks in progress*
+| ID | Task | Priority | Estimate |
+|----|------|----------|----------|
 
 ---
 
