@@ -45,62 +45,58 @@ export const PrescriptionVisionService = {
 
     const todayISO = startDateISO ?? new Date().toISOString().slice(0, 10);
 
-    const schema = {
-      name: 'prescription_extract',
-      schema: {
-        type: 'object',
-        additionalProperties: false,
-        properties: {
-          medications: {
-            type: 'array',
-            items: {
-              type: 'object',
-              additionalProperties: false,
-              properties: {
-                name: { type: 'string' },
-                dosage: { type: 'string' },
-                dosageUnit: { type: 'string' },
-                instructions: { type: 'string' },
-                mealTiming: { type: 'string', enum: ['before', 'after', 'with', 'anytime'] },
-                scheduleType: { type: 'string', enum: ['daily', 'weekly', 'interval', 'as-needed'] },
-                // Must be explicit HH:MM times.
-                scheduleTimes: {
-                  type: 'array',
-                  items: { type: 'string' },
-                },
-                scheduleWeekdays: {
-                  type: 'array',
-                  items: { type: 'integer' },
-                },
-                scheduleIntervalHours: { type: 'number' },
-                startDateISO: { type: 'string' },
-                endDateISO: { anyOf: [{ type: 'string' }, { type: 'null' }] },
-                hasEndDate: { type: 'boolean' },
-                dependsOnMedicationName: { anyOf: [{ type: 'string' }, { type: 'null' }] },
-                dependsOnOffsetDays: { type: 'number' },
+    const jsonSchema = {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        medications: {
+          type: 'array',
+          items: {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              name: { type: 'string' },
+              dosage: { type: 'string' },
+              dosageUnit: { type: 'string' },
+              instructions: { type: 'string' },
+              mealTiming: { type: 'string', enum: ['before', 'after', 'with', 'anytime'] },
+              scheduleType: { type: 'string', enum: ['daily', 'weekly', 'interval', 'as-needed'] },
+              // Must be explicit HH:MM times.
+              scheduleTimes: {
+                type: 'array',
+                items: { type: 'string' },
               },
-              required: [
-                'name',
-                'dosage',
-                'dosageUnit',
-                'instructions',
-                'mealTiming',
-                'scheduleType',
-                'scheduleTimes',
-                'scheduleWeekdays',
-                'scheduleIntervalHours',
-                'startDateISO',
-                'endDateISO',
-                'hasEndDate',
-                'dependsOnMedicationName',
-                'dependsOnOffsetDays',
-              ],
+              scheduleWeekdays: {
+                type: 'array',
+                items: { type: 'integer' },
+              },
+              scheduleIntervalHours: { type: 'number' },
+              startDateISO: { type: 'string' },
+              endDateISO: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+              hasEndDate: { type: 'boolean' },
+              dependsOnMedicationName: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+              dependsOnOffsetDays: { type: 'number' },
             },
+            required: [
+              'name',
+              'dosage',
+              'dosageUnit',
+              'instructions',
+              'mealTiming',
+              'scheduleType',
+              'scheduleTimes',
+              'scheduleWeekdays',
+              'scheduleIntervalHours',
+              'startDateISO',
+              'endDateISO',
+              'hasEndDate',
+              'dependsOnMedicationName',
+              'dependsOnOffsetDays',
+            ],
           },
         },
-        required: ['medications'],
       },
-      strict: true,
+      required: ['medications'],
     };
 
     const prompt = `You are extracting structured medication instructions from a prescription image.
@@ -150,7 +146,9 @@ Locale hint: ${localeHint}.`;
       text: {
         format: {
           type: 'json_schema',
-          json_schema: schema,
+          name: 'prescription_extract',
+          schema: jsonSchema,
+          strict: true,
         },
       },
     };
